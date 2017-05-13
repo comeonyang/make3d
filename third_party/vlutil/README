@@ -1,0 +1,14 @@
+                  VisionLab MATLAB utility programs
+                            Andrea Vedaldi
+                   http://vision.ucla.edu/~vedaldi
+
+This is a small collection of useful MATLAB programs (mostly MEX
+files) to perform commont tastks, such as computing histograms or
+smoothing images.
+
+See vlutil.html for an overview.
+
+
+CHANGES
+  0.9.2-5 Added several functions
+  0.9.1   Added imsmooth.mex.c. Fixed some copyright notices.

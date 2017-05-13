@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<title>YALMIP Example : Generalized eigenvalue problems</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<meta content="Microsoft FrontPage 6.0" name="GENERATOR">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<link href="yalmip.css" type="text/css" rel="stylesheet">
+<base target="_self">
+</head>
+
+<body leftMargin="0" topMargin="0">
+
+<div align="left">
+
+<table border="0" cellpadding="4" cellspacing="3" style="border-collapse: collapse" bordercolor="#000000" width="100%" align="left" height="100%">
+  <tr>
+    <td width="100%" align="left" height="100%" valign="top">
+        <h2>Decay-rate estimation</h2>
+    <hr noShade SIZE="1">
+    <p>The problem we will solve is to estimate the decay-rate of a linear 
+    system <strong>x' = Ax</strong>. This can be formulated as a generalized 
+    eigenvalue problem.</p>
+        <p><img border="0" src="gevp.h4.gif" hspace="45"></p>
+    <p>Due to the product between&nbsp;<b><font face="Tahoma">t</font></b> and 
+    <b><font face="Tahoma">P</font></b>, the problem cannot be solved 
+    directly. However, it is easily solved by bisection in <b>t</b>.</p>
+    <p>Define the variables.</p>
+    <table cellPadding="10" width="100%">
+      <tr>
+        <td class="xmpcode">
+        <pre>A = [-1 2;-3 -4];
+P = sdpvar(2,2);</pre>
+        </td>
+      </tr>
+    </table>
+    <p>To find a lower bound on <b>t</b>, we solve a standard Lyapunov stability 
+    problem.</p>
+    <table cellPadding="10" width="100%">
+      <tr>
+        <td class="xmpcode">
+        <pre>F = set(P&gt;eye(2))+set(A'*P+P*A &lt; -eye(2));
+solvesdp(F,trace(P));
+P0 = double(P);</pre>
+        </td>
+      </tr>
+    </table>
+    <p>In the code above, we minimized the trace just to get a numerically sound 
+    solution. This solution gives us a lower bound on decay-rate</p>
+    <table cellPadding="10" width="100%">
+      <tr>
+        <td class="xmpcode">
+        <pre>t_lower = -max(eig(inv(P0)*(A'*P0+P0*A)))/2;</pre>
+        </td>
+      </tr>
+    </table>
+    <p>We now find an upper bound on the decay-rate by doubling t until the 
+    problem is infeasible. To find out if the problem is infeasible, we check 
+    the field <code>problem</code> in the solution structure. The meaning of 
+    this variable is explained in the help text for the command&nbsp;<a href="reference.htm#yalmiperror">yalmiperror</a>. Infeasibility has been detected by the solver if the value is 1. To reduce 
+    the amount of information written on the screen, we run the solver in a 
+    completely silent mode. This can be accomplished by using the <code>verbose</code> 
+    and <code>warning</code> options in
+    <a href="reference.htm#sdpsettings">
+    sdpsettings</a>.</p>
+    <table cellPadding="10" width="100%">
+      <tr>
+        <td class="xmpcode">
+        <pre>t_upper = t_lower*2;
+F = set(P&gt;eye(2))+set(A'*P+P*A &lt; -2*t_upper*P);
+ops = sdpsettings('verbose',0,'warning',0);
+sol = solvesdp(F,[],ops);</pre>
+        <pre>while ~(sol.problem==1)
+&nbsp;&nbsp;&nbsp; t_upper = t_upper*2;
+&nbsp;&nbsp;&nbsp; F = set(P&gt;eye(2))+set(A'*P+P*A &lt; -2*t_upper*P);
+&nbsp;&nbsp;&nbsp; sol = solvesdp(F,[],ops);
+end</pre>
+        </td>
+      </tr>
+    </table>
+    <p>Having both an upper bound and a lower bound allows us to perform a 
+    bisection.</p>
+    <table cellPadding="10" width="100%">
+      <tr>
+        <td class="xmpcode">
+        <pre>tol = 0.01;
+t_works = t_lower
+while (t_upper-t_lower)&gt;tol
+&nbsp; t_test = (t_upper+t_lower)/2;
+&nbsp; disp([t_lower t_upper t_test])
+&nbsp; F = set(P&gt;eye(2))+set(A'*P+P*A &lt; -2*t_test*P);
+&nbsp; sol = solvesdp(F,[],ops);
+&nbsp; if sol.problem==1
+&nbsp;&nbsp;&nbsp; t_upper = t_test;
+&nbsp; else
+&nbsp;&nbsp;&nbsp; t_lower = t_test;
+&nbsp;&nbsp;&nbsp; t_works = t_test;
+ end
+end</pre>
+        </td>
+      </tr>
+    </table>
+        <p>This example will be revisited later when we study <a href="bmi.htm">
+        BMIs</a></td>
+  </tr>
+</table>
+
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,163 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<title>YALMIP Example : Efficient solution of KYP problems</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<meta content="Microsoft FrontPage 6.0" name="GENERATOR">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<link href="yalmip.css" type="text/css" rel="stylesheet">
+<base target="_self">
+</head>
+
+<body leftMargin="0" topMargin="0">
+
+<div align="left">
+  <table border="0" cellpadding="4" cellspacing="3" style="border-collapse: collapse" bordercolor="#000000" width="100%" align="left" height="100%">
+    <tr>
+      <td width="100%" align="left" height="100%" valign="top">
+      <h2>Saving &amp; and loading</h2>
+      <hr noShade SIZE="1">
+      <p>The most efficient and safe way to save and communicate YALMIP models 
+		is to work with the MATLAB script, i.e. the YALMIP code. In some cases 
+		however, it might be necessary to use binary or other formats. 
+		Additionally, there might be cases where a YALMIP model needs to be 
+		converted to a solver specific numerical model.</p>
+		<h3>Loading &amp; saving in binary MATLAB format</h3>
+		<p>The objects in YALMIP all support loading and saving, hence it is 
+		possible to save a model in a binary MATLAB format.</p>
+      <table cellPadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>A = randn(3);
+P = sdpvar(3,3);
+F = set(A'*P+P*A &lt; -eye(3));
+obj = trace(P);</pre>
+			<pre>save mymodel</pre>
+			<pre>clear all;
+load mymodel
+
+F
+<font color="#000000">+++++++++++++++++++++++++++++++++++++++++++++++++
+|   ID|      Constraint|                    Type|
++++++++++++++++++++++++++++++++++++++++++++++++++
+|   #1|   Numeric value|   Matrix inequality 3x3|
++++++++++++++++++++++++++++++++++++++++++++++++++</font>
+obj
+<font color="#000000">Linear scalar (real, 3 variables)</font></pre>
+          </td>
+        </tr>
+      </table>
+      <p>Note that loading a YALMIP model will destroy any
+              <a href="reference.htm#sdpvar">sdpvar</a> and
+              <a href="reference.htm#set">set</a> object in the current 
+		workspace. The binary data format is not recommended, and the reason is three-fold. The first reason is 
+		incompatibility between different MATLAB version, the second reason is 
+		possible incompatibility between different YALMIP versions, and finally 
+		that the binary format in YALMIP currently is inefficient for 
+		large-scale problems.</p>
+		<h3>Loading &amp; saving in SDPA sparse ASCII format</h3>
+		<p>The leading format to communicate standard linear SDP problems in a 
+		platform and application independent way is the
+		<a target="_blank" href="http://infohost.nmt.edu/~sdplib/FORMAT">sparse 
+		SDPA format</a>. YALMIP can both save and load models in this format.</p>
+      <table cellPadding="10" width="100%" id="table1">
+        <tr>
+          <td class="xmpcode">
+          <pre>A = randn(3);
+P = sdpvar(3,3);
+F = set(A'*P+P*A &lt; -eye(3));
+obj = trace(P);</pre>
+			<pre>savesdpafile(F,obj,'mymodel.dat-s');</pre>
+			<pre>clear all;
+[F,obj] = loadsdpafile('mymodel.dat-s');
+
+F
+<font color="#000000">+++++++++++++++++++++++++++++++++++++++++++++++++
+|   ID|      Constraint|                    Type|
++++++++++++++++++++++++++++++++++++++++++++++++++
+|   #1|   Numeric value|   Matrix inequality 3x3|
++++++++++++++++++++++++++++++++++++++++++++++++++</font>
+obj
+<font color="#000000">Linear scalar (real, 3 variables)</font></pre>
+          </td>
+        </tr>
+      </table>
+      <p>The SDPA format is limited to standard linear SDP problems (without 
+		equality constraints), hence many YALMIP models cannot be saved in this 
+		format. </p>
+      <h3>Exporting solver specific models</h3>
+		<p>YALMIP can be used to extract the numerical model in various solver 
+		specific formats. This can be done along during a call to the solver, 
+		but also without explicitly invoking the solver. To export the solver 
+		while solving the problem, we use the <code>savesolverinput</code> option.<table cellPadding="10" width="100%" id="table2">
+        <tr>
+          <td class="xmpcode">
+          <pre>A = randn(3);
+P = sdpvar(3,3);
+F = set(A'*P+P*A &lt; -eye(3));
+obj = trace(P);
+sol = solvesdp(F,obj,sdpsettings('solver','sedumi','savesolverinput',1));
+sol.solverinput
+<font color="#000000">ans = </font></pre>
+			<pre><font color="#000000">       A: [9x6 double]
+       c: [9x1 double]
+       b: [6x1 double]
+       K: [1x1 struct]
+    pars: [1x1 struct]</font></pre>
+          </td>
+        </tr>
+      </table>
+      <p>To export the model with actually calling the solver, use
+              <a href="reference.htm#export">export</a>.</p>
+      <table cellPadding="10" width="100%" id="table3">
+        <tr>
+          <td class="xmpcode">
+          <pre>A = randn(3);
+P = sdpvar(3,3);
+F = set(A'*P+P*A &lt; -eye(3));
+obj = trace(P);
+mdl = export(F,obj,sdpsettings('solver','sedumi'));
+mdl</pre>
+          </td>
+        </tr>
+      </table>
+      <p>All solvers are currently not supported in
+              <a href="reference.htm#export">export</a>. If you miss 
+		support for some solver, please make a feature request.<h3>Saving AMPL 
+		models<br>
+		</h3>A
+		rudimentary support for exporting models in
+		<a target="_blank" href="http://www.ampl.com/">AMPL</a> format is 
+		available. This functionality is mainly intended for small nonlinear or 
+		mixed integer programs, and was only implemented in order to save one 
+		particular problem. If you are interested in a better support, make a 
+		feature request.<table cellPadding="10" width="100%" id="table4">
+        <tr>
+          <td class="xmpcode">
+          <pre>sdpvar a b c
+F = set(a+b^2 &lt; c*pi) + set(integer(b)) + set(a+b==3);
+obj = a*b*c;
+saveampl(F,obj,'mymodel.mod')
+type mymodel</pre>
+			<pre><font color="#000000">var x {1..2};
+var z {1..1} integer ;
+minimize obj:  x[1]*z[1]*x[2];
+subject to constr1: 0 &lt;= -x[1]+x[2]-z[1]^2;
+subject to constr2: 0 == 3-x[1]-z[1];
+solve;
+display x;
+display z;
+display obj;</font></pre>
+          </td>
+        </tr>
+      </table>
+      </td>
+    </tr>
+  </table>
+</div>
+
+</body>
+
+</html>

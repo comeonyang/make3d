@@ -1,0 +1,1878 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<title>YALMIP - Interfaced solvers</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<link href="yalmip.css" type="text/css" rel="stylesheet">
+<base target="_self">
+</head>
+
+<body leftmargin="0" topmargin="0">
+
+<div align="left">
+  <table border="0" cellpadding="4" cellspacing="3" style="border-collapse: collapse" bordercolor="#000000" width="100%" align="left" height="100%">
+    <tr>
+      <td width="100%" align="left" height="100%" valign="top">
+      <h2>Interfaced solvers</h2>
+      <hr size="1">
+      <p>YALMIP supports a large number of solvers and these are briefly introduced 
+      here. To understand the tables below, here are some explanations.</p>
+      <table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse" width="100%" bordercolor="#FF9933">
+        <tr>
+          <td bgcolor="#FFDEAD">
+          <p class="tableheader"><a name="general"></a>Description of solver 
+          interface tables</p>
+          </td>
+        </tr>
+        <tr>
+          <td>
+          <table cellspacing="0" cellpadding="4" width="100%" border="0">
+            <tr>
+              <th class="doc" valign="top"  align="left"  width="101">
+              Version</th>
+              <td class="tabxpl">Solver version which has been successfully tested 
+              together with YALMIP. Other versions might work.</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="101">
+              Specialized for</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">This essentially states the problem classes that 
+              can be solved without YALMIP performing any internal conversions of 
+              the problem.<table border="0" cellpadding="0" style="border-collapse: collapse" width="70%">
+                <tr>
+                  <td width="67" ><strong>EQ</strong></td>
+                  <td width="412">Linear equality constraints.</td>
+                </tr>
+                <tr>
+                  <td width="67" ><strong>LP</strong></td>
+                  <td width="412">Linear element-wise inequality constraints.</td>
+                </tr>
+                <tr>
+                  <td width="67" ><strong>QP</strong></td>
+                  <td width="412">Convex quadratic objective function.</td>
+                </tr>
+                <tr>
+                  <td width="67" ><strong>SOCP</strong></td>
+                  <td width="412">Second order cone constraint.</td>
+                </tr>
+                <tr>
+                  <td width="67" ><strong>SDP</strong></td>
+                  <td width="412">Linear semidefinite constraints.</td>
+                </tr>
+                <tr>
+                  <td width="67" ><strong>BMI</strong></td>
+                  <td width="412">Bilinear and quadratic semidefinite constraints.</td>
+                </tr>
+                <tr>
+                  <td width="67" ><strong>GP</strong></td>
+                  <td width="412">Geometric programming (with posynomials)</td>
+                </tr>
+                <tr>
+                  <td width="67" ><strong>PP</strong></td>
+                  <td width="412">Polynomial programming</td>
+                </tr>
+                <tr>
+                  <td width="67" ><strong>NP</strong></td>
+                  <td width="412">General nonlinear programming</td>
+                </tr>
+                <tr>
+                  <td width="67" ><strong>MAXDET</strong></td>
+                  <td width="412">logdet objective and linear semidefinite constraints.</td>
+                </tr>
+                <tr>
+                  <td width="67" ><strong>I</strong></td>
+                  <td width="412">Integer (and/or binary) variables.</td>
+                </tr>
+                <tr>
+                  <td width="67" ><strong>M</strong></td>
+                  <td width="412">Multi-parametric</td>
+                </tr>
+              </table>
+&nbsp;</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="101">
+              Also handles</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">Problem classes that can be solved after internal 
+              problem conversions by YALMIP. Most importantly, equality constraints 
+              are written as double-sided inequalities (or a reduced basis is derived), 
+              convex quadratic performance objectives are rewritten using second 
+              order cones, and second order cones are rewritten to semidefinite 
+              constraints.</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="101">
+              Tag</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">This is the tag used in
+              <a href="reference.htm#sdpsettings">sdpsettings</a> to select solver.</td>
+            </tr>
+          </table>
+          </td>
+        </tr>
+      </table>
+      <h3>The solvers</h3>
+      <table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse" width="100%" bordercolor="#FF9933">
+        <tr>
+          <td bgcolor="#FFDEAD">
+          <p class="tableheader"><a name="bintprog"></a>BINTPROG</p>
+          </td>
+        </tr>
+        <tr>
+          <td>
+          <table cellspacing="0" cellpadding="4" width="100%" border="0">
+            <tr>
+              <th class="doc" valign="top" align="left" width="101">
+              Version</th>
+              <td class="tabxpl">&nbsp;</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top" align="left"  rowspan="2" width="101">
+              Specialized for</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">EQ, I, LP</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top" align="left"  rowspan="2" width="101">
+              Also handles</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">&nbsp;</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="101">
+              Homepage</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">
+              <a target="_blank" href="http://www.mathworks.com/products/optimization/">http://www.mathworks.com/products/optimization/</a></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="101">
+              Tag</th>
+            </tr>
+            <tr>
+              <td class="tabxpl"><code>&#39;bintprog&#39;</code></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="101">
+              Comments</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">Available in MATLAB 7. BINTPROG only support 
+				binary decision variables. If integer variables are used, YALMIP 
+				will try to model these using binary variables (requires 
+				explicit lower and upper bounds the variables)</td>
+            </tr>
+          </table>
+          </td>
+        </tr>
+      </table>
+      <p>&nbsp;</p>
+      <table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse" width="100%" bordercolor="#FF9933" id="table1">
+        <tr>
+          <td bgcolor="#FFDEAD">
+          <p class="tableheader"><a name="bpmpd"></a>BPMPD</p>
+          </td>
+        </tr>
+        <tr>
+          <td>
+          <table cellspacing="0" cellpadding="4" width="100%" border="0" id="table2">
+            <tr>
+              <th class="doc" valign="top" align="left"  width="100">
+              Version</th>
+              <td class="tabxpl">2.21.1</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="100">
+              Specialized for</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">EQ, LP, QP</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="100">
+              Also handles</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">&nbsp;</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="100">
+              Homepage</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">
+              <a target="_blank" href="http://www.pserc.cornell.edu/bpmpd/">
+              http://www.pserc.cornell.edu/bpmpd/</a></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="100">
+              Tag</th>
+            </tr>
+            <tr>
+              <td class="tabxpl"><code>&#39;bpmpd&#39;</code></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="100">
+              Comments</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">&nbsp;</td>
+            </tr>
+          </table>
+          </td>
+        </tr>
+      </table>
+      <p>&nbsp;</p>
+      <table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse" width="100%" bordercolor="#FF9933">
+        <tr>
+          <td bgcolor="#FFDEAD">
+          <p class="tableheader"><a name="cdd"></a>CDD</p>
+          </td>
+        </tr>
+        <tr>
+          <td>
+          <table cellspacing="0" cellpadding="4" width="100%" border="0">
+            <tr>
+              <th class="doc" valign="top" align="left"  width="100">
+              Version</th>
+              <td class="tabxpl">0.93</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="100">
+              Specialized for</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">EQ, LP</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="100">
+              Also handles</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">&nbsp;</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="100">
+              Homepage</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">
+              <a target="_blank" href="http://www.cs.mcgill.ca/~fukuda/soft/cdd_home/cdd.html">
+              http://www.cs.mcgill.ca/~fukuda/soft/cdd_home/cdd.html</a></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="100">
+              Tag</th>
+            </tr>
+            <tr>
+              <td class="tabxpl"><code>&#39;cdd&#39;</code></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="100">
+              Comments</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">Interfaced through the MATLAB interface
+              <a target="_blank" href="http://control.ee.ethz.ch/~hybrid/cdd.php">
+              CDDMEX</a></td>
+            </tr>
+          </table>
+          </td>
+        </tr>
+      </table>
+      <p>&nbsp;</p>
+      <table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse" width="100%" bordercolor="#FF9933">
+        <tr>
+          <td bgcolor="#FFDEAD">
+          <p class="tableheader"><a name="clp">CLP</a></p>
+          </td>
+        </tr>
+        <tr>
+          <td>
+          <table cellspacing="0" cellpadding="4" width="100%" border="0">
+            <tr>
+              <th class="doc" valign="top"  align="left"  width="96">
+              Versions</th>
+              <td class="tabxpl">&nbsp;</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="96">
+              Specialized for</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">EQ, LP, QP</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="96">
+              Also handles</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">&nbsp;</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="96">
+              Homepage</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">
+              <a target="_blank" href="http://www.coin-or.org">
+              http://www.coin-or.org</a></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="96">
+              Tag</th>
+            </tr>
+            <tr>
+              <td class="tabxpl"><code>&#39;clp&#39;</code></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="96">
+              Comments</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">Interfaced through the MATLAB interface
+              <a target="_blank" href="http://control.ee.ethz.ch/~joloef/clp.php">
+              mexclp</a></td>
+            </tr>
+          </table>
+          </td>
+        </tr>
+      </table>
+
+      <p>&nbsp;</p>
+      <table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse" width="100%" bordercolor="#FF9933">
+        <tr>
+          <td bgcolor="#FFDEAD">
+          <p class="tableheader"><a name="cplex">CPLEX</a></p>
+          </td>
+        </tr>
+        <tr>
+          <td>
+          <table cellspacing="0" cellpadding="4" width="100%" border="0">
+            <tr>
+              <th class="doc" valign="top"  align="left"  width="97">
+              Version</th>
+              <td class="tabxpl">8.1, 9.0</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="97">
+              Specialized for</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">EQ, LP, QP, I</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="97">
+              Also handles</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">&nbsp;</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="97">
+              Homepage</th>
+            </tr>
+            <tr>
+              <td class="tabxpl"><a target="_blank" href="http://www.ilog.com">www.ilog.com</a></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="97">
+              Tag</th>
+            </tr>
+            <tr>
+              <td class="tabxpl"><code>&#39;cplex&#39;</code></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="97">
+              Comments</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">Interfaced through the MATLAB interfaces
+              <a target="_blank" href="http://control.ee.ethz.ch/~hybrid/cplexint.msql">
+              CPLEXINT</a> or
+              <a target="_blank" href="http://www-dii.ing.unisi.it/~giorgetti/downloads.html">
+              CPLEXMEX</a>. </td>
+            </tr>
+          </table>
+          </td>
+        </tr>
+      </table>
+      <p>&nbsp;</p>
+      <table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse" width="100%" bordercolor="#FF9933">
+        <tr>
+          <td bgcolor="#FFDEAD">
+          <p class="tableheader"><a name="csdp">CSDP</a></p>
+          </td>
+        </tr>
+        <tr>
+          <td>
+          <table cellspacing="0" cellpadding="4" width="100%" border="0">
+            <tr>
+              <th class="doc" valign="top"  align="left" width="100">
+              Version</th>
+              <td class="tabxpl" width="938">4.9</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2">
+              Specialized for</th>
+            </tr>
+            <tr>
+              <td class="tabxpl" width="938">LP, SDP</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2">
+              Also handles</th>
+            </tr>
+            <tr>
+              <td class="tabxpl" width="938">EQ, SOCP, QC, QP</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2">
+              Homepage</th>
+            </tr>
+            <tr>
+              <td class="tabxpl" width="938">
+              <a target="_blank" href="http://www.nmt.edu/~borchers/csdp.html">http://www.nmt.edu/~borchers/csdp.html</a></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2">
+              Tag</th>
+            </tr>
+            <tr>
+              <td class="tabxpl" width="938"><code>&#39;csdp&#39;</code></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2">
+              Comments</th>
+            </tr>
+            <tr>
+              <td class="tabxpl" width="938">You must be in the CSDP directory in MATLAB 
+              when using CSDP, or have CSDP in your system path (having CSDP in 
+              the MATLAB path is not sufficient).</td>
+            </tr>
+          </table>
+          </td>
+        </tr>
+      </table>
+           <p>&nbsp;</p>
+      <table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse" width="100%" bordercolor="#FF9933">
+        <tr>
+          <td bgcolor="#FFDEAD">
+          <p class="tableheader"><a name="dsdp">DSDP</a></p>
+          </td>
+        </tr>
+        <tr>
+          <td>
+          <table cellspacing="0" cellpadding="4" width="100%" border="0">
+            <tr>
+              <th class="doc" valign="top"  align="left"  width="101">
+              Version</th>
+              <td class="tabxpl">5.5</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="101">
+              Specialized for</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">LP, SDP</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="101">
+              Also handles</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">EQ,&nbsp; QC, SOCP, QP</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="101">
+              Homepage</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">
+              <a target="_blank" href="http://www-unix.mcs.anl.gov/~benson/">http://www-unix.mcs.anl.gov/~benson/</a></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="101">
+              Tag</th>
+            </tr>
+            <tr>
+              <td class="tabxpl"><code>&#39;dsdp&#39;</code></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="101">
+              Comments</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">Specialized for sparse and low-rank SDPs</td>
+            </tr>
+          </table>
+           </table>
+
+          <p>&nbsp;</p>
+      <table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse" width="100%" bordercolor="#FF9933">
+        <tr>
+          <td bgcolor="#FFDEAD">
+          <p class="tableheader"><a name="fmincon">FMINCON</a></p>
+          </td>
+        </tr>
+        <tr>
+          <td>
+          <table cellspacing="0" cellpadding="4" width="100%" border="0">
+            <tr>
+              <th class="doc" valign="top"  align="left"  width="101">
+              Version</th>
+              <td class="tabxpl">&nbsp;</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="101">
+              Specialized for</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">NP</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="101">
+              Also handles</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">&nbsp;</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="101">
+              Homepage</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">
+              <a target="_blank" href="http://www.mathworks.com/products/optimization/">http://www.mathworks.com/products/optimization/</a></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="101">
+              Tag</th>
+            </tr>
+            <tr>
+              <td class="tabxpl"><code>'fmincon'</code></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="101">
+              Comments</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">&nbsp;</td>
+            </tr>
+          </table>
+          </td>
+        </tr>
+      </table>
+      <p>&nbsp;</p>
+      <table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse" width="100%" bordercolor="#FF9933">
+        <tr>
+          <td bgcolor="#FFDEAD">
+          <p class="tableheader"><a name="fminsearch">FMINSEARCH</a></p>
+          </td>
+        </tr>
+        <tr>
+          <td>
+          <table cellspacing="0" cellpadding="4" width="100%" border="0">
+            <tr>
+              <th class="doc" valign="top"  align="left"  width="101">
+              Version</th>
+              <td class="tabxpl">&nbsp;</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="101">
+              Specialized for</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">NP</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="101">
+              Also handles</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">&nbsp;</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="101">
+              Homepage</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">
+              <a target="_blank" href="http://www.mathworks.com/products/optimization/">http://www.mathworks.com/products/optimization/</a></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="101">
+              Tag</th>
+            </tr>
+            <tr>
+              <td class="tabxpl"><code>'fminsearch'</code></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="101">
+              Comments</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">Can only deal with unconstrained problems.</td>
+            </tr>
+          </table>
+          </td>
+        </tr>
+      </table>
+          <p>&nbsp;</p>
+      <table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse" width="100%" bordercolor="#FF9933">
+        <tr>
+          <td bgcolor="#FFDEAD">
+          <p class="tableheader"><a name="glpk">GLPK</a></p>
+          </td>
+        </tr>
+        <tr>
+          <td>
+          <table cellspacing="0" cellpadding="4" width="100%" border="0">
+            <tr>
+              <th class="doc" valign="top"  align="left" width="101">
+              Version</th>
+              <td class="tabxpl" width="937">4.5</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2">
+              Specialized for</th>
+            </tr>
+            <tr>
+              <td class="tabxpl" width="937">EQ, LP, I</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2">
+              Also handles</th>
+            </tr>
+            <tr>
+              <td class="tabxpl" width="937">&nbsp;</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2">
+              Homepage</th>
+            </tr>
+            <tr>
+              <td class="tabxpl" width="937">
+              <a target="_blank" href="http://www.gnu.org/software/glpk/glpk.html">
+              http://www.gnu.org/software/glpk/glpk.html</a></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2">
+              Tag</th>
+            </tr>
+            <tr>
+              <td class="tabxpl" width="937"><code>&#39;glpk&#39;</code></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2">
+              Comments</th>
+            </tr>
+            <tr>
+              <td class="tabxpl" width="937">Interfaced through the MATLAB interface
+              <a target="_blank" href="http://www-dii.ing.unisi.it/~giorgetti/downloads.html">
+              GLPKMEX</a></td>
+            </tr>
+          </table>
+          </td>
+        </tr>
+      </table>
+      <p>&nbsp;</p>
+      <table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse" width="100%" bordercolor="#FF9933" id="table5">
+        <tr>
+          <td bgcolor="#FFDEAD">
+          <p class="tableheader"><a name="gpposy">GPPOSY</a></p>
+          </td>
+        </tr>
+        <tr>
+          <td>
+          <table cellspacing="0" cellpadding="4" width="100%" border="0" id="table6">
+            <tr>
+              <th class="doc" valign="top"  align="left" width="101">
+              Version</th>
+              <td class="tabxpl" width="937">0.8</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2">
+              Specialized for</th>
+            </tr>
+            <tr>
+              <td class="tabxpl" width="937">GP</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2">
+              Also handles</th>
+            </tr>
+            <tr>
+              <td class="tabxpl" width="937">&nbsp;</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2">
+              Homepage</th>
+            </tr>
+            <tr>
+              <td class="tabxpl" width="937">
+              <a target="_blank" href="http://www.stanford.edu/~boyd/ggplab/">
+				http://www.stanford.edu/~boyd/ggplab/</a></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2">
+              Tag</th>
+            </tr>
+            <tr>
+              <td class="tabxpl" width="937"><code>&#39;gpposy&#39;</code></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2">
+              Comments</th>
+            </tr>
+            <tr>
+              <td class="tabxpl" width="937">&nbsp;</td>
+            </tr>
+          </table>
+          </td>
+        </tr>
+      </table>
+      <p>&nbsp;</p>
+      <table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse" width="100%" bordercolor="#FF9933">
+        <tr>
+          <td bgcolor="#FFDEAD">
+          <p class="tableheader"><a name="kypd">KYPD</a></p>
+          </td>
+        </tr>
+        <tr>
+          <td>
+          <table cellspacing="0" cellpadding="4" width="100%" border="0">
+            <tr>
+              <th class="doc" valign="top"  align="left"  width="95">
+              Version</th>
+              <td class="tabxpl">&nbsp;</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="95">
+              Specialized for</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">KYP</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="95">
+              Also handles</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">EQ, LP, QP, SDP </td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="95">
+              Homepage</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">
+              <a target="_blank" href="http://www.control.isy.liu.se/publications/doc?id=1470">
+              http://www.control.isy.liu.se/publications/doc?id=1470</a></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="95">
+              Tag</th>
+            </tr>
+            <tr>
+              <td class="tabxpl"><code>&#39;kypd&#39;</code></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="101">
+              Comments</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">&nbsp;</td>
+            </tr>
+          </table>
+          </td>
+        </tr>
+      </table>
+      <p>&nbsp;</p>
+      <table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse" width="100%" bordercolor="#FF9933">
+        <tr>
+          <td bgcolor="#FFDEAD">
+          <p class="tableheader"><a name="linprog">LINPROG</a></p>
+          </td>
+        </tr>
+        <tr>
+          <td>
+          <table cellspacing="0" cellpadding="4" width="100%" border="0">
+            <tr>
+              <th class="doc" valign="top"  align="left"  width="100">
+              Version</th>
+              <td class="tabxpl">&nbsp;</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="100">
+              Specialized for</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">EQ, LP</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="100">
+              Also handles</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">&nbsp;</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="100">
+              Homepage</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">
+              <a target="_blank" href="http://www.mathworks.com/products/optimization/">http://www.mathworks.com/products/optimization/</a></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="100">
+              Tag</th>
+            </tr>
+            <tr>
+              <td class="tabxpl"><code>&#39;linprog&#39;</code></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="100">
+              Comments</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">Commercial. </td>
+            </tr>
+          </table>
+          </td>
+        </tr>
+      </table>
+      <p>&nbsp;</p>
+      <table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse" width="100%" bordercolor="#FF9933">
+        <tr>
+          <td bgcolor="#FFDEAD">
+          <p class="tableheader"><a name="lmilab">LMILAB</a></p>
+          </td>
+        </tr>
+        <tr>
+          <td>
+          <table cellspacing="0" cellpadding="4" width="100%" border="0">
+            <tr>
+              <th class="doc" valign="top"  align="left" width="100">
+              Version</th>
+              <td class="tabxpl" width="938">&nbsp;</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2">
+              Specialized for</th>
+            </tr>
+            <tr>
+              <td class="tabxpl" width="938">SDP,</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2">
+              Also handles</th>
+            </tr>
+            <tr>
+              <td class="tabxpl" width="938">EQ, LP, SOCP, QP</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2">
+              Homepage</th>
+            </tr>
+            <tr>
+              <td class="tabxpl" width="938">
+              <a target="_blank" href="http://www.mathworks.com/products/robust/">http://www.mathworks.com/products/robust/</a></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2">
+              Tag</th>
+            </tr>
+            <tr>
+              <td class="tabxpl" width="938"><code>&#39;lmilab&#39;</code></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2">
+              Comments</th>
+            </tr>
+            <tr>
+              <td class="tabxpl" width="938">Commercial. Please note that LMILAB often is terribly 
+              slow on general problems. LMILAB is efficient when control 
+              specific 
+              structure is explicitly stated, but YALMIP 
+              cannot exploit this feature and LMILAB will thus run much slower compared 
+              to when the problem is modeled directly in LMILAB. Hence, if you 
+              insist on using LMILAB, YALMIP will cause efficiency problems. Of-course, 
+              a simple solution is to switch solver and use any of the other SDP 
+              solvers supported by YALMIP. To summarize, <font color="#FF0000">
+              do not use LMILAB together with YALMIP</font> except if you really have to.</td>
+            </tr>
+          </table>
+          </td>
+        </tr>
+      </table>
+
+      <p>&nbsp;</p>
+      <table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse" width="100%" bordercolor="#FF9933" id="table3">
+        <tr>
+          <td bgcolor="#FFDEAD">
+          <p class="tableheader"><a name="lmirank">LMIRANK</a></p>
+          </td>
+        </tr>
+        <tr>
+          <td>
+          <table cellspacing="0" cellpadding="4" width="100%" border="0" id="table4">
+            <tr>
+              <th class="doc" valign="top"  align="left" width="99">
+              Version</th>
+              <td class="tabxpl" width="939">&nbsp;</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2">
+              Specialized for</th>
+            </tr>
+            <tr>
+              <td class="tabxpl" width="939">SDP with rank constraints</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2">
+              Also handles</th>
+            </tr>
+            <tr>
+              <td class="tabxpl" width="939">EQ, LP, SOCP, QP</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2">
+              Homepage</th>
+            </tr>
+            <tr>
+              <td class="tabxpl" width="939">
+              <a target="_blank" href="http://users.rsise.anu.edu.au/~robert/lmirank/">
+				http://users.rsise.anu.edu.au/~robert/lmirank/</a></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2">
+              Tag</th>
+            </tr>
+            <tr>
+              <td class="tabxpl" width="939"><code>&#39;lmirank&#39;</code></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2">
+              Comments</th>
+            </tr>
+            <tr>
+              <td class="tabxpl" width="939">&nbsp;</td>
+            </tr>
+          </table>
+          </td>
+        </tr>
+      </table>
+
+      <p>&nbsp;</p>
+      <table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse" width="100%" bordercolor="#FF9933">
+        <tr>
+          <td bgcolor="#FFDEAD">
+          <p class="tableheader"><a name="lpsolve">LP_SOLVE</a></p>
+          </td>
+        </tr>
+        <tr>
+          <td>
+          <table cellspacing="0" cellpadding="4" width="100%" border="0">
+            <tr>
+              <th class="doc" valign="top"  align="left"  width="101">
+              Version</th>
+              <td class="tabxpl">5.1, 5.5</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="101">
+              Specialized for</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">EQ, LP, I</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="101">
+              Also handles</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">&nbsp;</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="101">
+              Homepage</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">
+              <a target="_blank" href="http://groups.yahoo.com/group/lp_solve/">http://groups.yahoo.com/group/lp_solve/</a></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="101">
+              Tag</th>
+            </tr>
+            <tr>
+              <td class="tabxpl"><code>'lpsolve'</code></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="101">
+              Comments</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">&nbsp;</td>
+            </tr>
+          </table>
+          </td>
+        </tr>
+      </table>
+      <p>&nbsp;</p>
+      <table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse" width="100%" bordercolor="#FF9933">
+        <tr>
+          <td bgcolor="#FFDEAD">
+          <p class="tableheader"><a name="maxdet">MAXDET</a></p>
+          </td>
+        </tr>
+        <tr>
+          <td>
+          <table cellspacing="0" cellpadding="4" width="100%" border="0">
+            <tr>
+              <th class="doc" valign="top"  align="left" width="101">
+              Version</th>
+              <td class="tabxpl">&nbsp;</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2">
+              Specialized for</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">LP, SDP, MAXDET</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2">
+              Also handles</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">EQ, QP,&nbsp; QC, SOCP</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2">
+              Homepage</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">
+              <a target="_blank" href="http://www.stanford.edu/~boyd/MAXDET.html">
+              http://www.stanford.edu/~boyd/MAXDET.html</a></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2">
+              Tag</th>
+            </tr>
+            <tr>
+              <td class="tabxpl"><code>&#39;maxdet&#39;</code></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2">
+              Comments</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">Updated source-code and binaries for MATLAB 6 
+				and 7 can 
+              be found at
+              <a href="http://control.ee.ethz.ch/~joloef/maxdet.zip">http://control.ee.ethz.ch/~joloef/maxdet.zip</a>. Note that 
+				pure determinant 
+              maximization problems now can be solved using any SDP solver in YALMIP, 
+              hence MAXDET is no longer necessary.</td>
+            </tr>
+          </table>
+          </td>
+        </tr>
+      </table>
+      <p>&nbsp;</p>
+      <table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse" width="100%" bordercolor="#FF9933">
+        <tr>
+          <td bgcolor="#FFDEAD">
+          <p class="tableheader"><a name="mpt">Multi-parametric Toolbox</a></p>
+          </td>
+        </tr>
+        <tr>
+          <td>
+          <table cellspacing="0" cellpadding="4" width="100%" border="0">
+            <tr>
+              <th class="doc" valign="top"  align="left"  width="95">
+              Version</th>
+              <td class="tabxpl">&nbsp;</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="95">
+              Specialized for</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">MLP, MQP</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="95">
+              Also handles</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">&nbsp;</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="95">
+              Homepage</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">
+              <a target="_blank" href="http://control.ee.ethz.ch/~mpt">http://control.ee.ethz.ch/~mpt</a></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="95">
+              Tag</th>
+            </tr>
+            <tr>
+              <td class="tabxpl"><code>&#39;mpt&#39;</code></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="95">
+              Comments</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">&nbsp;</td>
+            </tr>
+          </table>
+          </td>
+        </tr>
+      </table>
+      <p>&nbsp;</p>
+      <table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse" width="100%" bordercolor="#FF9933">
+        <tr>
+          <td bgcolor="#FFDEAD">
+          <p class="tableheader"><a name="mosek">MOSEK</a></p>
+          </td>
+        </tr>
+        <tr>
+          <td>
+          <table cellspacing="0" cellpadding="4" width="100%" border="0">
+            <tr>
+              <th class="doc" valign="top"  align="left"  width="95">
+              Version</th>
+              <td class="tabxpl">3</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="95">
+              Specialized for</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">EQ, LP, QP, SOCP, GP, I</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="95">
+              Also handles</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">&nbsp;</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="95">
+              Homepage</th>
+            </tr>
+            <tr>
+              <td class="tabxpl"><a target="_blank" href="http://www.mosek.com">
+              http://www.mosek.com</a></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="95">
+              Tag</th>
+            </tr>
+            <tr>
+              <td class="tabxpl"><code>&#39;mosek&#39;</code></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="95">
+              Comments</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">Commercial solver (limited trial version available). 
+              This solver has only been minimally tested. If you want to 
+              purchase MOSEK for usage with YALMIP, then you always need product 
+              PTS. You may also need one of the extensions<br>
+&nbsp;PTOC - If you solve problems with cones.<br>
+&nbsp;PTOM - If you solve problems with general nonlinear constraints such as 
+              GPs.<br>
+&nbsp;PTOC - If you solve problems with integer variables.</td>
+            </tr>
+          </table>
+          </td>
+        </tr>
+      </table>
+      <p>&nbsp;</p>
+      <table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse" width="100%" bordercolor="#FF9933">
+        <tr>
+          <td bgcolor="#FFDEAD">
+          <p class="tableheader"><a name="nag">NAG</a></p>
+          </td>
+        </tr>
+        <tr>
+          <td>
+          <table cellspacing="0" cellpadding="4" width="100%" border="0">
+            <tr>
+              <th class="doc" valign="top"  align="left"  width="95">
+              Version</th>
+              <td class="tabxpl">&nbsp;</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="95">
+              Specialized for</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">EQ, LP, QP</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="95">
+              Also handles</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">&nbsp;</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="95">
+              Homepage</th>
+            </tr>
+            <tr>
+              <td class="tabxpl"><a target="_blank" href="http://www.nag.co.uk">
+              http://www.nag.co.uk</a></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="95">
+              Tag</th>
+            </tr>
+            <tr>
+              <td class="tabxpl"><code>&#39;nag&#39;</code></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="95">
+              Comments</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">Commercial.</td>
+            </tr>
+          </table>
+          </td>
+        </tr>
+      </table>
+      <p>&nbsp;</p>
+      <table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse" width="100%" bordercolor="#FF9933">
+        <tr>
+          <td bgcolor="#FFDEAD">
+          <p class="tableheader"><a name="ooqp">OOQP</a></p>
+          </td>
+        </tr>
+        <tr>
+          <td>
+          <table cellspacing="0" cellpadding="4" width="100%" border="0">
+            <tr>
+              <th class="doc" valign="top"  align="left"  width="96">
+              Version</th>
+              <td class="tabxpl">0.99</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="96">
+              Specialized for</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">EQ, LP, QP</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="96">
+              Also handles</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">&nbsp;</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="96">
+              Homepage</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">
+              <a target="_blank" href="http://www.cs.wisc.edu/~swright/ooqp/">http://www.cs.wisc.edu/~swright/ooqp/</a></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="96">
+              Tag</th>
+            </tr>
+            <tr>
+              <td class="tabxpl"><code>&#39;ooqp&#39;</code></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="96">
+              Comments</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">This solver has only been minimally tested.
+              </td>
+            </tr>
+          </table>
+          </td>
+        </tr>
+      </table>
+      <p>&nbsp;</p>
+      <table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse" width="100%" bordercolor="#FF9933">
+        <tr>
+          <td bgcolor="#FFDEAD">
+          <p class="tableheader"><a name="penbmi">PENBMI</a></p>
+          </td>
+        </tr>
+        <tr>
+          <td>
+          <table cellspacing="0" cellpadding="4" width="100%" border="0">
+            <tr>
+              <th class="doc" valign="top"  align="left"  width="97">
+              Version</th>
+              <td class="tabxpl">1.1</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="97">
+              Specialized for</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">LP, SDP, BMI</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="97">
+              Also handles</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">EQ, SOCP, QC, QP</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="97">
+              Homepage</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">
+              <a target="_blank" href="http://www.penopt.com">http://www.penopt.com</a></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="97">
+              Tag</th>
+            </tr>
+            <tr>
+              <td class="tabxpl"><code>&#39;penbmi&#39;</code></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="97">
+              Comments</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">Commercial solver with free developer licenses 
+              for academics. YALMIP also interfaces the
+				<a target="_blank" href="http://tomlab.biz">TOMLAB</a> version 
+				of the solver.</td>
+            </tr>
+          </table>
+          </td>
+        </tr>
+      </table>
+      <p>&nbsp;</p>
+      <table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse" width="100%" bordercolor="#FF9933">
+        <tr>
+          <td bgcolor="#FFDEAD">
+          <p class="tableheader"><a name="pensdp">PENSDP</a></p>
+          </td>
+        </tr>
+        <tr>
+          <td>
+          <table cellspacing="0" cellpadding="4" width="100%" border="0">
+            <tr>
+              <th class="doc" valign="top"  align="left"  width="98">
+              Version</th>
+              <td class="tabxpl">1.1</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="98">
+              Specialized for</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">LP, SDP</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="98">
+              Also handles</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">EQ, SOCP, QC, QP</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="98">
+              Homepage</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">
+              <a target="_blank" href="http://www.penopt.com">http://www.penopt.com</a></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="98">
+              Tag</th>
+            </tr>
+            <tr>
+              <td class="tabxpl"><code>&#39;pensdp&#39;</code></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="98">
+              Comments</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">Commercial solver with free developer licenses 
+              for academics. YALMIP also interfaces the
+				<a target="_blank" href="http://tomlab.biz">TOMLAB</a> version 
+				of the solver.</td>
+            </tr>
+          </table>
+          </td>
+        </tr>
+      </table>
+      <p>&nbsp;</p>
+      <table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse" width="100%" bordercolor="#FF9933">
+        <tr>
+          <td bgcolor="#FFDEAD">
+          <p class="tableheader"><a name="quadprog">QUADPROG</a></p>
+          </td>
+        </tr>
+        <tr>
+          <td>
+          <table cellspacing="0" cellpadding="4" width="100%" border="0">
+            <tr>
+              <th class="doc" valign="top"  align="left"  width="98">
+              Version</th>
+              <td class="tabxpl">&nbsp;</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="98">
+              Specialized for</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">EQ, LP, QP</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="98">
+              Also handles</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">&nbsp;</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="98">
+              Homepage</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">
+              <a target="_blank" href="http://www.mathworks.com/products/optimization/">http://www.mathworks.com/products/optimization/</a></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="98">
+              Tag</th>
+            </tr>
+            <tr>
+              <td class="tabxpl"><code>&#39;quadprog&#39;</code></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="98">
+              Comments</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">Commercial. </td>
+            </tr>
+          </table>
+          </td>
+        </tr>
+      </table>
+      <p>&nbsp;</p>
+      <table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse" width="100%" bordercolor="#FF9933">
+        <tr>
+          <td bgcolor="#FFDEAD">
+          <p class="tableheader"><a name="sdpa">SDPA</a></p>
+          </td>
+        </tr>
+        <tr>
+          <td>
+          <table cellspacing="0" cellpadding="4" width="100%" border="0">
+            <tr>
+              <th class="doc" valign="top"  align="left"  width="97">
+              Version</th>
+              <td class="tabxpl">5, 6</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="97">
+              Specialized for</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">LP, SDP</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="97">
+              Also handles</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">EQ, SOCP,&nbsp; QC, QP</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="97">
+              Homepage</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">
+              <a target="_blank" href="http://sdpa.is.titech.ac.jp/">http://grid.r.dendai.ac.jp/sdpa/</a></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="97">
+              Tag</th>
+            </tr>
+            <tr>
+              <td class="tabxpl"><code>'sdpa'</code></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="97">
+              Comments</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">Interfaced through
+              <a target="_blank" href="http://sdpa.is.titech.ac.jp/SDPA-M/">SDPA-M</a></td>
+            </tr>
+          </table>
+          </td>
+        </tr>
+      </table>
+      <p>&nbsp;</p>
+      <table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse" width="100%" bordercolor="#FF9933">
+        <tr>
+          <td bgcolor="#FFDEAD">
+          <p class="tableheader"><a name="sdplr">SDPLR</a></p>
+          </td>
+        </tr>
+        <tr>
+          <td>
+          <table cellspacing="0" cellpadding="4" width="100%" border="0">
+            <tr>
+              <th class="doc" valign="top"  align="left"  width="97">
+              Version</th>
+              <td class="tabxpl">&nbsp;</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="97">
+              Specialized for</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">SDP</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="97">
+              Also handles</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">EQ, LP, SOCP,&nbsp; QC, QP</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="97">
+              Homepage</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">
+              <a target="_blank" href="http://dollar.biz.uiowa.edu/~burer/software/SDPLR/">http://dollar.biz.uiowa.edu/~burer/software/SDPLR/</a></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="97">
+              Tag</th>
+            </tr>
+            <tr>
+              <td class="tabxpl"><code>&#39;sdplr'</code></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="97">
+              Comments</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">SDPLR is specialized for problems with a low 
+              rank dual solution (dual in YALMIPs notation). The solver can 
+              additionally also exploit low rank data matrices. For information 
+              on how this can be done using YALMIP, see the command <a target="topic" href="reference.htm#lowrank">
+              lowrank</a>.</td>
+            </tr>
+          </table>
+          </td>
+        </tr>
+      </table>
+      <p>&nbsp;</p>
+      <table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse" width="100%" bordercolor="#FF9933">
+        <tr>
+          <td bgcolor="#FFDEAD">
+          <p class="tableheader"><a name="sdpt3">SDPT3</a></p>
+          </td>
+        </tr>
+        <tr>
+          <td>
+          <table cellspacing="0" cellpadding="4" width="100%" border="0">
+            <tr>
+              <th class="doc" valign="top"  align="left"  width="97">
+              Version</th>
+              <td class="tabxpl">3.02, 3.1</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="97">
+              Specialized for</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">EQ, LP, SOCP, SDP</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="97">
+              Also handles</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">SOCP, QC, QP</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="97">
+              Homepage</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">
+              <a target="_blank" href="http://www.math.nus.edu.sg/~mattohkc/sdpt3.html">
+              http://www.math.nus.edu.sg/~mattohkc/sdpt3.html</a></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="97">
+              Tag</th>
+            </tr>
+            <tr>
+              <td class="tabxpl"><code>&#39;sdpt3&#39;</code></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="97">
+              Comments</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">Make sure not to have both SeDuMi and SDPT3 3.02 
+              in the MATLAB path.</td>
+            </tr>
+          </table>
+          </td>
+        </tr>
+      </table>
+      <p>&nbsp;</p>
+      <table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse" width="100%" bordercolor="#FF9933">
+        <tr>
+          <td bgcolor="#FFDEAD">
+          <p class="tableheader"><a name="sedumi">SeDuMi</a></p>
+          </td>
+        </tr>
+        <tr>
+          <td>
+          <table cellspacing="0" cellpadding="4" width="100%" border="0">
+            <tr>
+              <th class="doc" valign="top"  align="left"  width="96">
+              Versions</th>
+              <td class="tabxpl">1.03, 1.05R5, 1.1</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="96">
+              Specialized for</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">EQ, LP, SOCP, SDP</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="96">
+              Also handles</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">QP, QC</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="96">
+              Homepage</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">
+              <a target="_blank" href="http://sedumi.mcmaster.ca/">http://sedumi.mcmaster.ca/</a></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="96">
+              Tag</th>
+            </tr>
+            <tr>
+              <td class="tabxpl"><code>&#39;sedumi&#39;</code></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="96">
+              Comments</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">Make sure not to have both SeDuMi and SDPT3 in 
+              the MATLAB path.</td>
+            </tr>
+          </table>
+          </td>
+        </tr>
+      </table>
+      <p>&nbsp;</p>
+      <table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse" width="100%" bordercolor="#FF9933">
+        <tr>
+          <td bgcolor="#FFDEAD">
+          <p class="tableheader"><a name="qsopt">QSopt</a></p>
+          </td>
+        </tr>
+        <tr>
+          <td>
+          <table cellspacing="0" cellpadding="4" width="100%" border="0">
+            <tr>
+              <th class="doc" valign="top"  align="left"  width="96">
+              Versions</th>
+              <td class="tabxpl">&nbsp;</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="96">
+              Specialized for</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">EQ, LP</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="96">
+              Also handles</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">&nbsp;</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="96">
+              Homepage</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">
+              <a target="_blank" href="http://www.isye.gatech.edu/~wcook/qsopt/">
+              http://www.isye.gatech.edu/~wcook/qsopt/</a></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="96">
+              Tag</th>
+            </tr>
+            <tr>
+              <td class="tabxpl"><code>&#39;qsopt&#39;</code></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="96">
+              Comments</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">May only be used for research or eduction purposes. 
+              Interfaced through the MATLAB interface
+              <a target="_blank" href="http://control.ee.ethz.ch/~joloef/mexqsopt.php">
+              mexqsopt</a></td>
+            </tr>
+          </table>
+          </td>
+        </tr>
+      </table>
+      <p>&nbsp;</p>
+      <table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse" width="100%" bordercolor="#FF9933">
+        <tr>
+          <td bgcolor="#FFDEAD">
+          <p class="tableheader"><a name="xpress">XPRESS</a></p>
+          </td>
+        </tr>
+        <tr>
+          <td>
+          <table cellspacing="0" cellpadding="4" width="100%" border="0">
+            <tr>
+              <th class="doc" valign="top"  align="left"  width="101">
+              Version</th>
+              <td class="tabxpl">&nbsp;</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="101">
+              Specialized for</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">EQ, LP, QP, I</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="101">
+              Also handles</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">&nbsp;</td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="101">
+              Homepage</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">
+              <a target="_blank" href="http://www.dashoptimization.com">www.dashoptimization.com</a></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="101">
+              Tag</th>
+            </tr>
+            <tr>
+              <td class="tabxpl"><code>&#39;xpress&#39;</code></td>
+            </tr>
+            <tr>
+              <th class="doc" valign="top"  align="left"  rowspan="2" width="101">
+              Comments</th>
+            </tr>
+            <tr>
+              <td class="tabxpl">Interfaced through the MATLAB interface
+              <a target="_blank" href="http://www-dii.ing.unisi.it/~giorgetti/downloads.html">
+              MEXPRESS</a></td>
+            </tr>
+          </table>
+          </td>
+        </tr>
+      </table>
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+      </td>
+    </tr>
+  </table>
+</div>
+
+</body>
+
+</html>

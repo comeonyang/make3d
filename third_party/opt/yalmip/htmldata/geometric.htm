@@ -1,0 +1,264 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<title>YALMIP Example : Geometric programming</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<meta content="Microsoft FrontPage 6.0" name="GENERATOR">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<link href="yalmip.css" type="text/css" rel="stylesheet">
+<base target="_self">
+</head>
+
+<body leftMargin="0" topMargin="0">
+
+<div align="left">
+  <table border="0" cellpadding="4" cellspacing="3" style="border-collapse: collapse" bordercolor="#000000" width="100%" align="left" height="100%">
+    <tr>
+      <td width="100%" align="left" height="100%" valign="top">
+      <h2>Geometric programming</h2>
+      <hr noShade SIZE="1">
+      <p>
+    <img border="0" src="exclamationmark.jpg" align="left" width="16" height="16">This 
+      example requires <a href="solvers.htm#mosek">MOSEK</a>,
+	<a href="solvers.htm#GPPOSY">GPPOSY</a> or
+	<a href="solvers.htm#fmincon">fmincon</a><br>
+      <br>
+      Nonlinear terms can be defined also with negative and non-integer powers. 
+      This can be used to define geometric optimization problems.<br>
+    <img border="0" src="gemoetric.gif" width="144" height="102" hspace="77" vspace="10"></p>
+      <p>Geometric programming solvers are capable of 
+      solving a sub-class of geometric problems where <b>c<font face="Times New Roman">&#8805;0</font></b> 
+      with the additional constraint <b>t<font face="Times New Roman">&#8805;0, </font>
+      </b>so called posynomial geometric programming. The following example is 
+      taken from the <a href="solvers.htm#mosek">MOSEK</a> manual. (note, 
+      the positivity constraint on <b><font face="Times New Roman">t </font></b>
+      will be added automatically)</p>
+      <table cellPadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>t1 = sdpvar(1,1);
+t2 = sdpvar(1,1);
+t3 = sdpvar(1,1);
+obj = (40*t1^-1*t2^-0.5*t3^-1)+(20*t1*t3)+(40*t1*t2*t3);
+F = set((1/3)*t1^-2*t2^-2+(4/3)*t2^0.5*t3^-1 &lt; 1);
+solvesdp(F,obj);</pre>
+          </td>
+        </tr>
+      </table>
+      <p>If the geometric program violates the posynomial assumption, an error 
+      will be issued.</p>
+      <table cellPadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>solvesdp(F + set(t1-t2 &lt; 1),obj)
+Warning: Solver not applicable
+<font color="#000000"> ans = 
+  yalmiptime: 0.0600
+  solvertime: 0
+  info: 'Solver not applicable'
+  problem: -4</font></pre>
+          </td>
+        </tr>
+      </table>
+      <p>YALMIP will automatically convert some simple violations of the 
+      posynomial assumptions, such as lower bounds on monomial terms and 
+      maximization of negative monomials. The following small program maximizes 
+      the volume of an open box, under constraints on the floor and wall area, 
+      and constraints on the relation between the height, width and depth 
+      (example from
+           <a href="readmore.htm#BOYDETAL2">[S. Boyd, S. Kim, L. Vandenberghe, A. Hassibi]</a> 
+           ).</p>
+      <table cellPadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>sdpvar h w d
+
+Awall  = 1;
+Afloor = 1;
+
+F = set(0.5 &lt; h/w &lt; 2) + set(0.5 &lt; d/w &lt; 2);
+F = F + set(2*(h*w+h*d) &lt; Awall) + set(w*d &lt; Afloor);
+
+solvesdp(F,-(h*w*d))</pre>
+          </td>
+        </tr>
+      </table>
+      <p>The posynomial geometric programming problem is not convex in its 
+      standard formulation. Hence, if a general nonlinear solver is applied to 
+      the problem, it will typically fail. However, by performing a suitable 
+      logarithmic variable transformation, the problem is rendered convex. 
+      YALMIP has built-in support for performing this variable change, and solve 
+      the problem using the nonlinear solver  
+    <a href="solvers.htm#fmincon">fmincon</a>. To invoke this module in 
+      YALMIP, use the solver 
+      tag <code>'fmincon-geometric'.</code>Note that this feature mainly is intended for the 
+    <a href="solvers.htm#fmincon">fmincon</a> solver in the MathWorks Optimization Toolbox. 
+		It may work in the
+    <a href="solvers.htm#fmincon">fmincon</a> solver in
+		<a target="_blank" href="http://tomlab.biz">TOMLAB</a>, but this has not 
+		been tested to any larger extent.</p>
+      <table cellPadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>t1 = sdpvar(1,1);
+t2 = sdpvar(1,1);
+t3 = sdpvar(1,1);
+obj = (40*t1^-1*t2^-0.5*t3^-1)+(20*t1*t3)+(40*t1*t2*t3);
+F = set((1/3)*t1^-2*t2^-2+(4/3)*t2^0.5*t3^-1 &lt; 1);
+solvesdp(F,obj,sdpsettings('solver','fmincon-geometric'));</pre>
+          </td>
+        </tr>
+      </table>
+      <p>
+    <img border="0" src="exclamationmark.jpg" align="left" width="16" height="16"> The current 
+		version of YALMIP has a bug that may cause problems if you have convex 
+		quadratic constraints. To avoid this problem, use <code>
+		sdpsettings('convertconvexquad',0)</code>. To avoid some other known 
+	issues, explicitly tell YALMIP that the 
+	problem is a geometric problem by specifying the solver to <code>'gpposy'</code>, <code>'mosek-geometric'</code> 
+	or <code>'fmincon-geometric'</code>.</p>
+      <p>
+      <img border="0" src="exclamationmark.jpg" align="left" width="16" height="16"> 
+      Never use the commands <b>sqrt</b> and <b>cpower</b> when working with 
+      geometric programs, i.e. always use the ^ operator. The reason is 
+      implementation issues in YALMIP. The commands <b>sqrt</b> and <b>cpower</b> 
+      are meant to be used in optimization problems where a conic model is 
+      derived using convexity propagation, see <a href="extoperators.htm">
+      nonlinear operators</a>.</p>
+      <h3>Generalized geometric programming</h3>
+      <p>Some geometric programs, although not given in standard form, can still 
+      be solved using a standard geometric programming solver after some some 
+      additional variables and constraints have been introduced. YALMIP has 
+      built-in support for some of these conversion.
+      </p>
+      <p>To begin with, nonlinear operators can be used also in geometric 
+      programs, as in any other optimization problems (as long as YALMIP is 
+      capable of proving convexity, see the <a href="extoperators.htm">nonlinear 
+      operator examples</a>)</p>
+      <table cellPadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>t1 = sdpvar(1,1);
+t2 = sdpvar(1,1);
+t3 = sdpvar(1,1);
+obj = (40*t1^-1*t2^-0.5*t3^-1)+(20*t1*t3)+(40*t1*t2*t3);
+
+F = set(max((1/3)*t1^-2*t2^-2+(4/3)*t2^0.5*t3^-1,0.25*t1*t2) &lt; min(t1,t2));
+solvesdp(F,obj);</pre>
+          </td>
+        </tr>
+      </table>
+      <p>Powers of posynomials are allowed in generalized geometric 
+      programs. YALMIP will automatically take care of this and convert the 
+      problems to a standard geometric programs. Note that the power has to be 
+      positive if used on the left-hand side of a &lt;, and negative otherwise.</p>
+      <table cellPadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>t1 = sdpvar(1,1);
+t2 = sdpvar(1,1);
+t3 = sdpvar(1,1);
+obj = (40*t1^-1*t2^-0.5*t3^-1)+(20*t1*t3)+(40*t1*t2*t3);
+
+F = set(max((1/3)*t1^-2*t2^-2+(4/3)*t2^0.5*t3^-1,0.25*t1*t2) &lt; min((t1+0.5*t2)^-1,t2));
+F = F + set((2*t1+3*t2^-1)^0.5 &lt; 2);
+
+solvesdp(F,obj);</pre>
+          </td>
+        </tr>
+      </table>
+      <p>To understand how a generalized geometric program can be converted to a 
+      standard geometric program. the reader is referred to
+           <a href="readmore.htm#BOYDETAL2">[S. Boyd, S. Kim, L. Vandenberghe, A. Hassibi]</a> 
+           <h3><a name="migp"></a>Mixed integer geometric programming</h3>
+		<p>The branch and bound solver in YALMIP is built in a modular fashion that makes it 
+		possible to solve almost arbitrary convex mixed integer programs. The 
+		following example is taken from&nbsp;
+           <a href="readmore.htm#BOYDETAL2">[S. Boyd, S. Kim, L. Vandenberghe, A. Hassibi]</a>. 
+		To begin with, define the data for the example.<table cellPadding="10" width="100%" id="table2">
+        <tr>
+          <td class="xmpcode">
+          <pre>a     = ones(7,1);
+alpha = ones(7,1);
+beta  = ones(7,1);
+gamma = ones(7,1);
+f = [1 0.8 1 0.7 0.7 0.5 0.5]';
+e = [1 2 1 1.5 1.5 1 2]';
+Cout6 = 10;
+Cout7 = 10;</pre>
+          </td>
+        </tr>
+      </table>
+      <p>Introduce symbolic expressions used in the model.</p>
+      <table cellPadding="10" width="100%" id="table3">
+        <tr>
+          <td class="xmpcode">
+          <pre>x = sdpvar(7,1);</pre>
+			<pre>C = alpha+beta.*x;
+A = sum(a.*x);
+P = sum(f.*e.*x);
+R = gamma./x;</pre>
+			<pre>D1 = R(1)*(C(4));
+D2 = R(2)*(C(4)+C(5));
+D3 = R(3)*(C(5)+C(7));
+D4 = R(4)*(C(6)+C(7));
+D5 = R(5)*(C(7));
+D6 = R(6)*Cout6;
+D7 = R(7)*Cout7;</pre>
+          </td>
+        </tr>
+      </table>
+      <p>The objective function and constraints (notice the use of the
+		<a href="extoperators.htm">nonlinear operator</a> <b>max</b> in the 
+		objective).</p>
+      <table cellPadding="10" width="100%" id="table4">
+        <tr>
+          <td class="xmpcode">
+			<pre>% Constraints
+F = set(x &gt; 1) + set(P &lt; 20) + set(A &lt; 100);</pre>
+			<pre>% Objective
+D = max((D1+D4+D6),(D1+D4+D7),(D2+D4+D6),(D2+D4+D7),(D2+D5+D7),(D3+D5+D6),(D3+D7));</pre>
+          </td>
+        </tr>
+      </table>
+      <p>Solve!</p>
+      <table cellPadding="10" width="100%" id="table5">
+        <tr>
+          <td class="xmpcode">
+          <pre>solvesdp(F+set(integer(x)),D)
+double(D)
+<font color="#000000">ans =
+    8.3333</font></pre>
+          </td>
+        </tr>
+      </table>
+      <p>An alternative model is discussed in the paper, and is just as easy 
+		to define.</p>
+      <table cellPadding="10" width="100%" id="table1">
+        <tr>
+          <td class="xmpcode">
+          <pre>T1 = D1;
+T2 = D2;
+T3 = D3;
+T4 = max(T1,T2)+D4;
+T5 = max(T2,T3) + D5;
+T6 = T4 + D6;
+T7 = max(T3,T4,T5) + D7;
+D = max(T6,T7);
+solvesdp(F+set(integer(x)),D)
+double(D)
+<font color="#000000">ans =
+    8.3333</font></pre>
+          </td>
+        </tr>
+      </table>
+           </td>
+    </tr>
+  </table>
+	<p>&nbsp;</div>
+
+</body>
+
+</html>

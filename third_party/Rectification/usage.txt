@@ -1,0 +1,82 @@
+Contents:
+------------
+
+This package contains the source code for an implementation of the general rectification method in the paper:
+
+D. Oram
+Rectification for any epipolar geometry
+12th British Machine Vision Conference (BMVC 2001), September 2001
+
+The directory src contains all the code. Test contains a sample pair of images, with a fundamental matrix and matches and the VisStudioDotNetProject contains projects for Visual Studio .NET. The code must be linked with a copy of the clapack libraries (see http://www.netlib.org/clapack/).
+
+The src directory itself provides code offering a very simple example driver that can load a PNM image, a fundamental matrix and matches, rectify the image and save the results. This is intended to serve as an example of how to use the code rather than as a serious standalone application.
+
+Below the src directory, the Rectify directory contains the actual rectification code seperated into two files: Ops.cc/Ops.h & General2Im.cc/General2Im.h. The Ops files contain the support data types and external code that depends on LAPACK; and General2Im contains the actual rectification code itself.
+
+Compiling:
+----------
+
+Under UNIX simply type make in the top directory. To prevent any textual output during the rectification process simply comment out the #define DEBUG_GENERALRECTIFY at the beginning of General2Im.cc.
+
+General instructions:
+---------------------
+
+The code in General2Im & Ops files are designed to be used inside existing code and make use of namespaces and STL style conventions to prevent naming conflicts and allow reuse. To use the code, first of all place your images into the Image::Image data type (or write an adaptor for your image class as explained below and in the Ops.h file). Place your fundamental matrix into the MultiViewGeom::FMatrix datatype and finaly make a std::vector of Geometry::Point2D pairs to represent all your matches. An example of this is given in main.cc. Finaly call the following functions
+
+	1.) Setup: - call the constructor to work out the bounds and internal tables for the rectification/unrectification of points. Does not use the images at all - only their dimensions. Call
+
+	GeneralPlanarRectify(const unsigned int im1xs, const unsigned int im1ys,
+			const unsigned int im2xs, const unsigned int im2ys,
+			const MultiViewGeom::FMatrix<double> &FM,
+			const std::vector<std::pair<Geometry::Point2D<double>, Geometry::Point2D<double> > > &Matches);
+
+	where:
+
+	im1xs, im1ys, im2xs, im2ys: are the sizes of both the images
+	FM: is a valid fundamental matrix that can be used to transform points in image 1 u to epipole lines l in image 2 as Fu=l
+	Matches: A selection of matches used to calculate the fundamental matrix. Ideally these should be Hartley-Sturm corrected.
+
+	2.) Resample the images: (resampleIms) - will resample both images to be rectified
+
+	template <class ImageT, class ImageT2>
+	void resampleIms(const ImageT &Im1, const ImageT &Im2,
+			ImageT2 &OutIm1, ImageT2 &OutIm2,
+			const typename ImageT2::value_type bound);
+
+	where:
+
+	ImageT: Is the type of the input images. This type is totally arbitrary and you can use any image type you like provided it has at least the same functions as in the example Image class in Ops.h. Write an adaptor if your current image class isn't up to it. An example is provided in Ops.h
+	ImageT2: Type out the output images, same as for ImageT.
+	bound: This is the value that will be placed in the rectified image wherever there isn't an equivalent point in the original image. I like to use 0xff0000000 for this in unsigned int images or -1 in int images.
+
+	3.) Rectify/unrectify points:
+
+	This can easily be achieved using the RectifyPointIm and UnRectifyPoints functions. These functions can be quite slow so if dense correspondance has been performed and you wish to unrectify a large number of points all on the same scan line, the function UnRectifyPointsImn provides considerably better performance.
+
+Datatypes:
+----------
+
+All datatypes are included in Ops.h and consist of the following:
+
+--------
+
+template <class T>
+Image::Image<T>
+
+  A very simple colour or greyscale image type. Size is specified either via the constructor or using the resize function. Access is via operator(). If the image is colour the bottom 24 bits of each entry are considered to be an 8 bit RGB representation. Ordering of the R,G,B components is not important.
+
+  This is only an example image type - and if you care at all about efficiency I suggest you take the very simple step of rewritting this class so it uses your image type underneath. See Ops.h for an example wrapper
+
+template <class T>
+MatVec::Matrix<T>
+
+  Very simple column major matrix type accessed with operator() with 0 offset column major internal storage as a single 2D array.
+
+template <class T>
+MultiViewGeom::FMatrix<T>
+
+  Just another name for the matrix type. Only exists because this is ripped from bigger code.
+
+Geometry code: Some very self explanatory and simplistic geometric primitives.
+
+

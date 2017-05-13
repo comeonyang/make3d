@@ -1,0 +1,169 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<title>YALMIP Example : Integer programming</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<meta content="Microsoft FrontPage 6.0" name="GENERATOR">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<link href="yalmip.css" type="text/css" rel="stylesheet">
+<base target="_self">
+</head>
+
+<body leftMargin="0" topMargin="0">
+
+<div align="left">
+
+<table border="0" cellpadding="4" cellspacing="3" style="border-collapse: collapse" bordercolor="#000000" width="100%" align="left" height="100%">
+  <tr>
+    <td width="100%" align="left" height="100%" valign="top">
+    <h2>Integer programming</h2>
+    <hr noShade SIZE="1">
+    <p>YALMIP supports several mixed integer programming solvers, but also comes 
+	with built-in module for mixed integer programming, based on a simple 
+	standard branch-and-bound algorithm. </p>
+	<h3>Mixed integer conic programming</h3>
+	<p>Defining binary and integer variables is done with the commands&nbsp;<a href="reference.htm#binvar">binvar</a>&nbsp;and
+    <a href="reference.htm#intvar">
+    intvar</a>. The resulting objects are essentially&nbsp;<a href="reference.htm#sdpvar">sdpvar</a> 
+    objects with implicit constraints.</p>
+    <table cellPadding="10" width="100%">
+      <tr>
+        <td class="xmpcode">
+        <pre>x = intvar(n,m);
+y = binvar(n,m);</pre>
+        </td>
+      </tr>
+    </table>
+    <p>Objects with integer variables are manipulated as standard
+    <a href="reference.htm#sdpvar">
+    sdpvar</a> objects.</p>
+    <table cellPadding="10" width="100%">
+      <tr>
+        <td class="xmpcode">
+        <pre>z = x + y + trace(x) + sum(sum(y));
+F = set(z &gt;= 0) + set(x &lt;= 0);</pre>
+        </td>
+      </tr>
+    </table>
+    <p>In the code above, integrality was imposed by using integer and binary 
+    variables. An equivalent alternative is to use explicit constraints.</p>
+    <table cellPadding="10" width="100%">
+      <tr>
+        <td class="xmpcode">
+        <pre>x = sdpvar(n,m);
+y = sdpvar(n,m);
+z = x + y + trace(x) + sum(sum(y));
+F = set(z &gt;= 0) + set(x &lt;= 0) + set(integer(x)) + set(binary(y));</pre>
+        </td>
+      </tr>
+    </table>
+    <p>Note that we use non-strict inequalities. This is highly recommended when 
+	working with integer models since, see the <a href="faq.htm#reallystrict">
+	FAQ</a>.</p>
+	<p>The global integer solver can be applied to any kind of conic program 
+	that can be defined within the YALMIP framework, and defining integer programs is as simple as 
+	defining standard problems. The supported integer solvers are
+    <a href="solvers.htm#glpk">
+    GLPK</a>, <a href="solvers.htm#cplex">
+    CPLEX</a>, <a href="solvers.htm#xpress">
+    XPRESS</a> and <a href="solvers.htm#mosek">MOSEK</a>. In addition to these 
+	solvers, YALMIP comes with an internal branch-and-bound solver, 
+    called <code>'bnb'</code>, to 
+    be used together with any continuous solver. Hence, it is possible to 
+	(globally) solve 
+    mixed integer linear/quadratic/second order cone/semidefinite/geometric programs 
+	in YALMIP. Note 
+    that the internal branch-and-bound algorithm is rudimentary and useful only for small problems. See the help-text on <code>'bnb'</code> for 
+    more information on this solver.</p>
+    <p>As an example, let us return to the <a href="linearregression.htm">linear regression problem</a>. Solving the same problems, but looking for 
+    integer solutions can be done by changing one line of code</p>
+    <table cellPadding="10" width="100%">
+      <tr>
+        <td class="xmpcode">
+        <pre>a = [1 2 3 4 5 6]';
+t = (0:0.02:2*pi)';
+x = [sin(t) sin(2*t) sin(3*t) sin(4*t) sin(5*t) sin(6*t)];
+y = x*a+(-4+8*rand(length(x),1));
+
+a_hat = intvar(6,1);
+
+residuals = y-x*a_hat;
+bound = sdpvar(length(residuals),1);
+F = set(-bound &lt;= residuals &lt;= bound);
+solvesdp(F,sum(bound));
+a_L1 = double(a_hat);
+solvesdp([],residuals'*residuals);
+a_L2 = double(a_hat);
+bound = sdpvar(1,1);
+F = set(-bound &lt;= residuals &lt;= bound);
+solvesdp(F,bound);
+a_Linf = double(a_hat);</pre>
+        </td>
+      </tr>
+    </table>
+    <h3>General mixed integer programming</h3>
+	<p>The mixed integer programming solvers discussed above are all guaranteed 
+	to find a globally optimal solution, if one exists. The built-in 
+	branch-and-bound module can be applied also to general nonlinear programs 
+	with discrete data. The difference is that there is no guarantee on global 
+	optimality for these problems. It can however be a useful strategy for 
+	finding reasonably good feasible solutions to mixed integer nonlinear 
+	programs. For the following example to work, you need to have
+	<a href="solvers.htm#fmincon">fmincon</a>, or possibly
+	<a href="solvers.htm#PENBMI">PENBMI</a>, installed on your system.</p>
+    <table cellPadding="10" width="100%" id="table1">
+      <tr>
+        <td class="xmpcode">
+        <pre>x = sdpvar(5,1);
+A = randn(15,5);
+b = rand(15,1)*10;
+
+obj = sum(x) + sum((x-3).^4); % 4th order objective
+solvesdp(set(A*x &lt; b) + set(integer(x)),obj,sdpsettings('bnb.solver','fmincon'))
+<font color="#000000">
+* Starting YALMIP integer branch &amp; bound.
+* Lower solver   : fmincon-standard
+* Upper solver   : rounder
+* Max iterations : 300
+
+Warning : The relaxed problem may be nonconvex. This means 
+that the branching process not is guaranteed to find a
+globally optimal solution, since the lower bound can be
+invalid. Hence, do not trust the bound or the gap...
+ Node      Upper     Gap(%)     Lower     Open
+    1 :  -6.400E+001    44.57    -1.155E+002   2 
+    2 :  -6.400E+001    44.57    -1.155E+002   3 
+    3 :  -6.400E+001    41.27    -1.090E+002   4 
+    4 :  -6.400E+001    41.27    -1.090E+002   5 
+    5 :  -6.400E+001    36.58    -1.009E+002   6 
+    6 :  -6.400E+001    36.58    -1.009E+002   7 
+    7 :  -6.400E+001    33.44    -9.615E+001   8 
+    8 :  -6.400E+001    33.44    -9.615E+001   9 
+    9 :  -6.400E+001    30.38    -9.193E+001   8 
+   10 :  -6.400E+001    30.38    -9.193E+001   9 
+   11 :  -7.800E+001    13.85    -9.054E+001   6 
+   12 :  -7.800E+001    13.85    -9.054E+001   5 
+   13 :  -7.800E+001    12.19    -8.883E+001   4 
+   14 :  -7.800E+001    12.19    -8.883E+001   3 
+   15 :  -7.800E+001    10.41    -8.706E+001   2 
+   16 :  -7.800E+001    10.41    -8.706E+001   3 
+   17 :  -7.800E+001     0.60    -7.847E+001   2 
+   18 :  -7.800E+001     0.60    -7.847E+001   1 
+   19 :  -7.800E+001     0.60    -7.847E+001   0 
++  19 Finishing.  Cost: -78</font></pre>
+		<pre>&nbsp;</pre>
+        </td>
+      </tr>
+    </table>
+    <p>For an additional example, check out the <a href="geometric.htm#migp">
+	mixed integer geometric programming example</a></td>
+  </tr>
+</table>
+
+</div>
+
+</body>
+
+</html>

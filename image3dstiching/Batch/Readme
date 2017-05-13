@@ -1,0 +1,39 @@
+% Quick to see result ----------------- run each pair in different cluster --------------------
+1) PairModel.sh
+	Test Pair Of Image
+	Usage:
+		setenv Task xxxx # Specify the Folder in ./scratch/TestMultipleImage/
+		setenv Img1 xxxx # Pick Img1 as xxxxx.jpg in the ./scratch/TestMultipleImage/"$Task"/"$Img1"
+		setenv Img2 xxxx # Pick Img2 as xxxxx.jpg in the ./scratch/TestMultipleImage/"$Task"/"$Img2"
+		qsub -l arch=i686 -v Img1,Img2,Task PairModel.sh
+
+2) OneTaskPairModel.pl
+	Quick mothod issue lots of PairModel.sh, each in a different cluster
+	Usage: 
+		perl OneTaskPairModel.pl TaskName PairListFlag PairList
+		# TaskName: Specify the Folder in ./scratch/TestMultipleImage/
+		# If PairListFlag == 0, used all Image pairs in TaskName folder
+		# If PairListFlag == 1, used List in PairList(filename in the local folder) array defined in OneTaskPairModel.pl
+		# PairList: ex, PairList.txt
+% ----------------------------------------------------------------------------------------------
+
+% Slow to see result ----------------- run each pair seqensialy on the same cluster --------------------
+3) PairListModel.sh
+	Test Pair Of Image
+	Usage:
+		# If PairListFlag == 0, used all Image pairs in TaskName folder, Otherwise Read PairList in  PairList(filename in the local folder) 
+		setenv PairListFlag x 
+		setenv PairList xxx # PairList: ex, PairList.txt
+		setenv Task xxx # Specify the Folder in ./scratch/TestMultipleImage/
+		setenv AbsThre xxx # Absolute threshould for surf Matching
+		setenv RatioThre xxx # relative thresuold for surf Matching
+		qsub -l arch=i686 -v Task,PairListFlag,AbsThre,RatioThre,PairList PairListModel.sh
+
+4) ChainListModel.sh
+	Test Chain Of Image
+	Usage:
+		setenv ChainList xxx # ChainList: ex, ChainList.txt: Read ChainList in  ChainList(filename in the local folder) 
+		setenv Task xxx # Specify the Folder in ./scratch/TestMultipleImage/
+		setenv AbsThre xxx # Absolute threshould for surf Matching
+		setenv RatioThre xxx # relative thresuold for surf Matching
+		qsub -l arch=i686 -v Task,AbsThre,RatioThre,ChainList ChainListModel.sh

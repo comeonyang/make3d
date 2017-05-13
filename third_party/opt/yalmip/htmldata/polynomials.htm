@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<title>YALMIP Example : Polynomial expressions</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<meta content="Microsoft FrontPage 6.0" name="GENERATOR">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<link href="yalmip.css" type="text/css" rel="stylesheet">
+<base target="_self">
+</head>
+
+<body leftMargin="0" topMargin="0">
+
+<div align="left">
+
+<table border="0" cellpadding="4" cellspacing="3" style="border-collapse: collapse" bordercolor="#000000" width="100%" align="left" height="100%">
+  <tr>
+    <td width="100%" align="left" height="100%" valign="top">
+        <h2>Polynomial expressions</h2>
+    <hr noShade SIZE="1">
+    <p>Starting from YALMIP 3, polynomial expressions are supported. These 
+    nonlinear expressions can be used for, e.g., SDPs with BMI constraints, 
+    quadratic programming, or 
+    to solve sum-of-squares problems.</p>
+    <p>Nonlinear expressions are built using
+    <a href="reference.htm#sdpvar">
+    sdpvar</a> objects, and are manipulated in same way</p>
+    <table cellPadding="10" width="100%">
+      <tr>
+        <td class="xmpcode">
+        <pre>x = sdpvar(1,1);
+y = sdpvar(1,1);
+p = 1+x*y+x^2+y^3;
+Y = sdpvar(3,3);
+Z = Y*Y+Y.*Y;</pre>
+        </td>
+      </tr>
+    </table>
+    <p>A convenient command is
+    <a href="reference.htm#sdisplay">
+    sdisplay</a> (symbolic display)</p>
+    <table cellPadding="10" width="100%">
+      <tr>
+        <td class="xmpcode">
+        <pre>sdisplay(p)
+<font color="#000000"> ans = 
+&nbsp;&nbsp; '1+xy+x^2+y^3'</font></pre>
+        </td>
+      </tr>
+    </table>
+    <p>Some simple operators for polynomials have been implemented, such as 
+    differentiation.</p>
+    <table cellPadding="10" width="100%">
+      <tr>
+        <td class="xmpcode">
+        <pre>dp = jacobian(p);
+d2p = jacobian(jacobian(p)');</pre>
+        </td>
+      </tr>
+    </table>
+    <p>Checking the degree is easily done</p>
+    <table cellPadding="10" width="100%">
+      <tr>
+        <td class="xmpcode">
+        <pre>degree(p)
+<font color="#000000"> ans =
+  3
+</font>
+degree(p,x)
+<font color="#000000"> ans = 
+  2</font></pre>
+        </td>
+      </tr>
+    </table>
+    <p>Of course, all standard operators applies to the nonlinear objects.</p>
+    <table cellPadding="10" width="100%">
+      <tr>
+        <td class="xmpcode">
+        <pre>x = sdpvar(3,1);
+p = 5*trace(x*x') + jacobian(sum(x.^4))</pre>
+        </td>
+      </tr>
+    </table>
+        <p><img border="0" src="demoicon.gif" width="16" height="16"> Clear the internals of YALMIP on a regular basis with 
+    the command <code>yalmip('clear')</code> when working with polynomial 
+    expressions. The reason is that every time a nonlinear variable is defined, 
+    a description on how it is created is saved inside YALMIP (all monomials 
+        generate new variables). With many 
+    nonlinear terms this list grows fast, making YALMIP slower and slower since 
+    the list has to be searched in when polynomial expressions are manipulated.<br>
+    <br>
+        <img border="0" src="demoicon.gif" width="16" height="16"> The current implementation of the 
+    polynomial objects is inefficient for large problems. Multiplying two 
+        matrices of dimension, say 20, takes several seconds. But if you have a 
+        problem with this type of non-linearity, the solver will probably be the 
+        bottle-neck anyway...
+    </td>
+  </tr>
+</table>
+
+</div>
+
+</body>
+
+</html>

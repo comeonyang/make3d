@@ -1,0 +1,341 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<title>YALMIP Example : Moment relaxations</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<meta content="Microsoft FrontPage 6.0" name="GENERATOR">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<link href="yalmip.css" type="text/css" rel="stylesheet">
+<base target="_self">
+</head>
+
+<body leftMargin="0" topMargin="0">
+
+<div align="left">
+
+<table border="0" cellpadding="4" cellspacing="3" style="border-collapse: collapse" bordercolor="#000000" width="100%" align="left" height="100%">
+  <tr>
+    <td width="100%" align="left" height="100%" valign="top">
+       <h2>Moment based relaxation of polynomials programs</h2>
+    <hr noShade SIZE="1">
+    <p>YALMIP comes with a built-in module for polynomial programming using 
+    moment relaxations. This can be used for finding lower bounds on constrained 
+    polynomial programs (inequalities and equalities, element-wise and semidefinite), and to extract the corresponding optimizers. The implementation is entirely based on high-level 
+    YALMIP code, and can be somewhat inefficient for large problems (the 
+    inefficiency would then show in the setup of the problem, not actually 
+    solving the semidefinite resulting program). For very large problems, you might 
+    want to check out the dedicated software package
+    <a target="_blank" href="http://www.laas.fr/~henrion/software/gloptipoly/">Gloptipoly</a> 
+	(the solution time will be the same, but the setup time might be reduced). 
+    For the underlying theory of moment relaxations, the reader is referred to 
+      <a href="readmore.htm#LASSERRE">[Lasserre]</a>.</p>
+    <h3>Solving polynomial problems by relaxations</h3>
+		<p>The following code calculates a lower bound on a concave quadratic 
+    optimization problem. As you can see, the only difference compared to 
+	solving the problem using a standard solver, such as
+	<a href="solvers.htm#fmincon">fmincon</a> or <a href="solvers.htm#penbmi">
+	penbmi</a>, is that we call <a href="reference.htm#solvemoment">solvemoment</a> instead of 
+	<a href="reference.htm#solvesdp">solvesdp</a>.</p>
+    <table cellPadding="10" width="100%">
+      <tr>
+        <td class="xmpcode">
+        <pre>sdpvar x1 x2 x3
+obj = -2*x1+x2-x3;
+F = set(x1*(4*x1-4*x2+4*x3-20)+x2*(2*x2-2*x3+9)+x3*(2*x3-13)+24&gt;0);
+F = F + set(4-(x1+x2+x3)&gt;0);
+F = F + set(6-(3*x2+x3)&gt;0);
+F = F + set(x1&gt;0);
+F = F + set(2-x1&gt;0);
+F = F + set(x2&gt;0);
+F = F + set(x3&gt;0);
+F = F + set(3-x3&gt;0);
+solvemoment(F,obj);
+double(obj)
+<font color="#000000">
+ ans =</font></pre>
+        <pre><font color="#000000">&nbsp;&nbsp;&nbsp;&nbsp; -6.0000</font></pre>
+        </td>
+      </tr>
+    </table>
+    <p>Notice that YALMIP does not recover variables by default, a fact showing up in the 
+    difference between lifted variables and actual nonlinear variables (lifted 
+    variables are the variables used in the semidefinite relaxation to model 
+    nonlinear variables) The lifted variables can be obtained by using the 
+    command <code>relaxdouble</code> . The quadratic 
+    constraint above is satisfied in the lifted variables, but not in the true 
+    variables, as the following code illustrates.</p>
+    <table cellPadding="10" width="100%">
+      <tr>
+        <td class="xmpcode">
+        <pre>relaxdouble(x1*(4*x1-4*x2+4*x3-20)+x2*(2*x2-2*x3+9)+x3*(2*x3-13)+24)
+
+ <font color="#000000">ans =
+
+   23.2648</font></pre>
+        <pre>double(x1*(4*x1-4*x2+4*x3-20)+x2*(2*x2-2*x3+9)+x3*(2*x3-13)+24)
+
+<font color="#000000"> ans =
+
+  -2.0000</font></pre>
+        </td>
+      </tr>
+    </table>
+       <p>An tighter relaxation can be obtained by using a higher order relaxation (the 
+    lowest possible is used if it is not specified).</p>
+    <table cellPadding="10" width="100%">
+      <tr>
+        <td class="xmpcode">
+        <pre>solvemoment(F,obj,[],2);
+double(obj)
+
+<font color="#000000"> ans =</font></pre>
+        <pre><font color="#000000">&nbsp;&nbsp;&nbsp;&nbsp; -5.6593</font></pre>
+        </td>
+      </tr>
+    </table>
+    <p>The obtained bound can be used iteratively to improve the bound by adding 
+    dynamically generated cuts.</p>
+    <table cellPadding="10" width="100%">
+      <tr>
+        <td class="xmpcode">
+        <pre>solvemoment(F+set(obj&gt;double(obj)),obj,[],2);
+double(obj)
+
+ <font color="#000000">ans =</font></pre>
+        <pre><font color="#000000">&nbsp;&nbsp;&nbsp;&nbsp; -5.3870</font></pre>
+        <pre>solvemoment(F+set(obj&gt;double(obj)),obj,[],2);
+double(obj)
+
+ <font color="#000000">ans =
+
+     -5.1270</font></pre>
+        </td>
+      </tr>
+    </table>
+    <p>The known true minima, -4, is found in the fourth order relaxation.</p>
+    <table cellPadding="10" width="100%">
+      <tr>
+        <td class="xmpcode">
+        <pre>solvemoment(F,obj,[],4);
+double(obj)
+
+<font color="#000000"> ans =</font></pre>
+        <pre><font color="#000000">&nbsp;&nbsp;&nbsp;&nbsp; -4.0000</font></pre>
+        </td>
+      </tr>
+    </table>
+    <p>The true global minima is however not recovered with the lifted variables, as we can see if we 
+    check the current solution (still violates the nonlinear constraint).</p>
+       <table cellPadding="10" width="100%">
+      <tr>
+        <td class="xmpcode">
+        <pre>checkset(F)
+<font color="#000000">
++++++++++++++++++++++++++++++++++++++++++++++++++++
+| ID| Constraint   |         Type| Primal residual|
++++++++++++++++++++++++++++++++++++++++++++++++++++
+| #1| Numeric value| Element-wise|        </font><font color="#FF0000">-0.88573</font><font color="#000000">|
+| #2| Numeric value| Element-wise|           1.834|
+| #3| Numeric value| Element-wise|           5.668|
+| #4| Numeric value| Element-wise|           1.834|
+| #5| Numeric value| Element-wise|         0.16599|
+| #6| Numeric value| Element-wise|     2.0873e-006|
+| #7| Numeric value| Element-wise|         0.33198|
+| #8| Numeric value| Element-wise|           2.668|
++++++++++++++++++++++++++++++++++++++++++++++++++++</font></pre>
+        </td>
+      </tr>
+    </table>
+       <h3>Extracting solutions</h3>
+       <p>To extract a (or several) globally optimal solution, we need two output 
+       arguments. The first output is a diagnostic structure (standard solution 
+       structure from the semidefinite solver), the second output is the 
+       (hopefully) extracted globally optimal solutions and the third output is 
+       a data structure containing all data that was needed to extract the 
+		solution.</p>
+    <table cellPadding="10" width="100%">
+      <tr>
+        <td class="xmpcode">
+        <pre>[sol,x] = solvemoment(F,obj,[],4);
+x{1}
+<font color="#000000">
+ans =
+
+    0.5000
+    0.0000
+    3.0000</font>
+x{2}
+<font color="#000000">
+ans =
+
+    2.0000
+   -0.0000
+    0.0000</font></pre>
+        </td>
+      </tr>
+    </table>
+       <p>We can easily check that these are globally optimal solutions since 
+       they reach the lower bound -4 and satisfy the constraints (up to 
+       numerical precision).</p>
+    <table cellPadding="10" width="100%">
+      <tr>
+        <td class="xmpcode">
+        <pre>assign([x1;x2;x3],x{1});
+double(obj)
+<font color="#000000">ans =</font></pre>
+        <pre><font color="#000000">   -4.0000</font></pre>
+        <pre>checkset(F)
+<font color="#000000">+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+|   ID|      Constraint|                       Type|   Primal residual|
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+|   #1|   Numeric value|   Element-wise (quadratic)|      -1.1034e-006|
+|   #2|   Numeric value|               Element-wise|               0.5|
+|   #3|   Numeric value|               Element-wise|                 3|
+|   #4|   Numeric value|               Element-wise|               0.5|
+|   #5|   Numeric value|               Element-wise|               1.5|
+|   #6|   Numeric value|               Element-wise|        5.956e-007|
+|   #7|   Numeric value|               Element-wise|                 3|
+|   #8|   Numeric value|               Element-wise|       4.6084e-007|
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</font></pre>
+        </td>
+      </tr>
+    </table>
+       <h3>Extracting sum of squares decompositions.</h3>
+       <p>Moment based approaches and <a href="sos.htm">sum of squares 
+		computations</a> are directly linked through duality. Given the solution 
+		to the moment problem, a sum of squares decomposition is easily derived 
+		from dual variables. Consider a simple unconstrained problem.</p>
+    <table cellPadding="10" width="100%" id="table1">
+      <tr>
+        <td class="xmpcode">
+        <pre>sdpvar x1 x2
+p = x1^4+x2^4-x1*x2+1</pre>
+        </td>
+      </tr>
+    </table>
+       <p>A sum of squares decomposition of <b>p</b> can be obtained by using
+		<a href="reference.htm#solvesos">solvesos</a></p>
+    <table cellPadding="10" width="100%" id="table2">
+      <tr>
+        <td class="xmpcode">
+        <pre>[sol,v,Q] = solvesos(set(sos(p)));
+sdisplay(clean(p-v{1}'*Q{1}*v{1},1e-6))
+<font color="#000000">0</font></pre>
+        </td>
+      </tr>
+    </table>
+       <p>The decomposition can alternatively be computed from the moment 
+		results. If we minimize the polynomial using moments,
+		<a href="reference.htm#solvemoment">solvemoment</a> will automatically 
+		extract <b>t</b>, <b>v</b> and <b>Q</b> in the decomposition <b>p(x)-t=v<sup>T</sup>Qv</b></p>
+    <table cellPadding="10" width="100%" id="table3">
+      <tr>
+        <td class="xmpcode">
+        <pre>[sol,x,moments,sosdec] = solvemoment([],p);
+t = sosdec.t;
+v = sosdec.v0;
+Q = sosdec.Q0;
+sdisplay(clean(p-t-v'*Q*v,1e-6))
+<font color="#000000">0</font></pre>
+        </td>
+      </tr>
+    </table>
+       <p>In the more general constrained case, the polynomial multipliers for 
+		the constraints will also be returned.</p>
+		<h3><a name="matrix"></a>Polynomial semidefinite constraints</h3>
+       <p>Nonlinear semidefinite constraints can be 
+       added using exactly the same notation and syntax. The following example is taken from 
+      <a href="readmore.htm#HENRIONLASSERRE">[D. Henrion, J. B. Lasserre]</a>.</p>
+    <table cellPadding="10" width="100%">
+      <tr>
+        <td class="xmpcode">
+        <pre>sdpvar x1 x2
+obj = -x1^2-x2^2;
+F = set([1-4*x1*x2 x1;x1 4-x1^2-x2^2]);
+[sol,x] = solvemoment(F,obj,[],2);
+assign([x1;x2],x{1});
+double(obj)
+<font color="#000000">ans =</font></pre>
+        <pre><font color="#000000">   -4.00003</font></pre>
+        <pre>checkset(F)
+<font color="#000000">++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+|   ID|      Constraint|              Type|   Primal residual|
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+|   #1|   Numeric value|   LMI (quadratic)|       -0.00034633|
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</font></pre>
+        </td>
+      </tr>
+    </table>
+       <h3>Advanced features</h3>
+       <p>A number of advanced features are available. We just briefly introduce 
+       these here by a quick example where we refine the extracted solution 
+       using a couple of Newton steps on an algebraic systems defining the global 
+       solutions given the optimal moment matrices, and change the numerical tolerance in the extraction 
+       algorithm. Finally, we calculate some different global solutions using 
+       the optimal moment matrices. Please check the moment relaxation example in
+       <a href="reference.htm#yalmipdemo">yalmipdemo</a> for details.</p>
+    <table cellPadding="10" width="100%">
+      <tr>
+        <td class="xmpcode">
+        <pre>sdpvar x1 x2
+obj = -x1^2-x2^2;
+F = set([1-4*x1*x2 x1;x1 4-x1^2-x2^2]);
+ops = sdpsettings('moment.refine',5','moment.rceftol',1e-8);
+[sol,xe,data] = solvemoment(F,obj,ops);
+xopt1 = extractsolution(data,sdpsettings('moment.refine',0));
+xopt2 = extractsolution(data,sdpsettings('moment.refine',1));
+xopt3 = extractsolution(data,sdpsettings('moment.refine',10));
+xopt4 = extractsolution(data,sdpsettings('moment.rceftol',1e-3,'moment.refine',5));</pre>
+        </td>
+      </tr>
+    </table>
+       <p>The moment relaxation solver can also be called using a more standard 
+       YALMIP notation, by simply defining the solver as <code>'moment'</code>.</p>
+    <table cellPadding="10" width="100%">
+      <tr>
+        <td class="xmpcode">
+        <pre>sdpvar x1 x2
+obj = -x1^2-x2^2;
+F = set([1-4*x1*x2 x1;x1 4-x1^2-x2^2]);
+sol = solvesdp(F,obj,sdpsettings('solver','moment','moment.order',2));
+assign(sol.momentdata.x,sol.xoptimal{1});
+double(obj)
+<font color="#000000">ans =</font></pre>
+        <pre><font color="#000000">   -4.00003</font></pre>
+        <pre>checkset(F)
+<font color="#000000">++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+|   ID|      Constraint|              Type|   Primal residual|
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+|   #1|   Numeric value|   LMI (quadratic)|       -0.00034633|
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</font></pre>
+        </td>
+      </tr>
+    </table>
+       <p>
+          <img border="0" src="demoicon.gif" width="16" height="16"> The 
+		semidefinite programs rapidly grows when the number of variables and the 
+		polynomial degree increase, so be careful when you model your problem.</p>
+		<p>
+          <img border="0" src="demoicon.gif" width="16" height="16"> The two 
+		most useful practical tips when working semidefinite relaxations seem to 
+		be to de-symmetrize your objective function, and compactify your 
+		feasible region. These two tricks typically increase the likelihood that 
+		you will be able to extract global solutions. By adding a perturbation 
+		to the polynomial, symmetry is lost, which generically means that there 
+		will not be infinitely many optima, and the extraction algorithm is more 
+		likely to work. Most theory in moment relaxations assumes that the 
+		feasible set is compact, and this is also affecting practical 
+		performance. By adding redundant compactifying constraints, you 
+		typically increase the likelihood of success. As an example, a simple 
+		redundant constraint which often work well in practice is an upper bound on 
+		the objective function based on a known feasible sub-optimal solution.</td>
+  </tr>
+</table>
+
+<p>&nbsp;</div>
+
+</body>
+
+</html>

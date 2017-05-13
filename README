@@ -1,0 +1,39 @@
+See:
+license.m, 
+LearningCode/README
+
+Version 0.1
+
+Running OneShot3dEfficent the First Time
+----------------------------------------
+
+-Add the line "addpath(genpath('../ec2/bin/mex'));" to LearningCode/InitialPath.m, if it is not already there
+-start matlab
+-cd to LearningCode
+-Run InitialPath
+-Run "OneShot3dEfficient("input_image_name.jpg", "output_dir")
+
+
+
+
+A few points to note:
+1.  The code will not run out of the box.  Therefore, unless
+    you have read the ICCV-3dRR paper, it would be hard to 
+    make it run.
+2.  This code may differe from the one used for experiments 
+    in ICCV-3dRR.
+3.  (For our recent submission for ICCV-3dRR + ICCV-vrml + NIPS 
+    workshop on grammar of vision work, to IEEE-PAMI, please email us.)
+4.  For understanding the optimization used for learning and inference
+    in the paper (minimization of L1 norms), please first see:
+    http://www.stanford.edu/class/ee364a/lectures.html
+    (lecture 4 on convex optimization problems)
+    before emailing us.
+
+
+
+Useful links:
+http://make3d.stanford.edu/publications
+http://make3d.stanford.edu/publications/code
+http://make3d.stanford.edu/publications/faq
+http://make3d.stanford.edu/publications/contact

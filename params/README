@@ -1,0 +1,18 @@
+Learned parameters v 0.1
+------------------------
+
+See:
+http://make3d.stanford.edu/publications
+and:
+http://make3d.stanford.edu/publications/code
+
+The parameters in this repository go with the code verion 0.1
+of the paper:
+Learning 3-D Scene Structure from a Single Still Image, Ashutosh Saxena, Min Sun, Andrew Y. Ng, In ICCV workshop on 3D Representation for Recognition (3dRR-07), 2007.
+
+
+Again, note that the parameter version may differ from ones
+used on the website, or used in ICCV paper; but is the same
+version as the code provided.
+
+

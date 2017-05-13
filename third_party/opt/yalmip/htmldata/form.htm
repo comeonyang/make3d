@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<title>YALMIP FAQ</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<meta content="Microsoft FrontPage 5.0" name="GENERATOR">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<link href="yalmip.css" type="text/css" rel="stylesheet">
+<base target="_self">
+</head>
+
+<body leftMargin="0" topMargin="0">
+
+<div align="left">
+
+<table border="1" cellpadding="4" cellspacing="3" style="border-collapse: collapse" bordercolor="#000000" width="100%" align="left" height="100%">
+  <tr>
+    <td width="100%" align="left" height="100%" valign="top">
+    <h2>Frequently asked question (and more)</h2>
+    <hr noShade SIZE="1">        
+    <p><b><font color="#0000FF">Q:</font></b> I've been using a previous version 
+    of YALMIP, but after installing the new version nothing works.<br>
+    <b><font color="#0000FF">A:</font></b> Restart Matlab.</p>
+    <p><b><font color="#0000FF">Q:</font></b> ...still doesn't work!<br>
+    <b><font color="#0000FF">A:</font></b> Added all the paths? (<i>/yalmip</i>, 
+    <i>/yalmip/extras, /yalmip/sos, /yalmip/demos, /yalmip/solvers</i>)</p>
+    <p><b><font color="#0000FF">Q:</font></b> My version of
+    <a href="solvers.htm#sdpt3">SDPT3</a>-3.02 does not work with 
+    YALMIP<br>
+    <b><font color="#0000FF">A:</font></b> Download <a href="solvers.htm#sdpt3">SDPT3</a>-3.02 and compile (code 
+    updated without version increment)</p>
+    <p><b><font color="#0000FF">Q:</font></b> <a href="solvers.htm#sdpt3">SDPT3</a> (or 
+    <a href="solvers.htm#sedumi">SeDuMi</a>) does not work<b><font color="#0000FF">.<br>
+    A:</font></b> Make sure not to have both <a href="solvers.htm#sdpt3">SDPT3</a> and 
+    <a href="solvers.htm#sedumi">SeDuMi</a> on the Matlab path</p>
+    <p><b><font color="#0000FF">Q:</font></b> <a href="solvers.htm#csdp">CSDP</a> does not work<b><font color="#0000FF">.<br>
+    A:</font></b> Do you have <a href="solvers.htm#csdp">CSDP</a> in your <i>system</i> path?</p>
+    <p><b><font color="#0000FF">Q:</font></b> It is soo slow!<br>
+    <b><font color="#0000FF">A:</font></b> Running on LINUX with YALMIP chucked 
+    away somewhere on a network? Yep, I know...</p>
+    <p><b><font color="#0000FF">Q:</font></b> I already have 
+    <a href="solvers.htm#lmilab">LMILAB</a> and <a href="solvers.htm#linprog">LINPROG</a> 
+    installed, do I need any other solver?<br>
+    <font color="#0000FF"><b>A:</b></font> Yes, at-least if you intend to solve 
+    anything but a few small problems.</p>
+    <p><b><font color="#0000FF">Q:</font></b> There are soo many solvers, which 
+    one should I use?<br>
+    <font color="#0000FF"><b>A:</b></font> <a href="solvers.htm#sedumi">SeDuMi</a> is a good general purpose SDP 
+    solver, with binaries available for most platforms. (not necessarily the 
+    best solver though)</p>
+    <p><b><font color="#0000FF">Q:</font></b> Are  inequalities really 
+    strict?<br>
+    <font color="#0000FF"><b>A:</b></font> There is no distinction in YALMIP 
+    between strict or non-strict inequalities. How the inequality is treated 
+    (strict or non-strict) depends on the solver.</p>
+    <p><b><font color="#0000FF">Q:</font></b> I can't write <code>X(end)</code> 
+    when <code>X</code> is an
+    <a target="topic" href="file:///C:/Dokumente%20und%20Einstellungen/Johan%20L&ouml;fberg/Eigene%20Dateien/My%20Webs/myweb9/htmldata/reference.htm#sdpvar">
+    sdpvar</a>-matrix<br>
+    <font color="#0000FF"><b>A:</b></font> Use 2 arguments, for example <code>
+    X(1,end)</code> or <code>X(end,1)</code>.</p>
+    <p><b><font color="#0000FF">Q:</font></b> Why can't I write <code>X = 
+    eye(2); X(1,1)=sdpvar(1,1)</code>?<br>
+    <font color="#0000FF"><b>A:</b></font> Work in progress, seems to be a bug 
+    in Matlab.</p>
+    <p><b><font color="#0000FF">Q:</font></b> I have found a bug, what to do?<font color="#0000FF"><b><br>
+    A:</b></font> Send a mail to <a href="mailto:loefberg@control.ee.ethz.ch">
+    loefberg@control.ee.ethz.ch</a>. Type <code>ver</code> in Matlab and include 
+    the result in the mail. If possible, include the code (as simple as 
+    possible) that generated the fault, otherwise, include at-least the error 
+    message etc. The more information the better.</p>
+    <p><b><font color="#0000FF">Q:</font></b> I have an idea for a new feature, 
+    what to do?<font color="#0000FF"><b><br>
+    A:</b></font> Send a mail to <a href="mailto:loefberg@control.ee.ethz.ch">
+    loefberg@control.ee.ethz.ch</a>. However, I only add new features when I 
+    need them my self, but if your idea is good enough, I might realize that I 
+    need it.</p>
+    <p><b><font color="#0000FF">Q:</font></b> What does YALMIP mean?<b><font color="#0000FF"><br>
+    A:</font></b> Used to be short for Yet Another LMI Parser. However, since 
+    YALMIP is much more than a LMI parser now, it dies not mean anything more. 
+    Perhaps Yet Another Lame Modeling Initiative.</p>
+    <p><b><font color="#0000FF">Q:</font></b> Defining bilinear matrix 
+    inequalities using the command lmi and solving LPs with a command called 
+    solvesdp, kind'a weird if you ask me!<b><font color="#0000FF"><br>
+    A:</font></b> Yes...These names are kept or backwards compability. Hence the 
+    command lmi does not mean Linear Matrix Inequalitiy, but List of Matrix 
+    Inequalities and solvesdp is short for solve symbolic decision problem. Or 
+    what ever you want them to mean.</p>
+    </td>
+  </tr>
+</table>
+
+</div>
+
+</body>
+
+</html>

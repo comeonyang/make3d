@@ -1,0 +1,191 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<title>YALMIP Example : Advanced programming</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<meta content="Microsoft FrontPage 6.0" name="GENERATOR">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<link href="yalmip.css" type="text/css" rel="stylesheet">
+<base target="_self">
+</head>
+
+<body leftMargin="0" topMargin="0">
+
+<div align="left">
+  <table border="0" cellpadding="4" cellspacing="3" style="border-collapse: collapse" bordercolor="#000000" width="100%" align="left" height="100%">
+    <tr>
+      <td width="100%" align="left" height="100%" valign="top">
+      <h2>Advanced YALMIP programming</h2>
+      <hr noShade SIZE="1" color="#000000">
+      <p>In some cases, it might be necessary to do more advanced YALMIP coding. 
+      YALMIP comes with a number of commands to facilitate this.</p>
+      <p>Let us begin by defining a set of variables.</p>
+      <table cellPadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>x = sdpvar(2,1);
+y = x'*randn(2)*x;</pre>
+          </td>
+        </tr>
+      </table>
+      <p>A common task is to find variables used in an expression. To do this, there are 
+      two important commands, <code>depends.m </code>and <code>getvariables.m</code>.</p>
+      <table cellPadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>depends(x)
+ <font color="#000000">ans =
+  1 2</font>
+
+depends(y)
+<font color="#000000"> ans =
+  1 2</font>
+
+getvariables(x)
+<font color="#000000"> ans =
+  1 2</font>
+
+getvariables(y)
+<font color="#000000"> ans =
+  3 4 5</font></pre>
+          </td>
+        </tr>
+      </table>
+      <p>The command <code>depends.m</code> gives the actual linear independent variables, while <code>getvariables.m</code> returns the 
+      variable indices to the so called relaxed variables used in YALMIP. When 
+      a nonlinear expression is defined in YALMIP, a new variable is introduced 
+      for every monomial term. For our quadratic variable y, we need 3 monomials.</p>
+      <table cellPadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>getvariables(x(1)^2)
+<font color="#000000"> ans = 
+  3</font>
+
+getvariables(x(2)^2)
+ <font color="#000000">ans = 
+  4</font></pre>
+          <pre>getvariables(x(1)*x(2))
+<font color="#000000"> ans = 
+  5</font></pre>
+          </td>
+        </tr>
+      </table>
+      <p>The commands above only give the internal identifiers. To create an
+      <a href="reference.htm#sdpvar">sdpvar</a> variable using these variables, 
+      we use the command <code>recover.m</code></p>
+      <table cellPadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>variables_in_y = recover(depends(y))
+<font color="#000000">Linear matrix variable 2x1 (full, real)</font></pre>
+          </td>
+        </tr>
+      </table>
+      <p>All <a href="reference.htm#sdpvar">sdpvar</a> 
+      objects are defined by the variable indicies obtained with <code>getvariables.m</code>, 
+      and a basis. Let us begin with scalar variables to explain the concepts. 
+      The basis with respect to all variables returned from <code>getvariables.m </code>
+      is obtained using <code>getbase.m</code></p>
+      <table cellPadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>x = sdpvar(1,1);
+y = sdpvar(1,1);
+z = pi+2*x+3*y;
+full(getbase(z))
+<font color="#000000">
+ ans =
+
+  3.1416 2.0000 3.0000</font></pre>
+          </td>
+        </tr>
+      </table>
+      <p>A basis with respect to a particular variable is obtained using <code>getbasematrix.m.</code></p>
+      <table cellPadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>full(getbasematrix(z,getvariables(x)))
+<font color="#000000">
+ ans =
+
+  2
+</font>
+full(getbasematrix(z,0))
+<font color="#000000">
+ ans =
+
+  3.1416</font>
+
+full(getbasematrix(z,123456789))
+<font color="#000000">
+ ans =
+
+  0</font></pre>
+          </td>
+        </tr>
+      </table>
+      <p>Matrix variables are defined in the same way, except that all basis 
+      matrices are stored in a vectorized format.</p>
+      <table cellPadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>x = pi*eye(2)+5*sdpvar(2,2);
+base = full(getbase(x))
+<font color="#000000"> base =
+
+ 3.1416 5.0000      0      0
+      0      0 5.0000      0
+      0      0 5.0000      0
+ 3.1416      0      0 5.0000</font>
+
+reshape(base(:,1),2,2)
+<font color="#000000"> ans =
+
+  3.1416      0
+       0 3.1416</font></pre>
+          </td>
+        </tr>
+      </table>
+      <p>The command <a href="reference.htm#is">is</a> can be useful to select 
+      parts of <a href="reference.htm#set">set</a> objects</p>
+      <table cellPadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>F = set(x&gt;0) + lmi(x*x' &gt; 0);
+F_linear = F(find(is(F,'linear')))</pre>
+          </td>
+        </tr>
+      </table>
+      <p><code>replace.m</code> can be useful in some situations to replace an
+      <a href="reference.htm#sdpvar">sdpvar</a> inside an
+      <a href="reference.htm#sdpvar">sdpvar</a> or <a href="reference.htm#set">
+      set</a>.</p>
+      <table cellPadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>F0 = replace(F,x(1),0);
+y0 = replace(y,x(1),0);</pre>
+          </td>
+        </tr>
+      </table>
+      <p>The terms in a <a href="reference.htm#set">set</a> object can be 
+      extracted and converted to <a href="reference.htm#sdpvar">sdpvar</a> 
+      objects.</p>
+      <table cellPadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>xtimesx = sdpvar(F(2));</pre>
+          </td>
+        </tr>
+      </table>
+      <p>More to come but do not hesitate to ask.</td>
+    </tr>
+  </table>
+</div>
+
+</body>
+
+</html>

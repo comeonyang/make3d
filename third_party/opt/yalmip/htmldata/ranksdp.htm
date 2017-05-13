@@ -1,0 +1,186 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<title>YALMIP Example : Rank constrained LMIs</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<meta content="Microsoft FrontPage 6.0" name="GENERATOR">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<link href="yalmip.css" type="text/css" rel="stylesheet">
+<base target="_self">
+</head>
+
+<body leftMargin="0" topMargin="0">
+
+<div align="left">
+
+<table border="0" cellpadding="4" cellspacing="3" style="border-collapse: collapse" bordercolor="#000000" width="100%" align="left" height="100%">
+  <tr>
+    <td width="100%" align="left" height="100%" valign="top">
+          <h2>Rank constrained LMIs</h2>
+    <hr noShade SIZE="1">
+    <p>
+    <img border="0" src="exclamationmark.jpg" align="left" width="16" height="16">This 
+    example requires the solver <a href="solvers.htm#lmirank">LMIRank</a> (and a 
+	semidefinite solver)</p>
+    		<p>A lot of problems, in particular in control theory, can be 
+			addressed using rank constraints. Unfortunately, adding a 
+			simple rank constraint to a matrix in a standard LMI problem leads 
+			to an NP-hard optimization problem. Nevertheless, with a reasonable 
+			initial guess, a local search can be efficient for finding a 
+			low-rank solution in some cases. The solver <a href="solvers.htm#lmirank">LMIRank</a> 
+			performs such a local search and is interfaced by YALMIP. Details on 
+			the algorithm <a href="solvers.htm#lmirank">LMIRank</a> 
+			can be found in 
+      <a href="readmore.htm#ORSI">[Orsi et. al.]</a>.</p>
+			<h3>Dynamic controller design using rank constraints</h3>
+			<p>To illustrate rank constraints in YALMIP, and how to use 
+			the solver <a href="solvers.htm#lmirank">LMIRank</a>, we solve one 
+			of the examples in  
+      <a href="readmore.htm#ORSI">[Orsi et. al.]</a>. The problem is to design a 
+			dynamic output feedback controller for the system <strong>x' = Ax+Bu, 
+			y=Cx</strong></p>
+    <table cellPadding="10" width="100%">
+      <tr>
+        <td class="xmpcode">
+        <pre>A = [0.2 0 1 0;0 0.2 0 1;-1 1 0.2 0;1 -1 0 0.2];
+B = [0 0 1 0]';
+C = [0 1 0 0];</pre>
+        </td>
+      </tr>
+    </table>
+    <p>Define matrices <b>X</b> and <b>Y</b> (essentially modeling a Lyapunov 
+	matrix and its inverse) </p>
+    <table cellPadding="10" width="100%">
+      <tr>
+        <td class="xmpcode">
+        <pre>X = sdpvar(4,4);
+Y = sdpvar(4,4);</pre>
+        </td>
+      </tr>
+    </table>
+    <p>Without going into the theoretical background, the following LMI 
+	constraints are necessary for the existence of a controller. </p>
+    <table cellPadding="10" width="100%">
+      <tr>
+        <td class="xmpcode">
+        <pre>Bp = null(B')';
+Cp = null(C)';
+W  = eye(3)*1e-6;</pre>
+		<pre>F = set(Bp*(A*X+X*A')*Bp' &lt; -W) + set(Cp*(Y*A+A'*Y)*Cp' &lt; -W);</pre>
+        </td>
+      </tr>
+    </table>
+    		<p>The rank constraint enter when we want to couple the matrices X 
+			and Y, and ensure the existence of a dynamic controller with at most 2 
+			states. Once again stating the equations without any theoretical 
+			justification, the resulting constraints are</p>
+    <table cellPadding="10" width="100%" id="table1">
+      <tr>
+        <td class="xmpcode">
+        <pre>F = F + set([X eye(4);eye(4) Y] &gt;= 0);   % not needed, see below
+F = F + set(rank([X eye(4);eye(4) Y]) &lt;= 4+2);</pre>
+        </td>
+      </tr>
+    </table>
+    		<p>In the current implementation in YALMIP, a rank constraint 
+			automatically appends a positive semidefiniteness constraint on the 
+			involved matrix (i.e. a non-strict constraint, so these appended cones are 
+			not affected by the option <code>shift</code>.) Hence, the first constraint in the previous piece 
+			of code can (and should) be removed.&nbsp; Also note the use of a 
+			non-strict rank constraint. A strict inequality can be used, but will 
+			currently be interpreted as non-strict, hence it should not be used 
+			in order to avoid confusion. At the moment, the rank operator is 
+			implemented rather straightforwardly using a <a href="extoperators.htm">nonlinear operator</a>, 
+			but requires some dedicated code internally (read hack) to work when 
+			actually calling a solver. Hence, it should be emphasized that the current 
+			implementation is experimental and can be subject to changes in 
+			order to make the operator better integrated.</p>
+			<p>At this point, we are ready to solve the problem. The solver <a href="solvers.htm#lmirank">LMIRank</a> 
+			needs an initial guess, and this can be supplied either by the user 
+			(by initializing variables and using the <code>'usex0'</code> option 
+			in standard fashion) or 
+			automatically by YALMIP. YALMIP computes an initial guess by 
+			removing the rank constraint and minimizing the trace of the rank 
+			constrained matrix (or sum of traces of all rank constrained 
+			matrices). Note that <a href="solvers.htm#lmirank">LMIRank</a> does not 
+			support objective functions, but only solves feasibility problems. 
+			If you want to optimize an objective function, you need to, e.g., 
+			perform a bisection. The following call will automatically select an 
+			SDP solver to find the initial guess, solve the initial problem, and 
+			then call <a href="solvers.htm#lmirank">LMIRank</a> (if installed) to search for a 
+			low-rank solution.</p>
+    <table cellPadding="10" width="100%" id="table2">
+      <tr>
+        <td class="xmpcode">
+        <pre>solvesdp(F);</pre>
+        </td>
+      </tr>
+    </table>
+    		<p>The following call ensures that the solver for the initial guess 
+			is <a href="solvers.htm#sedumi">SeDuMi</a>, and uses an accuracy recommended by the author of <a href="solvers.htm#lmirank">LMIRank</a>.</p>
+    <table cellPadding="10" width="100%" id="table7">
+      <tr>
+        <td class="xmpcode">
+        <pre>solvesdp(F,[],sdpsettings('lmirank.solver','sedumi','sedumi.eps',0))</pre>
+        </td>
+      </tr>
+    </table>
+    		<p>Note that these computations only give a feasible pair <b>X</b> 
+			and <b>Y</b>. To actually compute the controller (called reconstruction) requires some additional steps. </p>
+			<p>If we compute the eigenvalues of our rank 
+			constrained matrix, we immediately see that we effectively have a 
+			rank of 6.</p>
+    <table cellPadding="10" width="100%" id="table4">
+      <tr>
+        <td class="xmpcode">
+        <pre>eig(double([X eye(4);eye(4) Y]))</pre>
+		<pre><font color="#000000">ans =
+   -0.0000
+   -0.0000
+    1.6780
+    2.5342
+    2.7754
+    2.9674
+    6.2289
+    6.8932</font></pre>
+        </td>
+      </tr>
+    </table>
+    		<p>indeed, this is the rank reported by YALMIP.</p>
+    <table cellPadding="10" width="100%" id="table5">
+      <tr>
+        <td class="xmpcode">
+        <pre>rank([X eye(4);eye(4) Y])
+<font color="#000000">Linear scalar (real, derived, 1 variables, current value : 6)</font></pre>
+        </td>
+      </tr>
+    </table>
+    		<p>Note that rank computations are inherently hard from a numerical 
+			point of view, hence it may easily happen that the reported rank is 
+			higher than the desired rank, even though <a href="solvers.htm#lmirank">LMIRank</a> 
+			claimed feasibility. In such cases, a more detailed analysis using 
+			tolerances might be necessary (YALMIP always uses the default 
+			tolerance.)</p>
+    <table cellPadding="10" width="100%" id="table6">
+      <tr>
+        <td class="xmpcode">
+        <pre>rank(double([X eye(4);eye(4) Y]))</pre>
+		<pre><font color="#000000">ans =
+     6</font></pre>
+		<pre>rank(double([X eye(4);eye(4) Y]),1e-6)</pre>
+		<pre><font color="#000000">ans =
+     6</font></pre>
+        </td>
+      </tr>
+    </table>
+    		</td>
+  </tr>
+</table>
+
+</div>
+
+</body>
+
+</html>

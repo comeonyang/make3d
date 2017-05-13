@@ -1,0 +1,23 @@
+/README.txt/2.0/Thu Jun 19 12:05:57 2003//Trelease-1
+/analyse_error.m/2.0/Thu Jun 19 12:05:58 2003//Trelease-1
+/apply_distortion.m/2.0/Thu Jun 19 12:05:58 2003//Trelease-1
+/check_active_images.m/2.0/Thu Jun 19 12:05:58 2003//Trelease-1
+/comp_distortion_oulu.m/2.0/Thu Jun 19 12:05:58 2003//Trelease-1
+/comp_error_calib.m/2.0/Thu Jun 19 12:05:58 2003//Trelease-1
+/comp_ext_calib.m/2.0/Thu Jun 19 12:05:58 2003//Trelease-1
+/compute_extrinsic_init.m/2.0/Thu Jun 19 12:05:59 2003//Trelease-1
+/compute_extrinsic_refine.m/2.0/Thu Jun 19 12:05:59 2003//Trelease-1
+/export_calib_data.m/2.0/Thu Jun 19 12:05:59 2003//Trelease-1
+/extract_parameters.m/2.0/Thu Jun 19 12:05:59 2003//Trelease-1
+/ginput3.m/2.0/Thu Jun 19 12:05:59 2003//Trelease-1
+/go_calib_optim_iter.m/2.0/Thu Jun 19 12:05:59 2003//Trelease-1
+/gorad.m/2.0/Thu Jun 19 12:06:00 2003//Trelease-1
+/goradf.m/2.2/Wed Jul 30 10:32:22 2003//Trelease-1
+/normalize.m/2.0/Thu Jun 19 12:06:00 2003//Trelease-1
+/preparedata.m/2.0/Thu Jun 19 12:06:00 2003//Trelease-1
+/project_points2.m/2.0/Thu Jun 19 12:06:01 2003//Trelease-1
+/quiver.m/2.1/Mon May 23 16:20:12 2005//Trelease-1
+/rigid_motion.m/2.0/Thu Jun 19 12:06:01 2003//Trelease-1
+/rodrigues.m/2.0/Thu Jun 19 12:06:01 2003//Trelease-1
+/visualize_distortions.m/2.0/Thu Jun 19 12:06:01 2003//Trelease-1
+D

@@ -1,0 +1,1242 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<title>YALMIP FAQ</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<meta content="Microsoft FrontPage 6.0" name="GENERATOR">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<link href="yalmip.css" type="text/css" rel="stylesheet">
+<base target="_self">
+</head>
+
+<body leftMargin="0" topMargin="0">
+
+<div align="left">
+
+<table border="0" cellpadding="4" cellspacing="3" style="border-collapse: collapse" bordercolor="#000000" width="100%" align="left" height="100%">
+  <tr>
+    <td width="100%" align="left" height="100%" valign="top">
+    <h2 style="margin-top: 0; margin-bottom: 0">Frequently asked question</h2>
+    <hr noShade SIZE="1">        
+    <p style="margin-bottom: 0; margin-top:0">&nbsp;</p>
+    <h3 style="margin-bottom: 0; margin-top:0">Installation</h3>
+    <ul>
+      <li>
+      <p style="margin-bottom: 0; margin-top:0"><a href="#nothing works">YALMIP 
+      does not work.</a></p></li>
+		<li>
+      <p style="margin-bottom: 0; margin-top:0"><a href="#slow">
+		<font color="#FF0000">It is so slow!</font></a></p></li>
+    </ul>
+    <h3 style="margin-bottom: 0; margin-top:0">Solvers</h3>
+    <ul>
+      <li>
+      <p style="margin-bottom: 0; margin-top:0"><a href="#nosolver">YALMIP 
+      cannot find any solver</a></p></li>
+      <li>
+      <p style="margin-bottom: 0; margin-top:0"><a href="#penbmi update">My version of
+      PENBMI does not work with 
+    YALMIP anymore</a></p></li>
+      <li>
+      <p style="margin-bottom: 0; margin-top:0"><a href="#compile sdpt">My version of
+    SDPT3-3.02 does not work with 
+    YALMIP anymore</a></p></li>
+      <li>
+      <p style="margin-bottom: 0; margin-top:0"><a href="#sedumisdpt3">SDPT3 (or 
+    SeDuMi) does not work</a></p></li>
+      <li>
+      <p style="margin-bottom: 0; margin-top:0"><a href="#csdppath">CSDP does not work</a></p>
+      </li>
+      <li>
+      <p style="margin-bottom: 0; margin-top:0"><a href="#csdpcrash">CSDP 
+        runs but crashes</a></p></li>
+      <li>
+      <p style="margin-bottom: 0; margin-top:0"><a href="#lmilabalready">I already have 
+    LMILAB and LINPROG 
+    installed, do I need any other solver?</a></p></li>
+      <li>
+      <p style="margin-bottom: 0; margin-top:0"><a href="#lmilabslow">LMILAB 
+        is slower when I use it with YALMIP</a></p></li>
+      <li>
+      <p style="margin-bottom: 0; margin-top:0"><a href="#cddhangs">CDD hangs</a></p>
+      </li>
+      <li>
+      <p style="margin-bottom: 0; margin-top:0"><a href="#fminconcrashes">fmincon 
+		crashes</a></p>
+      </li>
+		<li>
+      <p style="margin-bottom: 0; margin-top:0"><a href="#maxdetcrashes">MAXDET fails or crashes</a></p>
+      </li>
+      <li>
+		<p style="margin-bottom: 0; margin-top:0"><a href="#xpress">XPRESS 
+      performs badly, claims infeasibility etc.</a></p></li>
+		<li>
+		<p style="margin-bottom: 0; margin-top:0"><a href="#selectsolver">There are so many solvers, which 
+    one should I use?</a></p></li>
+		<li>
+		<p style="margin-bottom: 0; margin-top:0"><a href="#infeasible">The solution I get in an SDP is not 
+    feasible but has eigenvalues around, say, -1e-6</a></p></li>
+		<li>
+		<p style="margin-bottom: 0; margin-top:0"><a href="#bmi">Can I solve BMIs without
+    PENBMI?</a></p></li>
+    </ul>
+    <h3 style="margin-bottom: 0; margin-top:0">YALMIP</h3>
+    <ul>
+     <li>
+      <p style="margin-bottom: 0; margin-top:0"><a href="#typical">My solution 
+		is not what I expected.</a></p></li>
+      <li>
+      <p style="margin-bottom: 0; margin-top:0"><a href="#typeset">Typing <code>help set</code> gives 
+    me no information on the YALMIP function <code>set</code>.</a></p></li>
+      <li>
+      <p style="margin-bottom: 0; margin-top:0"><a href="#setclass">Is there really a <code>set</code> class?</a></p>
+      </li>
+      <li>
+      <p style="margin-bottom: 0; margin-top:0"><a href="#normalset">Is <code>set</code> related to 
+        the &quot;normal&quot; set command in MATLAB.</a></p></li>
+      <li>
+      <p style="margin-bottom: 0; margin-top:0"><a href="#lmielement">I define a 
+      semidefinite constraint, but YALMIP declares it &quot;element-wise&quot;.</a></p></li>
+      <li>
+		<p style="margin-bottom: 0; margin-top:0"><a href="#reallystrict">Are  inequalities really 
+    strict?</a></p></li>
+		<li>
+		<p style="margin-bottom: 0; margin-top:0"><a href="#gevp">How do I 
+      solve generalized eigenvalue problems (like <code>gevp</code> in LMILAB)?</a></p>
+		</li>
+		<li>
+		<p style="margin-bottom: 0; margin-top:0"><a href="#removeequalities">I get strange 
+		results when I use the option <code>'removeequalities'</code></a>.</p>
+		</li>
+		<li>
+		<p style="margin-bottom: 0; margin-top:0"><a href="#convexity ">YALMIP complains about failing in convexity propagation.</a></p>
+		</li>
+		<li>
+		<p style="margin-bottom: 0; margin-top:0"><a href="#gpconvex">I 
+		have problems solving a geometric program.</a></p></li>
+    </ul>
+	<p style="margin-bottom: 0; margin-top:0">&nbsp;</p>   
+    <h3 style="margin-bottom: 0; margin-top:0">Known bugs</h3>
+    <ul>
+      <li>
+      <p style="margin-bottom: 0; margin-top:0"><a href="#subasgn">I can not write 
+      	<code>X = 
+    eye(2); X(1,1)=sdpvar(1,1)</code></a></p></li>
+		<li>
+      <p style="margin-bottom: 0; margin-top:0"><a href="#vectorquadratic">
+		Vector-valued quadratic constraints</a></p></li>
+		<li>
+      <p style="margin-bottom: 0; margin-top:0"><a href="#implies">
+		Using <code>implies</code> on set objects</a></p></li>
+		<li>
+      <p style="margin-bottom: 0; margin-top:0"><a href="#constructbug">
+		Sometimes MATLAB fails to declare a SDPVAR object with the name i or j 
+		inside a function</a></p></li>
+    </ul>
+    <p style="margin-bottom: 0; margin-top:0"></p>
+    <h3 style="margin-bottom: 0; margin-top:0">&nbsp;</h3>
+	<h3 style="margin-bottom: 0; margin-top:0">Other</h3>
+    <ul>
+      <li>
+      <p style="margin-bottom: 0; margin-top:0"><a href="#foundbug">I have found a bug. What to do?</a></p>
+      </li>
+      <li>
+      <p style="margin-bottom: 0; margin-top:0"><a href="#feature">I have an idea for a new feature. 
+    What to do?</a></p></li>
+      <li>
+      <p style="margin-bottom: 0; margin-top:0"><a href="#yalmipmeans">What does YALMIP mean?</a></p>
+      </li>
+    </ul>
+    <hr noShade SIZE="1" color="#FF0000">        
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <table border="0" cellpadding="0" style="border-collapse: collapse" width="100%">
+      <tr>
+        <td width="26" valign="top" class="AQ">
+        <p style="margin-bottom: 0; margin-top:0"><b><font color="#0000FF">
+        <a name="nothing works"></a>Q:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0"><b>I have been using a previous version 
+    of YALMIP, but after installing the new version nothing works.</b></td>
+      </tr>
+      <tr>
+        <td width="26" valign="top" class="AQ">
+        <p style="margin-bottom: 0; margin-top:0"><font color="#0000FF"><b>A</b></font><b><font color="#0000FF">:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0">Restart MATLAB.</td>
+      </tr>
+    </table>
+    <p style="margin-bottom: 0; margin-top:0">&nbsp;</p>
+    <table border="0" cellpadding="0" style="border-collapse: collapse" width="100%">
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><b><font color="#0000FF">
+        <a name="remove old"></a>Q:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0"><b>..still doesn't work!</b></td>
+      </tr>
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><font color="#0000FF"><b>A</b></font><b><font color="#0000FF">:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0">Remove any old version of 
+        YALMIP before you install the new version. Do not just copy the new 
+        version into the old YALMIP directory.</td>
+      </tr>
+    </table>
+    <p style="margin-bottom: 0; margin-top:0">&nbsp;</p>
+    <table border="0" cellpadding="0" style="border-collapse: collapse" width="100%">
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><b><font color="#0000FF">
+        <a name="add path"></a>Q:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0"><b>..still doesn't work!</b></td>
+      </tr>
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><font color="#0000FF"><b>A</b></font><b><font color="#0000FF">:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0">Added all the paths? (<i>/yalmip</i>, 
+    <i>/yalmip/extras, /yalmip/demos, /yalmip/solvers</i>)</td>
+      </tr>
+    </table>
+    <p style="margin-bottom: 0; margin-top:0">&nbsp;</p>
+    <table border="0" cellpadding="0" style="border-collapse: collapse" width="100%" id="table13">
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><b><font color="#0000FF">
+        <a name="add path2"></a>Q:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0"><b>..still doesn't work!</b></td>
+      </tr>
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><font color="#0000FF"><b>A</b></font><b><font color="#0000FF">:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0">Did your unzip application 
+		really decompress the files to the path structure, instead of placing 
+		all files in one directory.</td>
+      </tr>
+    </table>
+    <p style="margin-bottom: 0; margin-top:0">&nbsp;</p>
+    <table border="0" cellpadding="0" style="border-collapse: collapse" width="100%">
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><b><font color="#0000FF">
+        <a name="add path0"></a>Q:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0"><b>..still doesn't work!</b></td>
+      </tr>
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><font color="#0000FF"><b>A</b></font><b><font color="#0000FF">:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0">Are you sure you added all the paths! (<i>/yalmip</i>, 
+    <i>/yalmip/extras, /yalmip/demos, /yalmip/solvers</i>)</td>
+      </tr>
+    </table>
+    <p style="margin-bottom: 0; margin-top:0">&nbsp;</p>
+    <table border="0" cellpadding="0" style="border-collapse: collapse" width="100%" id="table3">
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><b><font color="#0000FF">
+        <a name="add path1"></a>Q:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0"><b>..still doesn't work!</b></td>
+      </tr>
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><font color="#0000FF"><b>A</b></font><b><font color="#0000FF">:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0">Could be related to toolbox 
+		path caching (open menu File/Preferences/General and run &quot;Update Toolbox 
+		Path Cache&quot;)</td>
+      </tr>
+    </table>
+    <p style="margin-bottom: 0; margin-top:0">&nbsp;</p>
+    <table border="0" cellpadding="0" style="border-collapse: collapse" width="100%">
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><b><font color="#0000FF">
+        <a name="remove path"></a>Q:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0"><b>..still doesn't work!</b></td>
+      </tr>
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><font color="#0000FF"><b>A</b></font><b><font color="#0000FF">:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0">Removed your old YALMIP 
+        version from the MATLAB path?</td>
+      </tr>
+    </table>
+    <p style="margin-bottom: 0; margin-top:0">&nbsp;</p>
+    <table border="0" cellpadding="0" style="border-collapse: collapse" width="100%">
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><b><font color="#0000FF">
+        <a name="added solver path"></a>Q:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0"><b>..still doesn't work!</b></td>
+      </tr>
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><font color="#0000FF"><b>A</b></font><b><font color="#0000FF">:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0">Added all the paths to your solver?</td>
+      </tr>
+    </table>
+    <p style="margin-bottom: 0; margin-top:0">&nbsp;</p>
+    <table border="0" cellpadding="0" style="border-collapse: collapse" width="100%">
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><b><font color="#0000FF">
+        <a name="compile solver1"></a>Q:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0"><b>...still doesn't work!</b></td>
+      </tr>
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><font color="#0000FF"><b>A</b></font><b><font color="#0000FF">:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0">Do you have any solver 
+        installed?</p>
+        </td>
+      </tr>
+    </table>
+    <p style="margin-bottom: 0; margin-top:0">&nbsp;</p>
+    <table border="0" cellpadding="0" style="border-collapse: collapse" width="100%">
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><b><font color="#0000FF">
+        <a name="compile solver"></a>Q:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0"><b>...still doesn't work!</b></td>
+      </tr>
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><font color="#0000FF"><b>A</b></font><b><font color="#0000FF">:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0">Compiled the solver (if needed)? 
+        Compiled it for the correct MATLAB version?</p>
+        </td>
+      </tr>
+    </table>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <table border="0" cellpadding="0" style="border-collapse: collapse" width="100%">
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><b><font color="#0000FF">
+        <a name="compile solver2"></a>Q:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0"><b>...still doesn't work!</b></td>
+      </tr>
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><font color="#0000FF"><b>A</b></font><b><font color="#0000FF">:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0">Using MATLAB 5.3.1 or later?</p>
+        </td>
+      </tr>
+    </table>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <table border="0" cellpadding="0" style="border-collapse: collapse" width="100%">
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><b><font color="#0000FF">
+        <a name="compile solver0"></a>Q:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0"><b>...still doesn't work!</b></td>
+      </tr>
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><font color="#0000FF"><b>A</b></font><b><font color="#0000FF">:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0">Probably a PICNIC problem ;-P</p>
+        </td>
+      </tr>
+    </table>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <table border="0" cellpadding="0" style="border-collapse: collapse" width="100%" id="table1">
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><b><font color="#0000FF">
+        <a name="slow"></a>Q:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0"><b>It is so slow!</b></td>
+      </tr>
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><font color="#0000FF"><b>A</b></font><b><font color="#0000FF">:</font></b></td>
+        <td>
+    <p style="margin-bottom: 0; margin-top:0">As a rule of thumb, the time 
+    reported as <code>'yalmiptime'</code> in the output diagnostic should be around fractions 
+    of a second for small problems, and typically a fraction of the actual 
+    solution time for larger problems. If this is not the case, you probably 
+    have a problem with your installation.</p>
+	<p style="margin-bottom: 0; margin-top:0">&nbsp;</p>
+	<p style="margin-bottom: 0; margin-top:0">As another rule of thumb, <code>yalmiptest(sdpsettings('verbose',0,'solver','sedumi'))</code> 
+	takes 2-5 seconds (including initial search for solvers) on my PC machines 
+	(2GHz and 3GHz).</p>
+    <p style="margin-bottom: 0; margin-top:0">&nbsp;</p>
+    <p style="margin-bottom: 0; margin-top:0">Do you have FEMLAB on your MATLAB 
+    path? Removing FEMLAB from the path can improve performance significantly. 
+    Another way to make YALMIP faster is to set the field <code>cachesolvers</code> 
+          in <a href="#sdpsettings">sdpsettings</a> to 1. (One reason for the 
+    extremely poor performance of YALMIP in these cases is typically due to slow 
+    network functionalities, making the command <code>exist</code> , which is 
+    used in <a href="#solvesdp">solvesdp</a> when detecting solvers, very slow.</p>
+	<p style="margin-bottom: 0; margin-top:0">&nbsp;</p>
+	<p style="margin-bottom: 0; margin-top:0">Are you running over a network? 
+	This can be extremely detrimental for general performance in YALMIP. On some 
+	networked Linux version, YALMIP runs 10-100 times slower!</p>
+	<p style="margin-bottom: 0; margin-top:0">&nbsp;</p>
+	<p style="margin-bottom: 0; margin-top:0">Do you have a poor sparse matrix 
+	library in your installation? Some distributions seem to have extremely poor 
+	performance for sparse matrices (observed on Linux), which is used a lot in YALMIP.&nbsp; One 
+	way to test this is to run the script below. If the displayed result is 
+	substantially larger than 20, you have problems (and I have no idea how you 
+	can resolve this...)</p>
+	<blockquote>
+		<blockquote>
+			<pre>d = sprandn(1e5,1,0.5);
+tic;for i= 1:1000;d([2000:3000]);end;t1 = toc;
+d = d';
+tic;for i= 1:1000;d([2000:3000]);end;t2 = toc;t1/t2</pre>
+		</blockquote>
+	</blockquote>
+    <p style="margin-bottom: 0; margin-top:0">Do 
+    you have&nbsp;<a href="solvers.htm#mosek">MOSEK</a> installed? This solver overloads 
+    the function <code>optimset</code> in Mathworks optimization toolbox, but is much slower. <code>optimset</code> is called in <a href="#sdpsettings">sdpsettings</a> 
+    to initialize the option fields for <a href="solvers.htm#linprog">LINPROG</a> and
+    <a href="solvers.htm#quadprog">QUADPROG</a>. Note that
+    <a href="#sdpsettings">sdpsettings</a> is called in <a href="#solvesdp">solvesdp</a> 
+    if no options structure is passed in the call. Hence, for optimal speed, 
+    define the options structure once, and always use three arguments when 
+    calling <a href="#solvesdp">solvesdp</a>. This is recommended even if you do 
+    not have <a href="solvers.htm#mosek">MOSEK</a>.</p>
+    <p style="margin-bottom: 0; margin-top:0">&nbsp;</p>
+    <p style="margin-bottom: 0; margin-top:0">Are you working with nonlinear 
+    expressions? In that case, clear the internals of YALMIP regularly using
+    <code>yalmip('clear')</code>.</p>
+	<p style="margin-bottom: 0; margin-top:0">&nbsp;</p>
+    <p style="margin-bottom: 0; margin-top:0">Are you working with large 
+	polynomial 
+    expressions? Try to compile the file findhash.c (<code>mex findhash.c</code>)</p>
+	<p style="margin-bottom: 0; margin-top:0">&nbsp;</p>
+	<p style="margin-bottom: 0; margin-top:0">Have you formulated a standard 
+	primal SDP form problem and expected YALMIP to solve it that way? Make sure 
+	to read the section on <a href="dual.htm#dualization">dualization</a>.</p>
+	<p style="margin-bottom: 0; margin-top:0">&nbsp;</p>
+    <p style="margin-bottom: 0; margin-top:0">Finally, standard MATLAB coding 
+    practice applies. This means that you should try to vectorize code, define 
+    things once etc.</p>
+        </td>
+      </tr>
+    </table>
+    <hr noShade SIZE="1" color="#FF0000">        
+    <p style="margin-bottom: 0; margin-top:0">&nbsp;</p>
+    <table border="0" cellpadding="0" style="border-collapse: collapse" width="100%">
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><b><font color="#0000FF">
+        <a name="nosolver"></a>Q:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0"><b>YALMIP cannot find any 
+        solver.</b></td>
+      </tr>
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><font color="#0000FF"><b>A</b></font><b><font color="#0000FF">:</font></b></td>
+        <td>
+    <p style="margin-bottom: 0; margin-top:0">Do you have any solver? You typically 
+    need to install a (or several) solver and update you path. See
+    <a target="topic" href="solvers.htm">interfaced solver</a>.</p>
+        </td>
+      </tr>
+    </table>
+    <p style="margin-bottom: 0; margin-top:0">&nbsp;</p>
+    <table border="0" cellpadding="0" style="border-collapse: collapse" width="100%">
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><b><font color="#0000FF">
+        <a name="penbmi update"></a>Q:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0"><b><a href="solvers.htm#penbmi">
+        PENBMI</a> does not work with 
+    YALMIP anymore.</b></td>
+      </tr>
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><font color="#0000FF"><b>A</b></font><b><font color="#0000FF">:</font></b></td>
+        <td>
+    <p style="margin-bottom: 0; margin-top:0">Version 1.1 and earlier will not 
+    work directly anymore. However, this is easily fixed. Edit the file 
+    callpenbmim.m (if you use the
+    <a target="_blank" href="http://www.penopt.com">PENOPT</a> version) or 
+    callpenbmi.m (if you use the <a target="_blank" href="http://tomlab.biz">TOMLAB</a> 
+    version). Uncomment the code below the comment &quot;UNCOMMENT THIS&quot;.</p>
+        </td>
+      </tr>
+    </table>
+    <p style="margin-bottom: 0; margin-top:0">&nbsp;</p>
+    <table border="0" cellpadding="0" style="border-collapse: collapse" width="100%">
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><b><font color="#0000FF">
+        <a name="compile sdpt"></a>Q:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0"><b><a href="solvers.htm#sdpt3">SDPT3</a>-3.02 does not work with 
+    YALMIP anymore.</b></td>
+      </tr>
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><font color="#0000FF"><b>A</b></font><b><font color="#0000FF">:</font></b></td>
+        <td>
+    <p style="margin-bottom: 0; margin-top:0">Download <a href="solvers.htm#sdpt3">SDPT3</a>-3.02 and compile (code 
+    updated without version increment)</p>
+        </td>
+      </tr>
+    </table>
+    <p style="margin-bottom: 0; margin-top:0">&nbsp;</p>
+    <table border="0" cellpadding="0" style="border-collapse: collapse" width="100%">
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><b><font color="#0000FF">
+        <a name="compile sdpt0"></a>Q:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0"><b>My version of
+    <a href="solvers.htm#sdpt3">SDPT3</a>-3.02 does not work and complains about 
+        the file <code>svec</code>.</b></td>
+      </tr>
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><font color="#0000FF"><b>A</b></font><b><font color="#0000FF">:</font></b></td>
+        <td>
+    <p style="margin-bottom: 0; margin-top:0">Do you have the solver SDPPACK 
+    installed? Remove the path to this solver.</p>
+        </td>
+      </tr>
+    </table>
+    <p style="margin-bottom: 0; margin-top:0">&nbsp;</p>
+    <table border="0" cellpadding="0" style="border-collapse: collapse" width="100%">
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><b><font color="#0000FF">
+        <a name="sedumisdpt3"></a>Q:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0"> <b> <a href="solvers.htm#sdpt3">SDPT3</a> (or 
+    <a href="solvers.htm#sedumi">SeDuMi</a>) does not work<font color="#0000FF">.</font></b></td>
+      </tr>
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><font color="#0000FF"><b>A</b></font><b><font color="#0000FF">:</font></b></td>
+        <td>
+    <p style="margin-bottom: 0; margin-top:0">Make sure not to have both <a href="solvers.htm#sdpt3">SDPT3</a> 
+    (version 3.02) and 
+    <a href="solvers.htm#sedumi">SeDuMi</a> on the MATLAB path. This problem is 
+    resolved in <a href="solvers.htm#sdpt3">SDPT3</a> 3.1</p>
+        </td>
+      </tr>
+    </table>
+    <p style="margin-bottom: 0; margin-top:0">&nbsp;</p>
+    <table border="0" cellpadding="0" style="border-collapse: collapse" width="100%">
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><b><font color="#0000FF">
+        <a name="csdppath"></a>Q:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0"> <b> <a href="solvers.htm#csdp">CSDP</a> does not work<font color="#0000FF">.</font></b></td>
+      </tr>
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><font color="#0000FF"><b>A</b></font><b><font color="#0000FF">:</font></b></td>
+        <td>
+    <p style="margin-bottom: 0; margin-top:0">Do you have <a href="solvers.htm#csdp">CSDP</a> in your <i>system</i> path?</p>
+        </td>
+      </tr>
+    </table>
+    <p style="margin-bottom: 0; margin-top:0">&nbsp;</p>
+    <table border="0" cellpadding="0" style="border-collapse: collapse" width="100%">
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><b><font color="#0000FF">
+        <a name="csdpcrash"></a>Q:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0"> <b> <a href="solvers.htm#csdp">CSDP</a> 
+        runs but crashes<font color="#0000FF">.</font></b></td>
+      </tr>
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><font color="#0000FF"><b>A</b></font><b><font color="#0000FF">:</font></b></td>
+        <td>
+    <p style="margin-bottom: 0; margin-top:0">Running MATLAB 6.1 and <a href="solvers.htm#csdp">CSDP</a> 
+    4.6? In that case, edit readsol.m in the <a href="solvers.htm#csdp">CSDP</a> 
+    directory and replace all occurrences of &amp;&amp; with &amp;. Even better, 
+    download the latest version of <a href="solvers.htm#csdp">CSDP</a>.</p>
+        </td>
+      </tr>
+    </table>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <table border="0" cellpadding="0" style="border-collapse: collapse" width="100%">
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><b><font color="#0000FF">
+        <a name="lmilabalready"></a>Q:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0"><b>I already have 
+    <a href="solvers.htm#lmilab">LMILAB</a> and <a href="solvers.htm#linprog">LINPROG</a> 
+    installed, do I need any other solver?</b></td>
+      </tr>
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><font color="#0000FF"><b>A</b></font><b><font color="#0000FF">:</font></b></td>
+        <td>
+    <p style="margin-bottom: 0; margin-top:0">Yes, at-least if you intend to 
+    solve anything but a few small problems.&nbsp; See next issue.</p>
+        </td>
+      </tr>
+    </table>
+    <p style="margin-bottom: 0; margin-top:0">&nbsp;</p>
+    <table border="0" cellpadding="0" style="border-collapse: collapse" width="100%">
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><b><font color="#0000FF">
+        <a name="lmilabslow"></a>Q:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0"><b><a href="solvers.htm#lmilab">LMILAB</a> 
+        is slower when I use it with YALMIP</b></td>
+      </tr>
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><font color="#0000FF"><b>A</b></font><b><font color="#0000FF">:</font></b></td>
+        <td>
+    <p style="margin-bottom: 0; margin-top:0">Yes. YALMIP, and all other 
+    supported solvers, works with a completely general SDP formulation in 
+    contrast to <a href="solvers.htm#lmilab">LMILAB</a> that requires the 
+    problem structure to be explicitely described by the user for speed (in 
+    particular for control related problems). Rule of 
+    thumb : <font color="#FF0000">Do not use LMILAB with YALMIP</font>. If you 
+    have made the effort to download YALMIP, take 5 more minutes and install a 
+    more efficient and general solver. Future versions of YALMIP may resolve 
+	this issue. Constraints defined using the <a href="kyp.htm">KYP</a> operator 
+	is efficiently handled in some cases already.</p>
+        </td>
+      </tr>
+    </table>
+    <p style="margin-bottom: 0; margin-top:0">&nbsp;</p>
+    <table border="0" cellpadding="0" style="border-collapse: collapse" width="100%">
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><b><font color="#0000FF">
+        <a name="cddhangs"></a>Q:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0"><b><a href="solvers.htm#penbmi">
+        CDD</a> hangs</b></td>
+      </tr>
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><font color="#0000FF"><b>A</b></font><b><font color="#0000FF">:</font></b></td>
+        <td>
+    <p style="margin-bottom: 0; margin-top:0">Try 
+    <code>sdpsettings('cdd.method','dual-simplex')</code></p>
+        </td>
+      </tr>
+    </table>
+    <p style="margin-bottom: 0; margin-top:0">&nbsp;</p>
+    <table border="0" cellpadding="0" style="border-collapse: collapse" width="100%" id="table2">
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><b><font color="#0000FF">
+        <a name="fminconcrashes"></a>Q:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0"><b><a href="solvers.htm#fmincon">
+        fmincon</a> crashes</b></td>
+      </tr>
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><font color="#0000FF"><b>A</b></font><b><font color="#0000FF">:</font></b></td>
+        <td>
+    <p style="margin-bottom: 0; margin-top:0">Do you have <a href="solvers.htm#mosek">MOSEK</a> 
+	installed? This can cause problems due to an inconsistency between MATLABs 
+	and <a href="solvers.htm#mosek">MOSEKs</a> implementation of the file 
+	optimget.m. Remove <a href="solvers.htm#mosek">MOSEK</a> 
+	from your path.</p>
+        </td>
+      </tr>
+    </table>
+    <p style="margin-bottom: 0; margin-top:0">&nbsp;</p>
+    <table border="0" cellpadding="0" style="border-collapse: collapse" width="100%" id="table4">
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><b><font color="#0000FF">
+        <a name="maxdetcrashes"></a>Q:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0"><b><a href="solvers.htm#maxdet">
+        MAXDET</a> fails</b></td>
+      </tr>
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><font color="#0000FF"><b>A</b></font><b><font color="#0000FF">:</font></b></td>
+        <td>
+    <p style="margin-bottom: 0; margin-top:0"><a href="solvers.htm#maxdet">
+        MAXDET</a> seems to be sensitive to unbounded feasible regions and 
+	unconstrained variables. Try to add redundant bound constraints on all your 
+	variables.</p>
+        </td>
+      </tr>
+    </table>
+    <p style="margin-bottom: 0; margin-top:0">&nbsp;</p>
+    <table border="0" cellpadding="0" style="border-collapse: collapse" width="100%">
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><b><font color="#0000FF">
+        <a name="xpress"></a>Q:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0"><b><a href="solvers.htm#xpress">
+        XPRESS</a> performs badly, claims infeasibility etc.</a></b></td>
+      </tr>
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><font color="#0000FF"><b>A</b></font><b><font color="#0000FF">:</font></b></td>
+        <td>
+    <p style="margin-bottom: 0; margin-top:0">Adding bounds on the involved 
+    variables solves this issue in many cases.</p>
+        </td>
+      </tr>
+    </table>
+    <p style="margin-bottom: 0; margin-top:0">&nbsp;</p>
+    <table border="0" cellpadding="0" style="border-collapse: collapse" width="100%">
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><b><font color="#0000FF">
+        <a name="selectsolver"></a>Q:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0"><b>There are so many solvers, which 
+    one should I use?</b></td>
+      </tr>
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><font color="#0000FF"><b>A</b></font><b><font color="#0000FF">:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0"> <a href="solvers.htm#sedumi">SeDuMi</a> 
+        and
+        <a href="solvers.htm#sdpt3">SDPT3</a> are good general purpose SDP 
+    solvers (not necessarily the 
+    best solvers though), efficient also on LP and SOCP problems and reasonably 
+        efficient on small QP problems. Hans D. Mittelmanns
+        <a target="_blank" href="http://www.optimization-online.org/DB_HTML/2001/07/358.html">benchmark</a> might be helpful. 
+        If you mainly solve LPs, make sure to try the free solvers
+        <a href="solvers.htm#glpk">GLPK</a>,
+        <a href="solvers.htm#qsopt">QSOPT</a>,
+        <a href="solvers.htm#clp">CLP</a> and
+        <a href="solvers.htm#cdd">CDD</a></td>
+      </tr>
+    </table>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <table border="0" cellpadding="0" style="border-collapse: collapse" width="100%">
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><b><font color="#0000FF">
+        <a name="infeasible"></a>Q:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0"><b>The solution I get in an SDP is not 
+    feasible but has eigenvalues around, say, -1e-6.</b></td>
+      </tr>
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><font color="#0000FF"><b>A</b></font><b><font color="#0000FF">:</font></b></td>
+        <td>
+    <p style="margin-bottom: 0; margin-top:0">Most solvers actually use 
+    infeasible/exterior algorithms, so slightly infeasible 
+    solutions are common.</p>
+        </td>
+      </tr>
+    </table>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <table border="0" cellpadding="0" style="border-collapse: collapse" width="100%">
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><b><font color="#0000FF">
+        <a name="bmi"></a>Q:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0"><b>Can I solve BMIs without
+    <a href="solvers.htm#penbmi">PENBMI</a>?</b></td>
+      </tr>
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><font color="#0000FF"><b>A</b></font><b><font color="#0000FF">:</font></b></td>
+        <td>
+    <p style="margin-bottom: 0; margin-top:0">The BMI-examples in
+    <a href="reference.htm#yalmipdemo">yalmipdemo</a> show some alternative 
+    ways to code your own solver rather easily, but for performance and 
+    robustness,
+    <a href="solvers.htm#penbmi">PENBMI</a> is highly recommended.</p>
+        </td>
+      </tr>
+    </table>
+    <p style="margin-bottom: 0; margin-top:0">&nbsp;</p>
+    <hr noShade SIZE="1" color="#FF0000">        
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <table border="0" cellpadding="0" style="border-collapse: collapse" width="100%">
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><b><font color="#0000FF">
+        <a name="typical"></a>Q:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0"><b>My solution is not what I 
+		expected.</b></td>
+      </tr>
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><font color="#0000FF"><b>A</b></font><b><font color="#0000FF">:</font></b></td>
+        <td>
+    <p style="margin-bottom: 0; margin-top:0">Is your problem what you expected? 
+	Use the command checkset to see that you actually have the constraints that 
+	you meant to declare (does it say matrix inequality or element-wise 
+	inequality etc). </p>
+	<p style="margin-bottom: 0; margin-top:0">&nbsp;</p>
+	<p style="margin-bottom: 0; margin-top:0">Are your variables really what you 
+	meant to declare (display them to see if they are symmetric, Hermitian, 
+	full, etc.). </p>
+	<p style="margin-bottom: 0; margin-top:0">&nbsp;</p>
+	<p style="margin-bottom: 0; margin-top:0">Most common error is that you have 
+	declared a square matrix but accidentally forgotten to declare it as full 
+	and obtained a symmetric matrix instead (square matrices are full by 
+	default!)</p></td>
+      </tr>
+    </table>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <table border="0" cellpadding="0" style="border-collapse: collapse" width="100%" id="table15">
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><b><font color="#0000FF">
+        <a name="typeset"></a>Q:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0"><b>Typing <code>help set</code> gives 
+    me no information on the YALMIP function <code>set</code>.</b></td>
+      </tr>
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><font color="#0000FF"><b>A</b></font><b><font color="#0000FF">:</font></b></td>
+        <td>
+    <p style="margin-bottom: 0; margin-top:0">Yep, a bit tricky since <code>set</code> also is a built-in 
+    function. Type <code>help sdpvar/set</code> and you will find what you are 
+    looking for.</p></td>
+      </tr>
+    </table>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <table border="0" cellpadding="0" style="border-collapse: collapse" width="100%">
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><b><font color="#0000FF">
+        <a name="setclass"></a>Q:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0"><b>Is there really a <code>set</code> class?</b></td>
+      </tr>
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><font color="#0000FF"><b>A</b></font><b><font color="#0000FF">:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0">No...<code>set</code> is only a wrapper to 
+        call the old class <code>lmi</code>. To much work to re-write all code 
+        just for a name change.</p>
+        </td>
+      </tr>
+    </table>
+    <p style="margin-bottom: 0; margin-top:0">&nbsp;</p>
+    <table border="0" cellpadding="0" style="border-collapse: collapse" width="100%">
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><b><font color="#0000FF">
+        <a name="normalset"></a>Q:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0"><b>Is <code>set</code> related to 
+        the &quot;normal&quot; set command in MATLAB</b></td>
+      </tr>
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><font color="#0000FF"><b>A</b></font><b><font color="#0000FF">:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0">No... The name <code>set</code> 
+        was selected since it is short. An alternative would be to define 
+        constraints, or feasible sets, using a command named, e.g., <code>
+        constraint</code>. However, my keyboard typing speed is too slow to 
+        allow for such a long command name. In my opinion, the name <code>set</code> 
+        is at-least better than the old name <code>lmi</code>.</p>
+        </td>
+      </tr>
+    </table>
+    <p style="margin-bottom: 0; margin-top:0">&nbsp;</p>
+    <table border="0" cellpadding="0" style="border-collapse: collapse" width="100%">
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><b><font color="#0000FF">
+        <a name="lmielement"></a>Q:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0"><b>I define a 
+      semidefinite constraint, but YALMIP declares it &quot;element-wise&quot;.</b></td>
+      </tr>
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><font color="#0000FF"><b>A</b></font><b><font color="#0000FF">:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0">YALMIP detects semidefinite 
+        constraints by checking symmetry. In some cases (working with very 
+        ill-conditioned data), numerical problems may lead to a small violation 
+        of symmetry in MATLAB, and YALMIP will declare the constraint as 
+        element-wise. To solve this problem, just symmetrize your variable 
+        first.</p>
+        </td>
+      </tr>
+    </table>
+    <p style="margin-bottom: 0; margin-top:0">&nbsp;</p>
+    <table border="0" cellpadding="0" style="border-collapse: collapse" width="100%">
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><b><font color="#0000FF">
+        <a name="reallystrict"></a>Q:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0"><b>Are  inequalities really 
+    strict?</b></td>
+      </tr>
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><font color="#0000FF"><b>A</b></font><b><font color="#0000FF">:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0">By default, strict (&lt;,&gt;) and 
+        non-strict (&lt;=,&gt;=) inequalities are treated in the same way in YALMIP, 
+        and the result depends on the solver. However, by using the field <code>
+        shift</code> in <a href="reference.htm#sdpsettings">sdpsetttings</a>, 
+        inequalities defined using &lt; and &gt; will be treated slightly different. 
+        YALMIP will add a small perturbation to these inequalities to 
+        increase the likelihood of a strictly feasible solution. Warning : If you 
+		have an integer variable, and add a constraint <code>set(x<2)</code>, this will not be interpreted as <code>set(x<=1)</code> 
+		. To avoid confusion, use <code>set(x<=1)</code>. The same holds for rank constraints <code>set(rank(x)<2)<n)</code>.</code></td>
+      </tr>
+    </table>
+    <p style="margin-bottom: 0; margin-top:0">&nbsp;</p>
+    <table border="0" cellpadding="0" style="border-collapse: collapse" width="100%" id="table5">
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><b><font color="#0000FF">
+        <a name="gevp"></a>Q:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0"><b>How do I solve generalized 
+        eigenvalue problems (like <code>gevp</code> in <a href="solvers.htm#lmilab">LMILAB</a>)?</b></td>
+      </tr>
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><font color="#0000FF"><b>A</b></font><b><font color="#0000FF">:</font></b></td>
+        <td>
+    <p style="margin-bottom: 0; margin-top:0">Two options. The first one is to code your own 
+    script based on a simple bisection. This is illustrated in 
+    the example <code>decayex.m</code>. An alternative is to install the BMI solver 
+    <a href="solvers.htm#penbmi">PENBMI</a>. This solver solves GEVP problems 
+    globally.</p>
+        </td>
+      </tr>
+    </table>
+    
+    
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <table border="0" cellpadding="0" style="border-collapse: collapse" width="100%" id="table6">
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><b><font color="#0000FF">
+        <a name="gpconvex"></a>Q:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0"><b>I get strange 
+		results when I use the option <code>'removeequalities'</code></b></td>
+      </tr>
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><font color="#0000FF"><b>A</b></font><b><font color="#0000FF">:</font></b></td>
+        <td>
+    <p style="margin-bottom: 0; margin-top:0">When equality constraints are 
+	removed by YALMIP by deriving a reduced basis (<code>'removeequalities'</code> set to <b>1</b> or <b>2</b>) dual variables will not be recovered. This may 
+	lead to further complications in some cases. If you are solving a problem 
+	that you have derived by using the function <a href="reference.htm#dualize">dualize</a>, you original variables 
+	will not be computed, since they are computed from the missing duals. 
+	Another case is when you solve a linearly parameterized sum of squares problem using 
+	a kernel model (<code>'sos.model'</code> set to <b>0</b> or <b>1</b>). The 
+	parameterization variables are computed from the dual variables, hence failure will 
+	occur. To summarize, do not use the option <code>'removeequalities'</code> in sum-of-squares </b>
+	problems or dualized problems, unless you really now what you are doing.</p>
+        </td>
+      </tr>
+    </table>
+    
+    
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <table border="0" cellpadding="0" style="border-collapse: collapse" width="100%" id="table7">
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><b><font color="#0000FF">
+        <a name="convexity"></a>Q:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0"><b>YALMIP complains about 
+		failing in convexity propagation</b></td>
+      </tr>
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><font color="#0000FF"><b>A</b></font><b><font color="#0000FF">:</font></b></td>
+        <td>
+    <p style="margin-bottom: 0; margin-top:0">This means that you have used so 
+	called <a href="extoperators.htm">nonlinear operators</a> to model your 
+	problem, and most likely you have defined a problem which cannot be 
+	represented using standard convex constraints. If you know that your model 
+	is convex, try to model the nonlinear terms by hand to see if you actually are 
+	correct (the convexity analysis is conservative, although in most cases 
+	failure in the convexity propagation is due to actual nonconvexity.</p>
+        </td>
+      </tr>
+    </table>
+    
+    
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <table border="0" cellpadding="0" style="border-collapse: collapse" width="100%">
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><b><font color="#0000FF">
+        <a name="removeequalities"></a>Q:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0"><b>I have problems solving a 
+		geometric program.</b></td>
+      </tr>
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><font color="#0000FF"><b>A</b></font><b><font color="#0000FF">:</font></b></td>
+        <td>
+    <p style="margin-bottom: 0; margin-top:0">To begin with, you need a solver 
+	that can solve geometric programs (YALMIP currently supports
+	<a href="solvers.htm#gpposy">GPPOSY</a>,
+	<a href="solvers.htm#mosek">Mosek</a> and <a href="solvers.htm#fmincon">
+	fmincon</a>). If you still have problems, the reason may be that YALMIP 
+	converts convex quadratic constraints to seconds order constraints. This 
+	should not be done in geometric programs (it is a known bug). To avoid this, 
+	set the option <code>'convertconvexquad'</code> to 
+	0. Another reason is that runs into problem during the expansion of 
+	<a href="extoperators.htm">nonlinear operators</a>. To avoid this issue, explicitly 
+	tell YALMIP that the 
+	problem is a geometric problem by specifying the solver to <code>'gpposy'</code>, <code>'mosek-geometric'</code> 
+	or <code>'fmincon-geometric'</code>.</p>
+        </td>
+      </tr>
+    </table>
+    
+    
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    
+    
+    <hr noShade SIZE="1" color="#FF0000">        
+    <table border="0" cellpadding="0" style="border-collapse: collapse" width="100%" id="table11">
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><b><font color="#0000FF">
+        <a name="subasgn"></a>Q:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0"><b>I can not write <code>X = 
+    eye(2); X(1,1)=sdpvar(1,1)</code>!</b></td>
+      </tr>
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><font color="#0000FF"><b>A</b></font><b><font color="#0000FF">:</font></b></td>
+        <td>
+    <p style="margin-bottom: 0; margin-top:0">This is because of the way the 
+	object orientation works in MATLAB. There is currently no way to support 
+	this feature (without overloading the @double class, which can cause 
+	instability.)</p>
+        </td>
+      </tr>
+    </table>
+    
+    
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <table border="0" cellpadding="0" style="border-collapse: collapse" width="100%" id="table10">
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><b><font color="#0000FF">
+        <a name="vectorquadratic"></a>Q:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0"><b>Vector-valued quadratic constraints</b></td>
+      </tr>
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><font color="#0000FF"><b>A</b></font><b><font color="#0000FF">:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0">If you have vector-valued 
+		quadratic constraints with mixed convexity and concavity, things may 
+		fail. To avoid problems, use the options <code>sdpsettings('convertconvexquad',0)</code>, 
+		or simply do not use a vectorized constraint. Turning off the automatic 
+		conversion of convex quadratic constraints to second order cones is 
+		typically recommended if you know that you will not solve the problem using a 
+		semidefinite solver.</td>
+      </tr>
+    </table>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <table border="0" cellpadding="0" style="border-collapse: collapse" width="100%" id="table12">
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><b><font color="#0000FF">
+        <a name="implies"></a>Q:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0"><b>Using <code>implies</code> on set objects</b></td>
+      </tr>
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><font color="#0000FF"><b>A</b></font><b><font color="#0000FF">:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0">Using the logical constraint 
+		<code>implies</code> with the first argument being a constraint is currently causing problems in some cases, 
+		and should thus be avoided.</td>
+      </tr>
+    </table>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <table border="0" cellpadding="0" style="border-collapse: collapse" width="100%" id="table14">
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><b><font color="#0000FF">
+        <a name="constructbug"></a>Q:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0"><b>Sometimes MATLAB fails to 
+		declare an SDPVAR object named i or j inside a function</b></td>
+      </tr>
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><font color="#0000FF"><b>A</b></font><b><font color="#0000FF">:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0">This is one of the weirdest 
+		bugs in MATLAB I have come across. If you define your own class (such as 
+		SDPVAR) and use the constructor inside of a function body and assign the 
+		name i or j to the object, MATLAB fails to perform the definition, and i 
+		or j remains to point to the imaginary number. The bug has been reported 
+		and been acknowledged by The Mathworks. If you stumble upon this problem 
+		(very rare), just change the variable name.</td>
+      </tr>
+    </table>
+    
+    
+    <hr noShade SIZE="1" color="#FF0000">        
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <table border="0" cellpadding="0" style="border-collapse: collapse" width="100%">
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><b><font color="#0000FF">
+        <a name="foundbug"></a>Q:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0"><b>I have found a bug. What to do?</b></td>
+      </tr>
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><font color="#0000FF"><b>A</b></font><b><font color="#0000FF">:</font></b></td>
+        <td>
+    <p style="margin-bottom: 0; margin-top:0">Send a mail to <a href="mailto:loefberg@control.ee.ethz.ch">
+    loefberg@control.ee.ethz.ch</a>. Type <code>ver</code> in MATLAB and include 
+    the result in the mail. If possible, include the code (as simple as 
+    possible) that generated the fault, otherwise, include at-least the error 
+    message etc. The more information the better.</p>
+        </td>
+      </tr>
+    </table>
+    <p style="margin-bottom: 0; margin-top:0">&nbsp;</p>
+    <table border="0" cellpadding="0" style="border-collapse: collapse" width="100%">
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><b><font color="#0000FF">
+        <a name="feature"></a>Q:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0"><b>I have an idea for a new feature. 
+    What to do?</b></td>
+      </tr>
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><font color="#0000FF"><b>A</b></font><b><font color="#0000FF">:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0">Send a mail to <a href="mailto:loefberg@control.ee.ethz.ch">
+    loefberg@control.ee.ethz.ch</a>. However, I only add new features when I 
+    need them my self, but if your idea is good enough, I might realize that I 
+    need it!</td>
+      </tr>
+    </table>
+    <p style="margin-bottom: 0; margin-top:0">&nbsp;</p>
+    <table border="0" cellpadding="0" style="border-collapse: collapse" width="100%">
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><b><font color="#0000FF">
+        <a name="yalmipmeans"></a>Q:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0"><b>What does YALMIP mean?</b></td>
+      </tr>
+      <tr>
+        <td width="26" valign="top">
+        <p style="margin-bottom: 0; margin-top:0"><font color="#0000FF"><b>A</b></font><b><font color="#0000FF">:</font></b></td>
+        <td>
+        <p style="margin-bottom: 0; margin-top:0">Used to be short for Yet 
+        Another LMI Parser. However, since YALMIP is much more than a LMI parser 
+        now, it does not mean anything. 
+        </td>
+      </tr>
+    </table>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+    <p style="margin-top: 0; margin-bottom: 0">&nbsp;</td>
+  </tr>
+</table>
+
+</div>
+
+</body>
+
+</html>

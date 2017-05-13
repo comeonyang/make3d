@@ -1,0 +1,329 @@
+H1
+{
+    FONT-FAMILY: Tahoma; color:#0000FF
+}
+H2
+{
+    FONT-FAMILY: Tahoma; color:#000080 
+}
+H3
+{
+    FONT-FAMILY: Arial,sans-serif
+}
+H4
+{
+    FONT-FAMILY: Tahoma, Arial, sans-serif
+}
+P
+{
+    FONT-FAMILY: Tahoma,Arial,sans-serif
+}
+UL
+{
+    FONT-FAMILY: Arial,sans-serif
+}
+OL
+{
+    FONT-FAMILY: Arial,sans-serif
+}
+LI
+{
+    FONT-FAMILY: Arial,sans-serif
+}
+DIV
+{
+    FONT-FAMILY: Tahoma,Arial,sans-serif
+}
+TD
+{
+    FONT-FAMILY: Tahoma,Arial,sans-serif
+}
+TH
+{
+    FONT-FAMILY: Tahoma,Arial,sans-serif
+}
+ADDRESS
+{
+    FONT-FAMILY: Arial,sans-serif
+}
+BLOCKQUOTE
+{
+    FONT-FAMILY: Arial,sans-serif
+}
+NOBR
+{
+    FONT-FAMILY: Arial,sans-serif
+}
+B
+{
+    FONT-FAMILY: Arial,sans-serif
+}
+I
+{
+    FONT-FAMILY: Arial,sans-serif
+}
+NORMAL
+{
+     FONT-FAMILY: Tahoma,Verdana,Arial,sans-serif
+}
+P
+{
+     MARGIN-BOTTOM: 8px;
+     MARGIN-TOP: 7px;
+}
+
+H1
+{
+    FONT-SIZE: 26px;
+    MARGIN-BOTTOM: 18px
+}
+H2
+{
+    FONT-SIZE: 21px;
+    MARGIN-BOTTOM: 18px
+}
+H2.sh2
+{
+    FONT-SIZE: 21px
+}
+H3
+{
+    FONT-SIZE: 16px;
+}
+H3.xmp
+{
+    FONT-SIZE: 16px
+}
+H3.xpl
+{
+    FONT-SIZE: 16px
+}
+H3.inf
+{
+    FONT-SIZE: 16px
+}
+H3.tip
+{
+    FONT-SIZE: 16px
+}
+H3.akt
+{
+    FONT-SIZE: 16px
+}
+H4
+{
+    FONT-SIZE: 13px
+}
+P
+{
+    FONT-SIZE: 13px
+}
+UL
+{
+    FONT-SIZE: 13px
+}
+OL
+{
+    FONT-SIZE: 13px
+}
+LI
+{
+    FONT-SIZE: 13px
+}
+DIV
+{
+    FONT-SIZE: 13px;
+    MARGIN-BOTTOM: 2px;
+}
+TD
+{
+    FONT-SIZE: 13px
+}
+
+TH
+{
+    FONT-SIZE: 13px
+}
+ADDRESS
+{
+    FONT-SIZE: 13px
+}
+BLOCKQUOTE
+{
+    FONT-SIZE: 13px
+}
+LI
+{
+    MARGIN-TOP: 3px
+}
+PRE
+{
+	MARGIN-BOTTOM: 3px;
+    COLOR: #0000c0;
+    FONT-FAMILY: Courier New,Courier
+}
+CODE
+{
+    COLOR: #0000c0;
+    FONT-FAMILY: Courier New,Courier
+}
+KBD
+{
+    COLOR: #0000c0;
+    FONT-FAMILY: Courier New,Courier
+}
+TT
+{
+    COLOR: #0000c0;
+    FONT-FAMILY: Courier New,Courier
+}
+VAR
+{
+    COLOR: #0000c0;
+    FONT-STYLE: normal
+}
+BLOCKQUOTE
+{
+    FONT-STYLE: italic
+}
+CITE
+{
+    FONT-STYLE: italic
+}
+
+.tableheader
+{
+	font-weight: bold;
+	align: left;
+	margin-top: 5px; 
+	margin-bottom: 5px;
+	margin-left: 5px;
+	BACKGROUND-COLOR : #FFDEAD;
+}
+	
+.xmpcode
+{
+    BORDER-RIGHT: black 1px solid;
+    BORDER-TOP: black 1px solid;
+    BORDER-LEFT: black 1px solid;
+    BORDER-BOTTOM: black 1px solid;    
+    PADDING-BOTTOM: 3px;
+    CELL-PADDING : 1px;
+    PADDING-TOP: 3px;
+    BACKGROUND-COLOR: navajowhite;
+}
+
+.mytable
+{
+	cell-spacing: 0;
+	cell-padding: 5;
+	border-collapse: collapse;
+	border:0px;
+	background-color:#FF9933;
+	width:100%;
+}
+
+.thetable
+{
+	border-size:1px;
+	style-bordercolor:#0F9933;
+ cell-spacing:20px;
+ cell-padding:30px;
+}
+
+
+.thetable2
+{
+ border:10;
+ border-collapse: nocollapse;
+ width:100%;
+ cellspacing:20;
+ cellpadding:3;
+}
+
+.code
+{
+    BACKGROUND-COLOR: #ffffe0
+}
+
+.leftheader
+{	
+ rowspan : 2;
+ width= 101;
+ BACKGROUND-COLOR: #eeeeee;
+ }
+ 
+.tabxpl
+{
+   FONT-FAMILY: Tahoma,Courier New,Courier;
+   BACKGROUND-COLOR: #e4eeff;
+}
+
+.tableitem
+{
+  FONT-FAMILY: Courier;
+  ALIGN: left;
+}
+
+
+.doc
+{
+  FONT-FAMILY: Tahoma,Courier New,Courier;
+  BACKGROUND-COLOR: #eeeeee;
+  }
+.nav
+{
+    BACKGROUND-COLOR: navajowhite
+}
+.qbar
+{
+    FONT-SIZE: 13px;
+    FONT-FAMILY: Arial,sans-serif;
+    BACKGROUND-COLOR: #ffffe0
+}
+.blue
+{
+    COLOR: #0000c0
+}
+PRE.normal
+{
+	FONT-FAMILY: Verdana,Tahoma,Arial,sans-serif
+    COLOR: #000000
+}
+
+A:link
+{
+    COLOR: #aa5522;
+    TEXT-DECORATION: underline
+}
+A:visited
+{
+    COLOR: #772200;
+    TEXT-DECORATION: underline
+}
+A:active
+{
+    COLOR: #000000;
+    TEXT-DECORATION: none
+}
+A.an
+{
+    TEXT-DECORATION: none
+}
+.unicode
+{
+    FONT-SIZE: 15px;
+    FONT-FAMILY: Arial Unicode MS,Arial,sans-serif
+}
+INS
+{
+    FONT-WEIGHT: bold;
+    COLOR: #009900;
+    TEXT-DECORATION: none
+}
+DEL
+{
+    FONT-WEIGHT: bold;
+    COLOR: #990000;
+    TEXT-DECORATION: line-through
+}

@@ -1,0 +1,433 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<title>YALMIP Example : Dual variables</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<meta content="Microsoft FrontPage 6.0" name="GENERATOR">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<link href="yalmip.css" type="text/css" rel="stylesheet">
+<base target="_self">
+</head>
+
+<body leftMargin="0" topMargin="0">
+
+<div align="left">
+
+<table border="0" cellpadding="4" cellspacing="3" style="border-collapse: collapse" bordercolor="#000000" width="100%" align="left" height="100%">
+  <tr>
+    <td width="100%" align="left" height="100%" valign="top">
+           <h2>Duality</h2>
+    <hr noShade SIZE="1">
+    <p>Problems in YALMIP are internally written in the following format (this 
+    will be referred to the dual form, or dual type representation)</p>
+    <strong>
+    <blockquote dir="ltr" style="MARGIN-RIGHT: 0px">
+      <p><img border="0" src="dualform.gif" width="231" height="124"></p>
+    </blockquote>
+    </strong>
+    <p>The dual to this problem is (called the primal form)</p>
+           <div align="left">
+    <img border="0" src="primalform.gif" width="243" height="78"></div>
+    <strong>
+    </strong>
+           <h3>Dual variables</h3>
+			<p>The dual (dual in the sense that it is the dual related to a user 
+			defined constraint) variable <b>
+                 <font face="Tahoma,Arial,sans-serif">X </font></b>can be obtained using YALMIP. Consider the following 
+    version of the
+    <a href="lyapunov.htm">
+    Lyapunov stability</a> example (of-course, dual variables in LP, QP and SOCP 
+    problems can also be extracted)</p>
+    <table cellPadding="10" width="100%">
+      <tr>
+        <td class="xmpcode">
+        <pre>F = set(P &gt; eye(n),'Normalize');
+F = F + set(A'*P+P*A &lt; 0,'Lyapunov');
+solution = solvesdp(F,trace(P));</pre>
+        </td>
+      </tr>
+    </table>
+    <p>The dual variables related to the constraints <b>
+    <font face="Tahoma,Arial,sans-serif">P&gt;I</font></b> and <b>
+    <font face="Tahoma">A<sup>T</sup>P+PA&lt; 
+    0</font></b> can be 
+    obtained by using the command dual and indexing of lmi-objects.</p>
+    <table cellPadding="10" width="100%">
+      <tr>
+        <td class="xmpcode">
+        <pre>Z1 = dual(F('Normalize'))
+Z2 = dual(F('Lyapunov'))</pre>
+        </td>
+      </tr>
+    </table>
+    <p>Standard indexing can also be used.</p>
+    <table cellPadding="10" width="100%">
+      <tr>
+        <td class="xmpcode">
+        <pre>Z1 = dual(F(1))
+Z2 = dual(F(2))</pre>
+        </td>
+      </tr>
+    </table>
+    <p>Complementary slackness can easily be checked since 
+    <a href="reference.htm#double">double</a> is overloaded 
+    on lmi-objects..</p>
+    <table cellPadding="10" width="100%">
+      <tr>
+        <td class="xmpcode">
+        <pre>trace(dual(F(1))*double(F(1)))
+trace(dual(F(2))*double(F(2)))</pre>
+        </td>
+      </tr>
+    </table>
+    <p>Notice, <code>double(F(1))</code> returns <code>double(0-(A'*P+P*A))</code>.<h3>
+           <a name="dualize"></a>Dualize 
+			</h3>
+           <p>Important to note is that problems in YALMIP are modeled 
+           internally in the dual format (your primal <i>problem</i> is in dual <i>
+           form</i>). In control theory and many other fields, this is the 
+           natural representation (we have a number of variables on which we 
+           have inequality constraints), but in some fields (combinatorial 
+           optimization), the primal form is often more natural.<p>Due to the choice 
+           to work in the dual form, some problems are treated very 
+           inefficiently in YALMIP. Consider the following problem in YALMIP.<table cellpadding="10" width="100%">
+                <tr>
+                  <td class="xmpcode">
+                  <pre>X = sdpvar(30,30);
+Y = sdpvar(3,3);
+obj = trace(X)+trace(Y);
+F = set(X&gt;0) + set(Y&gt;0);
+F = F + set(X(1,3)==9) + set(Y(1,1)==X(2,2)) + set(sum(sum(X))+sum(sum(Y)) == 20)
+<font color="#000000">+++++++++++++++++++++++++++++++++++++++++++++++++++
+|   ID|      Constraint|                      Type|
++++++++++++++++++++++++++++++++++++++++++++++++++++
+|   #1|   Numeric value|   Matrix inequality 30x30|
+|   #2|   Numeric value|     Matrix inequality 3x3|
+|   #3|   Numeric value|   Equality constraint 1x1|
+|   #4|   Numeric value|   Equality constraint 1x1|
+|   #5|   Numeric value|   Equality constraint 1x1|
++++++++++++++++++++++++++++++++++++++++++++++++++++</font></pre>
+                  </td>
+                </tr>
+              </table>
+              <p>YALMIP will <i>explicitly</i> parameterize the variable <b>X</b> 
+              with free 465 variables, <b>Y</b> with 6 free variables, create 
+              two semidefinite constraints and introduce 3 equality constraints 
+              in the dual form representation, corresponding to&nbsp; 471 equality 
+              constraint, 2 semidefinite cones and 3 free variables in the 
+              primal form.&nbsp; If we instead would have solved this 
+              directly in the stated primal form, we have 3 equality 
+              constraints, 2 semidefinite cones and no free variables, 
+              corresponding to a dual form with 3 variables and two 
+              semidefinite constraints. The computational effort is mainly 
+              affected by the number of variables in the dual form and the size of the 
+              semidefinite cones. Moreover, many solvers have robustness 
+              problems with free variables in the primal form (equalities in the 
+              dual form). Hence, in this case, this problem can probably be solved 
+              much more efficiently if we could use an alternative model.<p>The 
+           command <a href="reference.htm#dualize">dualize</a> can be used to 
+           extract the primal form, and return the dual of 
+           this problem in YALMIPs preferred dual form.<table cellpadding="10" width="100%">
+                <tr>
+                  <td class="xmpcode">
+                  <pre>[Fd,objd,primals] = dualize(F,obj);Fd
+<font color="#000000">+++++++++++++++++++++++++++++++++++++++++++++++++++
+|   ID|      Constraint|                      Type|
++++++++++++++++++++++++++++++++++++++++++++++++++++
+|   #1|   Numeric value|   Matrix inequality 30x30|
+|   #2|   Numeric value|     Matrix inequality 3x3|
++++++++++++++++++++++++++++++++++++++++++++++++++++</font></pre>
+                  </td>
+                </tr>
+              </table>
+              <p>If we solve this problem in dual form, the duals to the 
+              constraints in <b>Fd</b> will correspond 
+              to the original variables <b>X</b> and <b>Y</b>. The optimal values of these 
+              variables can be reconstructed easily (note that the dual problem 
+              is a maximization problem)<table cellpadding="10" width="100%">
+                <tr>
+                  <td class="xmpcode">
+                  <pre>solvesdp(Fd,-objd);
+for i = 1:length(primals);assign(primals{i},dual(Fd(i)));end</pre>
+                  </td>
+                </tr>
+              </table>
+              <p>Variables are actually automatically updated, so the second 
+				line in the code above is not needed (but can be useful to 
+				understand what is happening). Hence, the following code is 
+				equivalent.</p><table cellpadding="10" width="100%" id="table1">
+                <tr>
+                  <td class="xmpcode">
+                  <pre>solvesdp(Fd,-objd);</pre>
+                  </td>
+                </tr>
+              </table>
+              <p>The procedure can be applied also to problems with free 
+              variables in the primal form, corresponding to equality 
+              constraints in the dual form.</p>
+           <table cellpadding="10" width="100%">
+                <tr>
+                  <td class="xmpcode">
+                  <pre>X = sdpvar(2,2);
+t = sdpvar(2,1);
+Y = sdpvar(3,3);
+obj = trace(X)+trace(Y)+5*sum(t);
+
+F = set(sum(X) == 6+pi*t(1)) + set(diag(Y) == -2+exp(1)*t(2))
+F = F + set(Y&gt;0) + set(X&gt;0);
+
+solvesdp(F,obj);
+double(t)
+<font color="#000000">ans =</font></pre>
+                  <pre><font color="#000000">   -1.9099
+    0.7358</font></pre>
+                  <pre>[Fd,objd,primals,free] = dualize(F,obj);Fd
+<font color="#000000">+++++++++++++++++++++++++++++++++++++++++++++++++++
+|   ID|      Constraint|                      Type|
++++++++++++++++++++++++++++++++++++++++++++++++++++
+|   #1|   Numeric value|     Matrix inequality 3x3|
+|   #2|   Numeric value|     Matrix inequality 2x2|
+|   #3|   Numeric value|   Equality constraint 2x1|
++++++++++++++++++++++++++++++++++++++++++++++++++++</font></pre>
+                  </td>
+                </tr>
+              </table>
+              <p>The detected free variables are returned as the 4th output, and 
+				can be recovered from the dual to the equality constraints (this 
+				is also done automatically by YALMIP in practice, see above).</p>
+           <table cellpadding="10" width="100%">
+                <tr>
+                  <td class="xmpcode">
+                  <pre>solvesdp(Fd,-objd);
+assign(free,dual(Fd(end)))
+double(t)
+<font color="#000000">ans =</font></pre>
+                  <pre><font color="#000000">   -1.9099
+    0.7358</font></pre>
+                  </td>
+                </tr>
+              </table>
+              <p>To simplify things even further, you can tell YALMIP to 
+				dualize, solve the dual, and recover the primal variables, by 
+				using the associated option.</p>
+           <table cellpadding="10" width="100%" id="table3">
+                <tr>
+                  <td class="xmpcode">
+                  <pre>solvesdp(F,obj,sdpsettings('dualize',1));
+double(t)
+<font color="#000000">ans =</font></pre>
+                  <pre><font color="#000000">   -1.9099
+    0.7358</font></pre>
+                  </td>
+                </tr>
+              </table>
+              <p>
+          <img border="0" src="demoicon.gif" width="16" height="16"> Mixed problems can be dualized also, i.e. 
+              problems involving constraints of both dual and primal form. 
+              Constraint in dual form <b>S(y)&ge;0 </b>are automatically changed to 
+              <b>S(y)-X=0</b>, <b>X&ge;0</b>, and the dualization algorithm is 
+              applied to this new problem. Note that problems involving 
+              dual form semidefinite constraints typically not gain from being 
+              dualized, unless the dual form constraints are few and small 
+              compared to the primal form constraints.<p>
+          <img border="0" src="demoicon.gif" width="16" height="16"> A problem 
+			involving translated cones <b>X&ge;C</b> where <b>C</b> is a 
+			constant is automatically converted to a problem in standard primal 
+			form, with no additional slacks variables. Hence, a lower bound on a 
+			variable will typically reduce the size of a dualized problem, since 
+			no free variables or slacks will be needed to model this cone. 
+			Practice has shown that simple bound constraints of the type <b>x&#8805;L</b> 
+			where <b>L</b> is a large negative number can lead to problems if one tries 
+			to perform the associated variable change in order to write it as a 
+			simple LP cone. Essentially, the dual cost will contain large 
+			numbers. With a primal problem <b>{min 
+			c<sup>T</sup>x, Ax=b, x&#8805;-L}</b>) will be converted to <b>{min c<sup>T</sup>z, 
+			Az=b+AL, z&#8805;0}</b>) with the dual <b>{min (b+AL)<sup>T</sup>y, A<sup>T</sup>y<font face="Times New Roman">&#8804;</font>c}</b>. 
+			If you want to avoid detection of translated LP cones (and thus 
+			treat the involved variables as free variables), set the 4th 
+			argument in <a href="reference.htm#dualize">dualize</a>.<p>
+          <img border="0" src="demoicon.gif" width="16" height="16"> Problems 
+          involving second order cone constraints can also be dualized. A constraint 
+          of the type <code>x = sdpvar(n,1);F = set(cone(x(2:end),x(1)));</code> is a second 
+          order constraint in standard primal form. If your cone constraint violates this 
+          form, slacks will be introduced, except for translated second order 
+			cones, just as in the semidefinite case. Note 
+          that you need a primal-dual solver that can solve second order cone 
+          constraints natively in order to recover the original variables 
+          (currently 
+              <a href="solvers.htm#sedumi">SeDuMi</a> and 
+              <a href="solvers.htm#sdpt3">SDPT3</a> for mixed semidefinite 
+          second order cone problems, and 
+              <a href="solvers.htm#mosek">MOSEK</a> for pure second order cone 
+          problems).<p>
+    <img border="0" src="exclamationmark.jpg" align="left" width="16" height="16"> Your solver 
+          has to be able to return both primal and dual variables for the reconstruction of 
+          variables to work. All SDP solvers support this, except 
+              <a href="solvers.htm#lmilab">LMILAB</a>.<p>
+    <img border="0" src="exclamationmark.jpg" align="left" width="16" height="16">Primal matrices (<b>X</b></b> and <b>Y</b> in the examples above) must 
+           be defined in one simple call in order to enable detection of the primal 
+           structure. In other words, a constraint <code>set(X&gt;0)</code> where 
+          <b>X</b> is defined 
+           with the code <code>x = sdpvar(10,1);X = 
+           [x(1) x(6);x(6) x(2)]</code> will not be categorized as a primal matrix, but 
+           as matrix constraint in dual form with three free variables.<h3>
+          <a name="primalize"></a>Primalize</h3>
+           <p>
+          For completeness, a functionality called primalize is available. This 
+          function takes an optimization problem in dual form and returns a 
+          YALMIP model in primal form. Consider the following SDP with 3 free 
+          variables, 1 equality constraint, and 1 SDP constraint of dimension 2.<table cellpadding="10" width="100%">
+                <tr>
+                  <td class="xmpcode">
+                  <pre>C = eye(2);
+A1 = randn(2,2);A1 = A1*A1';
+A2 = randn(2,2);A2 = A2*A2';
+A3 = randn(2,2);A3 = A3*A3';
+y = sdpvar(3,1);
+
+obj = -sum(y) % Maximize sum(y) i.e. minimize -sum(y)
+F = set(C-A1*y(1)-A2*y(2)-A3*y(3) &gt; 0) + set(y(1)+y(2)==1)</pre>
+                  </td>
+                </tr>
+              </table>
+           <p>A model in primal form is (note the negation of the objective 
+           function, primalize assumes the objective function should be 
+           maximized)</p>
+           <table cellpadding="10" width="100%">
+                <tr>
+                  <td class="xmpcode">
+                  <pre>[Fp,objp,free] = primalize(F,-obj);Fp
+<font color="#000000">+++++++++++++++++++++++++++++++++++++++++++++++++++
+|   ID|      Constraint|                      Type|
++++++++++++++++++++++++++++++++++++++++++++++++++++
+|   #1|   Numeric value|     Matrix inequality 2x2|
+|   #2|   Numeric value|   Equality constraint 3x1|
++++++++++++++++++++++++++++++++++++++++++++++++++++</font></pre>
+                  </td>
+                </tr>
+              </table>
+           <p>
+          The problem can now be solved in the primal form, and the original 
+          variables are reconstructed from the duals of the equality constraints 
+          (placed last). Note that the primalize function returns an objective 
+          function that should be minimized.<table cellpadding="10" width="100%">
+                <tr>
+                  <td class="xmpcode">
+                  <pre>solvesdp(Fp,objp);
+assign(free,dual(Fp(end)));</pre>
+                  </td>
+                </tr>
+              </table>
+           <p>Why not dualize the primalized model!</p>
+           <table cellpadding="10" width="100%">
+                <tr>
+                  <td class="xmpcode">
+                  <pre>[Fd,objd,X,free] = dualize(Fp,objp);Fd<font color="#000000">
++++++++++++++++++++++++++++++++++++++++++++++++++++
+|   ID|      Constraint|                      Type|
++++++++++++++++++++++++++++++++++++++++++++++++++++
+|   #1|   Numeric value|     Matrix inequality 2x2|
+|   #2|   Numeric value|   Equality constraint 1x1|
++++++++++++++++++++++++++++++++++++++++++++++++++++</font></pre>
+                  </td>
+                </tr>
+              </table>
+           <p>The model obtained from the primalization is most often more 
+           complex than the original model, so there is typically no reason 
+           to primalize a model. </p>
+           <p>There are however some cases where it may make sense. Consider the 
+           problem in the <a href="kyp.htm">KYP example</a></p>
+      <table cellPadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>n = 50;
+A = randn(n);A = A - max(real(eig(A)))*eye(n)*1.5; % Stable dynamics
+B = randn(n,1);
+C = randn(1,n);
+
+t = sdpvar(1,1);
+P = sdpvar(n,n);
+
+obj = t;
+F = set(kyp(A,B,P,blkdiag(C'*C,-t)) &lt; 0)</pre>
+          </td>
+        </tr>
+      </table>
+           <p>The original problem has 466 variables and one semidefinite 
+           constraint. If we primalize this problem, a new problem with 1276 
+           equality constraints and 1326 variables is obtained. This means that 
+			the effective number of variables is low (the degree of freedom).</p>
+      <table cellPadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>[Fp,objp] = primalize(F,-obj);Fp
+<font color="#000000">+++++++++++++++++++++++++++++++++++++++++++++++++++++
+|   ID|      Constraint|                        Type|
++++++++++++++++++++++++++++++++++++++++++++++++++++++
+|   #1|   Numeric value|     Matrix inequality 51x51|
+|   #2|   Numeric value|  Equality constraint 1276x1|
++++++++++++++++++++++++++++++++++++++++++++++++++++++</font>
+length(getvariables(Fp))
+<font color="#000000">ans =</font></pre>
+          <pre><font color="#000000">   1326</font></pre>
+          </td>
+        </tr>
+      </table>
+           <p>For comparison, let us first solve the original problem.</p>
+      <table cellPadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>solvesdp(F,obj)
+<font color="#000000">ans = </font></pre>
+          <pre><font color="#000000">    yalmiptime: 0.2410
+    solvertime: 32.4150
+          info: 'No problems detected (SeDuMi)'
+       problem: 0</font></pre>
+          </td>
+        </tr>
+      </table>
+           <p>The primalized takes approximately the same time to solve (this 
+           can differ between problem instances though).</p>
+      <table cellPadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>solvesdp(Fp,objp)
+<font color="#000000">ans = </font></pre>
+          <pre><font color="#000000">    yalmiptime: 0.3260
+    solvertime: 32.2530
+          info: 'No problems detected (SeDuMi)'
+       problem: 0</font></pre>
+          </td>
+        </tr>
+      </table>
+           <p>So why would we want to perform the primalization? We let YALMIP 
+			remove the equalities constraints first!</p>
+      <table cellPadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>solvesdp(Fp,objp,sdpsettings('removeequalities',1))
+<font color="#000000">ans = </font></pre>
+          <pre><font color="#000000">    yalmiptime: 2.6240
+    solvertime: 1.1860
+          info: 'No problems detected (SeDuMi)'
+       problem: 0</font></pre>
+          </td>
+        </tr>
+      </table>
+           <p>The drastic reduction in actual solution-time of the semidefinite 
+			program comes at a price. Removing the equality constraints and 
+			deriving a reduced basis with a smaller number of variables requires 
+			computation of a QR factorization of a matrix of 
+           dimension 1326 by 1276. The cost of doing this is roughly 2 seconds. 
+			The total saving in computation time is however still high enough to 
+			motivate the primalization.</p></td>
+  </tr>
+</table>
+
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,785 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<title>YALMIP Example : Multiparametric programming</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<link href="yalmip.css" type="text/css" rel="stylesheet">
+<base target="_self">
+</head>
+
+<body leftMargin="0" topMargin="0">
+
+<div align="left">
+  <table border="0" cellpadding="4" cellspacing="3" style="border-collapse: collapse" bordercolor="#000000" width="100%" align="left" height="100%">
+    <tr>
+      <td width="100%" align="left" height="100%" valign="top">
+      <h2>Multiparametric programming</h2>
+      <hr noShade SIZE="1">
+    <p>
+    <img border="0" src="exclamationmark.jpg" align="left" width="16" height="16">This 
+    example requires the <a href="solvers.htm#mpt">Multi-Parametric 
+      Toolbox (MPT)</a>. </p>
+      <p>YALMIP can be used to calculate explicit solutions of linear and quadratic 
+      programs by interfacing the <a href="solvers.htm#mpt">Multi-Parametric 
+      Toolbox (MPT)</a>. This chapter assumes that the reader is familiar with 
+		parametric programming and the basics of <a href="solvers.htm#mpt">MPT</a>.</p>
+		<h3>Standard example.</h3>
+		<p>Consider the following simple quadratic program in the<i> decision 
+		variable</i> <b>z</b>, solved 
+		for a particular value on a <i>parameter</i> <b>x</b>.</p>
+      <table cellPadding="10" width="100%" id="table1">
+        <tr>
+          <td class="xmpcode">
+          <pre>A = randn(15,3);
+b = rand(15,1);
+E = randn(15,2);
+
+z = sdpvar(3,1);
+x = [0.1;0.2];
+
+F = set(A*z &lt;= b+E*x);
+obj = (z-1)'*(z-1);
+
+sol = solvesdp(F,obj);
+double(z)
+<font color="#000000">ans =</font></pre>
+			<pre><font color="#000000">   -0.1454
+   -0.1789
+   -0.0388</font></pre>
+          </td>
+        </tr>
+      </table>
+      <p>To obtain the parametric solution with respect to <b>x</b>, we call the 
+		function <code>solvemp.m</code>, and tell the solver that <b>x</b> is a 
+		parametric variable. Moreover, we must add constraints to declare a 
+		bound on the region where we want to compute the parametric solution, the so called exploration set.</p>
+      <table cellPadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>x = sdpvar(2,1);
+F = set(A*z &lt;= b+E*x) + set(-1 &lt;= x &lt;= 1)
+sol = solvemp(F,obj,[],x);</pre>
+          </td>
+        </tr>
+      </table>
+      <p>The first output is an <a href="solvers.htm#mpt">MPT</a> structure. 
+		In accordance with <a href="solvers.htm#mpt">MPT</a> syntax, the optimizer for the parametric value&nbsp; 
+		is given by the following code.</p>
+      <table cellPadding="10" width="100%" id="table2">
+        <tr>
+          <td class="xmpcode">
+          <pre>xx = [0.1;0.2];
+[i,j] = isinside(sol{1}.Pn,xx)
+sol{1}.Bi{j}*xx + sol{1}.Ci{j}
+<font color="#000000">ans =</font></pre>
+			<pre><font color="#000000">   -0.1454
+   -0.1789
+   -0.0388</font></pre>
+          </td>
+        </tr>
+      </table>
+      <p>By using more outputs from <code>solvemp</code>, it is possible to simplify 
+		things considerably.</p>
+      <table cellPadding="10" width="100%" id="table3">
+        <tr>
+          <td class="xmpcode">
+          <pre>[sol,diagnostics,Z,Valuefunction,Optimizer] = solvemp(F,obj,[],x);</pre>
+          </td>
+        </tr>
+      </table>
+      <p>The function now returns solutions using YALMIPs
+		<a href="extoperators.htm">nonlinear operator</a> framework. To retrieve the solution for a particular 
+		parameter, simply use <code>assign</code> and <code>double</code> in standard fashion.</p>
+      <table cellPadding="10" width="100%" id="table4">
+        <tr>
+          <td class="xmpcode">
+          <pre>assign(x,[0.1;0.2]);
+double(Optimizer)</pre>
+          </td>
+        </tr>
+      </table>
+      <p>Some of the plotting capabilities of <a href="solvers.htm#mpt">MPT</a> are overloaded for 
+		the piecewise functions.</p>
+      <table cellPadding="10" width="100%" id="table25">
+        <tr>
+          <td class="xmpcode">
+          <pre>plot(Valuefunction)</pre>
+          </td>
+        </tr>
+      </table>
+      <p>More about the output later.</p>
+      <h3>MPC example</h3>
+		<p>Define numerical data for a linear system, prediction matrices, and 
+		variables for current state <b>x</b> and the 
+       
+      	future control sequence<b> U</b>, for an MPC problem with horizon 5.</p>
+      <table cellPadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>N = 5;
+A = [2 -1;1 0];
+B = [1;0];
+C = [0.5 0.5];
+[H,S] = create_CHS(A,B,C,N);</pre>
+          <pre>x = sdpvar(2,1);
+U = sdpvar(N,1);</pre>
+          </td>
+        </tr>
+      </table>
+      <p>The future output predictions are linear in the current state&nbsp;and the 
+      control sequence.</p>
+      <table cellPadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>Y = H*x+S*U;</pre>
+          </td>
+        </tr>
+      </table>
+      <p>We wish to minimize a  quadratic cost, compromising between small input 
+		and outputs.</p>
+      <table cellPadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>objective = Y'*Y+U'*U;</pre>
+          </td>
+        </tr>
+      </table>
+      <p>The input variable has a hard constraint, and so does the output at the 
+		terminal state.</p>
+      <table cellPadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>F = set(1 &gt; U &gt; -1);
+F = F+set(1 &gt; Y(N) &gt; -1); </pre>
+          </td>
+        </tr>
+      </table>
+      <p>We seek the explicit solution <b><font face="Tahoma,Arial,sans-serif">U(x)</font></b> over the 
+		exploration set <b>
+      <font face="Tahoma,Arial,sans-serif">|x|&#8804;1</font></b>.</p>
+      <table cellPadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>F = F + set(5 &gt; x &gt; -5);</pre>
+          </td>
+        </tr>
+      </table>
+      <p>The explicit solution <b>U(x)</b> is obtained by calling
+      <code>solvemp</code> with the parametric variable <b>x</b> as the fourth argument. 
+		Additionally, since we only are interested in the first element of the 
+		solution <b>U</b>, we use a fifth input to communicate this.</p>
+      <table cellPadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>[sol,diagnostics,Z,Valuefunction,Optimizer] = solvemp(F,objective,[],x,U(1));</pre>
+          </td>
+        </tr>
+      </table>
+      <p>The explicit solution can, e.g, be plotted (see the <a href="solvers.htm#mpt">MPT</a> 
+      manual informationon the solution structure)</p>
+      <table cellPadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>sol{1}
+<font color="#000000">
+ans = 
+
+ Pn: [1x13 polytope]
+ Fi: {1x13 cell}
+ Gi: {1x13 cell}
+ activeConstraints: {1x13 cell}
+ Phard: [1x1 polytope]</font></pre>
+          <pre>figure
+plot(sol{1}.Pn)
+figure
+plot(Valuefunction)
+figure
+plot(Optimizer)</pre>
+          </td>
+        </tr>
+      </table>
+      <p>The following piece of code calculates the explicit MPC controller with 
+      an worst-case L<sub><font face="Arial">&#8734;</font></sub> cost instead 
+		(i.e. worst case control/output peak along the predictions).</p>
+      <table cellPadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>A = [2 -1;1 0];
+B = [1;0];
+C = [0.5 0.5];
+N = 5;
+[H,S] = create_CHS(A,B,C,N);
+t = sdpvar(1,1);
+x = sdpvar(2,1);
+U = sdpvar(N,1);
+Y = H*x+S*U;
+F = set(-1 &lt; U &lt; 1);
+F = F+set(-1 &lt; Y(N) &lt; 1); 
+F = F + set(-5 &lt; x &lt; 5);
+[sol,diagnostics,Z,Valuefunction,Optimizer] = solvemp(F,norm([Y;U],inf),[],x);</pre>
+          </td>
+        </tr>
+      </table>
+      <p>This example enables us to introduce the overloading of the projection 
+      functionality in <a href="solvers.htm#mpt">MPT</a>. In MPC, 
+      only the first input, <b>U(1)</b>, is of interest. What we can do is to 
+      project the whole problem to the parametric variable <b>x</b>, the 
+      objective function <b>t</b>, and the variable of interest, <b>U(1)</b>. 
+		The following piece of code projects the problem to the reduced set of 
+		variables, and solves the multi-parametric LP in this reduced space (not 
+		necessarily an efficient approach though, projection is very expensive, 
+		and we can easily end up with a problem with many constraints in the 
+		reduced variables.)</p>
+      <table cellPadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>A = [2 -1;1 0];
+B = [1;0];
+C = [0.5 0.5];
+N = 5;
+[H,S] = create_CHS(A,B,C,N);
+t = sdpvar(1,1);
+x = sdpvar(2,1);
+U = sdpvar(N,1);
+Y = H*x+S*U;
+F = set(-1 &lt; U &lt; 1);
+F = F+set(-1 &lt; Y(N) &lt; 1); 
+F = F + set(-5 &lt; x &lt; 5);
+F = F + set(-t &lt; [Y;U] &lt; t);
+
+F = projection(F,[x;t;U(1)]);
+
+[sol_p,diagnostics_p,Zsol_p,Valuefunction_p,Optimizer_p] = solvemp(F,t,[],x,[U(1);t]);</pre>
+          </td>
+        </tr>
+      </table>
+      <p>To check that the two solutions actually coincide, we compare the value 
+		functions and conclude that they are essentially the same.</p>
+      <table cellPadding="10" width="100%" id="table30">
+        <tr>
+          <td class="xmpcode">
+          <pre>[pass,tol] = mpt_ispwabigger(sol{1},sol_p{1})
+pass =
+    <font color="#000000"> 0</font>
+tol =
+ <font color="#000000"> 1.3484e-014
+
+</font>figure;
+plot(Valuefunction);
+plot(Valuefunction_p):</pre>
+          </td>
+        </tr>
+      </table>
+      <p>Since the objective function is <b>t</b>, the optimal t should coincide 
+		with the value function. The optimal <b>t</b> in the projected problem 
+		was requested as the second optimizer</p>
+      <table cellPadding="10" width="100%" id="table31">
+        <tr>
+          <td class="xmpcode">
+          <pre>plot(Optimizer(2));</pre>
+          </td>
+        </tr>
+      </table>
+      <p>In the code above, we used the pre-constructed function <code>create_CHS.m</code>, 
+		which generates numerical data for defining predictions from 
+		current state and future input signals. The problem can however be 
+		solved without using this function. We will show two alternative 
+		methods. </p>
+		<p>The first approach explicitly generates future states using the given 
+		current state and future inputs (note that the solution not is exactly 
+		the same as above due to a small difference in indexing logic.)</p>
+      <table cellPadding="10" width="100%" id="table32">
+        <tr>
+          <td class="xmpcode">
+          <pre>x  = sdpvar(2,1);
+U  = sdpvar(N,1);</pre>
+			<pre>x0 = x; % Save parametric state
+F  =  set(-5 &lt; x0 &lt; 5); % Exploration space
+objective= 0;
+for k = 1:N    
+
+    % Feasible region
+    F = F + set(-1 &lt; U(k) &lt; 1);</pre>
+			<pre>    % Add stage cost to total cost
+    objective = objective + (C*x)'*(C*x) + U(k)'*U(k);
+
+    % Explicit state update
+    x = A*x + B*U(k);  
+end
+F = F + set(-1 &lt; C*x &lt; 1); % Terminal constraint
+
+[sol,diagnostics,Z,Valuefunction,Optimizer] = solvemp(F,objective,[],x0,U(1));</pre>
+          </td>
+        </tr>
+      </table>
+      <p>The second method introduced new decision variables for both future 
+		states and connect these using equality constraints.</p>
+      <table cellPadding="10" width="100%" id="table33">
+        <tr>
+          <td class="xmpcode">
+          <pre>x  = sdpvar(2,N+1);
+U  = sdpvar(N,1);</pre>
+			<pre>F  =  set(-5 &lt; x0 &lt; 5); % Exploration space
+objective = 0;
+for k = 1:N
+    
+    % Feasible region
+    F = F + set(-1 &lt; U(k) &lt; 1);
+  
+    % Add stage cost to total cost
+    objective = objective + (C*x(:,k))'*(C*x(:,k)) + U(k)'*U(k);</pre>
+			<pre>    % Implicit state update
+    F = F + set(x(:,k+1) == A*x(:,k) + B*U(k));  
+end
+F = F + set(-1 &lt; C*x(:,end) &lt; 1); % Terminal constraint
+
+[sol,diagnostics,Z,Valuefunction,Optimizer] = solvemp(F,objective,[],x(:,1),U(1));</pre>
+          </td>
+        </tr>
+      </table>
+      <p>This second method is less efficient, since it has a lot more decision 
+		variables. However, in some cases, it is the most convenient way to 
+		model a system (see the PWA examples below for similar approaches), and 
+		the additional decision variables are removed anyway during a pre-solve 
+		process YALMIP applies before calling the multi-parametric solver.</p>
+      <h3>Parametric programs with binary variables and equality constraints</h3>
+		<p>YALMIP extends the parametric algorithms in <a href="solvers.htm#mpt">MPT</a> 
+		by adding a layer to 
+		enable binary variables and equality constraints. We can use this to 
+		find explicit solutions to, e.g., predictive control of PWA (piecewise 
+		affine) systems.</p>
+		<p>Let us find the explicit solution to a predictive control problem, 
+		where the gain of the system depends on the sign of the first state. 
+		This will be a pretty advanced example, so let us start slowly by defining the 
+		some data.</p>
+      <table cellPadding="10" width="100%" id="table6">
+        <tr>
+          <td class="xmpcode">
+          <pre>yalmip('clear')
+clear all</pre>
+			<pre>% Model data
+A = [2 -1;1 0];
+B1 = [1;0];  % Small gain for x(1) &gt; 0 
+B2 = [pi;0]; % Larger gain for x(1) &lt; 0 
+C = [0.5 0.5];</pre>
+			<pre>nx = 2; % Number of states
+nu = 1; % Number of inputs
+
+% Prediction horizon
+N = 4;</pre>
+          </td>
+        </tr>
+      </table>
+      <p>To simplify the code and the notation, we create a bunch of state and 
+		control vectors in cell arrays</p>
+      <table cellPadding="10" width="100%" id="table5">
+        <tr>
+          <td class="xmpcode">
+          <pre>% States x(k), ..., x(k+N)
+x = sdpvar(repmat(nx,1,N),repmat(1,1,N));</pre>
+			<pre>% Inputs u(k), ..., u(k+N) (last one not used)
+u = sdpvar(repmat(nu,1,N),repmat(1,1,N));</pre>
+			<pre>% Binary for PWA selection
+d = binvar(repmat(2,1,N),repmat(1,1,N));</pre>
+          </td>
+        </tr>
+      </table>
+      <p>We now run a loop to add constraints on all states and inputs. Note 
+		the use of binary variables define the PWA dynamics, and the recommended 
+		use of <a href="logic.htm#bounds">bounds</a> to improve big-M 
+		relaxations)</p>
+      <table cellPadding="10" width="100%" id="table7">
+        <tr>
+          <td class="xmpcode">
+          <pre>F   = set([]);
+obj = 0;
+
+for k = N-1:-1:1    
+
+    % Strenghten big-M (improves numerics)
+    bounds(x{k},-5,5);
+    bounds(u{k},-1,1);
+    bounds(x{k+1},-5,5);
+    
+    % Feasible region
+    F = F + set(-1 &lt; u{k}     &lt; 1);
+    F = F + set(-1 &lt; C*x{k}   &lt; 1);
+    F = F + set(-5 &lt; x{k}     &lt; 5);
+    F = F + set(-1 &lt; C*x{k+1} &lt; 1);
+    F = F + set(-5 &lt; x{k+1}   &lt; 5);</pre>
+			<pre>    % PWA Dynamics
+    F = F + set(implies(d{k}(1),x{k+1} == (A*x{k}+B1*u{k})));
+    F = F + set(implies(d{k}(2),x{k+1} == (A*x{k}+B2*u{k})));
+    F = F + set(implies(d{k}(1),x{k}(1) &gt; 0));
+    F = F + set(implies(d{k}(2),x{k}(1) &lt; 0));
+
+    % It is EXTREMELY important to add as many
+    % constraints as possible to the binary variables
+    F = F + set(sum(d{k}) == 1);
+  
+    % Add stage cost to total cost
+    obj = obj + norm(x{k},1) + norm(u{k},1);
+
+end</pre>
+          </td>
+        </tr>
+      </table>
+      <p>The parametric variable here is the current state <b>x{1}</b>. In this 
+		optimization problem, there are a lot of variables that we have no 
+		interest in. To tell YALMIP that we only want the optimizer for the 
+		current state <b>u{1}</b>, we use a fifth input argument.</p>
+      <table cellPadding="10" width="100%" id="table8">
+        <tr>
+          <td class="xmpcode">
+          <pre>[sol,diagnostics,Z,Valuefunction,Optimizer] = solvemp(F,obj,[],x{1},u{1});</pre>
+          </td>
+        </tr>
+      </table>
+      <p>To obtain the optimal control input for a specific state, we use <code>double</code> 
+		and <code>assign</code> as usual.</p>
+      <table cellPadding="10" width="100%" id="table9">
+        <tr>
+          <td class="xmpcode">
+          <pre>assign(x{1},[-1;1]);
+double(Optimizer)
+ans =</pre>
+			<pre>    0.9549</pre>
+          </td>
+        </tr>
+      </table>
+      <p>The optimal cost at this state is available in the value function</p>
+      <table cellPadding="10" width="100%" id="table10">
+        <tr>
+          <td class="xmpcode">
+          <pre>double(Valuefunction)
+ans =</pre>
+			<pre>    4.2732</pre>
+          </td>
+        </tr>
+      </table>
+      <p>To convince our self that we have a correct parametric solution, let us 
+		compare it to the solution obtained by solving the problem for this 
+		specific state. </p>
+      <table cellPadding="10" width="100%" id="table11">
+        <tr>
+          <td class="xmpcode">
+          <pre>sol = solvesdp(F+set(x{1}==[-1;1]),obj);
+double(u{1})
+<font color="#000000">ans =</font></pre>
+			<pre><font color="#000000">    0.9549</font></pre>
+			<pre>double(obj)
+<font color="#000000">ans =</font></pre>
+			<pre><font color="#000000">    4.2732</font></pre>
+          </td>
+        </tr>
+      </table>
+      <h3><a name="dp"></a>Dynamic programming with LTI systems</h3>
+		<p>The capabilities in YALMIP to work with piecewise functions and 
+		parametric programs enables easy coding of dynamic programming 
+		algorithms. The value function with respect to the parametric variable 
+		for a parametric linear program is a convex PWA function, and this is 
+		the function returned in the fourth output. YALMIP creates this function 
+		internally, and also saves information about convexity etc, and uses it 
+		as any other <a href="extoperators.htm">nonlinear operator</a> (see more 
+		details below). For 
+		binary parametric linear programs, the value function is no longer 
+		convex, but a so called overlapping PWA function. This means that, at 
+		each point, it is defined as the minimum of a set of convex PWA 
+		function. This information is also handled transparently in YALMIP, it 
+		is simply another type of <a href="extoperators.htm">nonlinear operator</a>. 
+		The main difference between the two function classes is that the second 
+		class requires introduction of binary variables when used.</p>
+		<p>Note, the algorithms described in the following sections are mainly 
+		intended for with (picewise) linear objectives. Dynamic programming with 
+		quadratic 
+		objective functions give rise to problems that are much harder to solve, 
+		although it is supported.</p>
+		<p>To illustrate how easy it is to work with these PWA functions, we can 
+		solve predictive control using dynamic programming, instead of setting 
+		up the whole problem in one shot as we did above. As a first example, we solve a 
+		standard linear predictive control problem.&nbsp; To fully understand 
+		this example, it is required that you are familiar with predictive 
+		control, dynamic programming and parametric optimization.</p>
+      <table cellPadding="10" width="100%" id="table12">
+        <tr>
+          <td class="xmpcode">
+          <pre>yalmip('clear')
+clear all</pre>
+			<pre>% Model data
+A = [2 -1;1 0];
+B = [1;0];
+C = [0.5 0.5];</pre>
+			<pre>nx = 2; % Number of states
+nu = 1; % Number of inputs
+
+% Prediction horizon
+N = 4;</pre>
+          <pre>% States x(k), ..., x(k+N)
+x = sdpvar(repmat(nx,1,N),repmat(1,1,N));</pre>
+			<pre>% Inputs u(k), ..., u(k+N) (last one not used)
+u = sdpvar(repmat(nu,1,N),repmat(1,1,N));</pre>
+          </td>
+        </tr>
+      </table>
+      <p>Now, instead of setting up the problem for the whole prediction 
+		horizon, we only set it up for one step, solve the problem 
+		parametrically, take one step back, and perform a standard dynamic 
+		programming value iteration.</p>
+      <table cellPadding="10" width="100%" id="table13">
+        <tr>
+          <td class="xmpcode">
+          <pre>J{N} = 0;
+
+for k = N-1:-1:1    
+    
+    % Feasible region
+    F =     set(-1 &lt; u{k}     &lt; 1);
+    F = F + set(-1 &lt; C*x{k}   &lt; 1);
+    F = F + set(-5 &lt; x{k}     &lt; 5);
+    F = F + set(-1 &lt; C*x{k+1} &lt; 1);
+    F = F + set(-5 &lt; x{k+1}   &lt; 5);   </pre>
+			<pre>    % Dynamics
+    F = F + set(x{k+1} == A*x{k}+B*u{k});</pre>
+			<pre>    % Cost in value iteration
+    obj = norm(x{k},1) + norm(u{k},1) + J{k+1}
+
+    % Solve one-step problem    
+    [sol{k},diagnost{k},Uz{k},J{k},Optimizer{k}] = solvemp(F,obj,[],x{k},u{k});
+end</pre>
+          </td>
+        </tr>
+      </table>
+      <p>Notice the minor changes needed compared to the one shot solution. 
+		Important to understand is that the value function at step <b>k</b> will 
+		be a function in <b>x{k}</b>, hence when it is used at <b>k-1</b>, it 
+		will be a function penalizing the predicted state. Note that YALMIP 
+		automatically keep track of convexity of the value function. Hence, for 
+		this example, no binary variables are introduced along the solution 
+		process (this is why we safely can 
+		omit the use of <a href="reference.htm#bounds">bounds</a>).</p>
+		<p>To study the development of the value function, we can easily plot 
+		them. </p>
+      <table cellPadding="10" width="100%" id="table14">
+        <tr>
+          <td class="xmpcode">
+          <pre>for k = N-1:-1:1
+ plot(J{k});hold on
+end</pre>
+          </td>
+        </tr>
+      </table>
+      <p>The optimal control input can also be plotted.</p>
+      <table cellPadding="10" width="100%" id="table15">
+        <tr>
+          <td class="xmpcode">
+          <pre>clf;plot(Optimizer{1})</pre>
+          </td>
+        </tr>
+      </table>
+      <p>Of course, you can do the same thing by working directly with the 
+		numerical MPT 
+		data.</p>
+      <table cellPadding="10" width="100%" id="table23">
+        <tr>
+          <td class="xmpcode">
+          <pre>for k = N-1:-1:1
+ mpt_plotPWA(sol{k}{1}.Pn,sol{k}{1}.Bi,sol{k}{1}.Ci);hold on
+end</pre>
+          </td>
+        </tr>
+      </table>
+      <p>Why not solve the problem with a worst-case L<sub><font face="Arial">&#8734;</font></sub> cost! 
+		Notice&nbsp;the non-additive value iteration! Although this might look 
+		complicated using a mix of maximums, norms and piecewise value-functions 
+		, the formulation fits perfectly into the <a href="extoperators.htm">nonlinear operator</a> 
+		framework in YALMIP.</p>
+      <table cellPadding="10" width="100%" id="table24">
+        <tr>
+          <td class="xmpcode">
+          <pre>J{N} = 0;
+
+for k = N-1:-1:1    
+    
+    % Feasible region
+    F =     set(-1 &lt; u{k}     &lt; 1);
+    F = F + set(-1 &lt; C*x{k}   &lt; 1);
+    F = F + set(-5 &lt; x{k}     &lt; 5);
+    F = F + set(-1 &lt; C*x{k+1} &lt; 1);
+    F = F + set(-5 &lt; x{k+1}   &lt; 5);   </pre>
+			<pre>    % Dynamics
+    F = F + set(x{k+1} == A*x{k}+B*u{k});</pre>
+			<pre>    % Cost in value iteration
+    obj = max(norm([x{k};u{k}],inf),J{k+1})
+
+    % Solve one-step problem    
+    [sol{k},diagnost{k},Uz{k},J{k},Optimizer{k}] = solvemp(F,obj,[],x{k},u{k});
+end</pre>
+          </td>
+        </tr>
+      </table>
+      <h3>Dynamic programming with PWA systems</h3>
+		<p>As mentioned above, the difference between the value function from a 
+		parametric LP and a parametric LP with binary variables is that 
+		convexity of the value function no longer is guaranteed. In practice, 
+		this means that (additional) binary variables are required when the the 
+		value function is used in an optimization problem. This is done 
+		automatically in YALMIP through the <a href="extoperators.htm">nonlinear 
+		operator</a> framework, but it is extremely important to realize that 
+		the value function from a binary problem is much more complex than the 
+		one resulting from a standard parametric problem. Nevertheless, working 
+		with the objects is easy, as the following example illustrates. In this 
+		case, we solve the dynamic programming problem for our PWA system</p>
+      <table cellPadding="10" width="100%" id="table20">
+        <tr>
+          <td class="xmpcode">
+          <pre>yalmip('clear')
+clear all</pre>
+			<pre>% Model data
+A = [2 -1;1 0];
+B1 = [1;0];
+B2 = [pi;0]; % Larger gain for negative first state
+C = [0.5 0.5];</pre>
+			<pre>nx = 2; % Number of states
+nu = 1; % Number of inputs
+
+% Prediction horizon
+N = 4;</pre>
+          <pre>% States x(k), ..., x(k+N)
+x = sdpvar(repmat(nx,1,N),repmat(1,1,N));</pre>
+			<pre>% Inputs u(k), ..., u(k+N) (last one not used)
+u = sdpvar(repmat(nu,1,N),repmat(1,1,N));</pre>
+			<pre>% Binary for PWA selection
+d = binvar(repmat(2,1,N),repmat(1,1,N));</pre>
+          </td>
+        </tr>
+      </table>
+      <p>Just as in the LTI case, we set up the problem for the one step case, 
+		and use the value function from the previous iteration.</p>
+      <table cellPadding="10" width="100%" id="table21">
+        <tr>
+          <td class="xmpcode">
+          <pre>J{N} = 0;
+
+for k = N-1:-1:1    
+
+    % Strenghten big-M (improves numerics)
+    bounds(x{k},-5,5);
+    bounds(u{k},-1,1);
+    bounds(x{k+1},-5,5);
+    
+    % Feasible region
+    F =     set(-1 &lt; u{k}     &lt; 1);
+    F = F + set(-1 &lt; C*x{k}   &lt; 1);
+    F = F + set(-5 &lt; x{k}     &lt; 5);
+    F = F + set(-1 &lt; C*x{k+1} &lt; 1);
+    F = F + set(-5 &lt; x{k+1}   &lt; 5);  </pre>
+			<pre>    % PWA Dynamics
+    F = F + set(implies(d{k}(1),x{k+1} == (A*x{k}+B1*u{k})));
+    F = F + set(implies(d{k}(2),x{k+1} == (A*x{k}+B2*u{k})));
+    F = F + set(implies(d{k}(1),x{k}(1) &gt; 0));
+    F = F + set(implies(d{k}(2),x{k}(1) &lt; 0));
+    F = F + set(sum(d{k}) == 1);</pre>
+			<pre>    % Cost in value iteration
+    obj = norm(x{k},1) + norm(u{k},1) + J{k+1}</pre>
+			<pre>    % Solve one-step problem
+    [sol{k},diagnost{k},Uz{k},J{k},Optimizer{k}] = solvemp(F,obj,[],x{k},u{k});
+end</pre>
+          </td>
+        </tr>
+      </table>
+      <p>Plotting the final value function clearly reveals the nonconvexity.</p>
+      <table cellPadding="10" width="100%" id="table22">
+        <tr>
+          <td class="xmpcode">
+          <pre>clf;plot(J{1})</pre>
+          </td>
+        </tr>
+      </table>
+      <h3>Behind the scenes and advanced use</h3>
+		<p>The first thing that might be a bit unusual to the advanced user is 
+		the piecewise functions that YALMIP returns in the fourth and fifth 
+		output from <code>solvemp</code> . In principle, they are specialized
+		<a href="reference.htm#pwf">pwf</a> objects. To create a PWA value 
+		function after solving a multi-parametric LP, the following 
+		command is used.</p>
+      <table cellPadding="10" width="100%" id="table26">
+        <tr>
+          <td class="xmpcode">
+          <pre>Valuefunction = pwf(sol,x,'convex')</pre>
+          </td>
+        </tr>
+      </table>
+      <p>The <a href="reference.htm#pwf">pwf</a> command will recognize the MPT 
+		solution structure and create a PWA function based on the 
+		fields <b>Pn</b>, <b>Bi</b> and <b>Ci</b>. The dedicated
+		<a href="extoperators.htm">nonlinear operator</a> is implemented in the file <code>pwa_yalmip.m</code> 
+		. The <a href="extoperators.htm">nonlinear operator</a> will exploit the 
+		fact that the PWA function is convex and implements an efficient epi-graph 
+		representation. In case the PWA function is used in a non-convex fashion 
+		(i.e. the automatic <a href="extoperators.htm#propagation">convexity 
+		propagation</a> fails), a
+		<a href="extoperators.htm#milp">MILP implementation</a> is also 
+		available.<p>If the field <b>Ai</b> is non-empty (solution obtained from 
+		a multi-parametric QP), a corresponding PWQ function is created (<code>pwq_yalmip.m</code> 
+		). <p>To create a PWA function 
+		representing the optimizer, two things have to be changed. To begin 
+		with, YALMIP searches for the <b>Bi</b> and <b>Ci</b> fields, but since 
+		we want to create a PWA function based on <b>Fi</b> and <b>Gi</b> 
+		fields, the field names have to be changed. Secondly, the piecewise&nbsp; 
+		optimizer is typically not convex, so a general PWA function is created 
+		instead (requiring 1 binary variable per region if the variable later 
+		actually is used in an optimization problem.)<table cellPadding="10" width="100%" id="table27">
+        <tr>
+          <td class="xmpcode">
+          <pre>sol.Ai = cell(1,length(sol.Ai));
+sol.Bi = sol.Fi;
+sol.Ci = sol.Gi;
+Optimizer = pwf(sol,x,'general')</pre>
+          </td>
+        </tr>
+      </table>
+      <p>A third important case is when the solution structure returned from <code>solvemp</code> is 
+		a cell with several <a href="solvers.htm#mpt">MPT</a> structures. This means that a 
+		multi-parametric problem with binary variables was 
+		solved, and the different cells represent overlapping solutions. One way 
+		to get rid of the overlapping solutions is to use the MPT command 
+		<code>mpt_removeOverlaps.m</code> and create a PWA function based on the result. Since the 
+		resulting PWA function typically is non-convex, 
+		we must create a general function.<table cellPadding="10" width="100%" id="table28">
+        <tr>
+          <td class="xmpcode">
+          <pre>sol_single = mpt_removeOverlaps(sol);
+Valuefunction = pwf(sol_single,x,'general')</pre>
+          </td>
+        </tr>
+      </table>
+		<p>This is only recommended if you just intend to plot or investigate 
+		the value function. Typically, if you want to continue computing with the 
+		result, i.e. use it in another optimization problem, as in the dynamic 
+		programming examples above, it is recommended to keep the overlapping 
+		solutions. To model a general PWA function, 1 binary variable per region 
+		is needed. However, by using a dedicated <a href="extoperators.htm">nonlinear operator</a> 
+		for overlapping convex PWA functions, only one binary per PWA function 
+		is needed.</p>
+		<table cellPadding="10" width="100%" id="table29">
+        <tr>
+          <td class="xmpcode">
+          <pre>Valuefunction = pwf(sol,x,'overlapping')</pre>
+          </td>
+        </tr>
+      </table>
+		<p>As we have seen in the examples above, the PWA and PWQ functions can be 
+		plotted. This is currently nothing but a simple hack. Normally, when you 
+		apply the plot command, the corresponding double values are plotted. 
+		However, if the input is a simple scalar PWA or PWQ variable, the 
+		underlying MPT structures will be extracted and the plot commands in MPT 
+		will be called.</td>
+    </tr>
+  </table>
+	<p>&nbsp;</div>
+
+</body>
+
+</html>

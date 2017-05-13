@@ -1,0 +1,134 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<title>YALMIP Example : Solving BMIs locally</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<meta content="Microsoft FrontPage 6.0" name="GENERATOR">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<link href="yalmip.css" type="text/css" rel="stylesheet">
+<base target="_self">
+</head>
+
+<body leftMargin="0" topMargin="0">
+
+<div align="left">
+
+<table border="0" cellpadding="4" cellspacing="3" style="border-collapse: collapse" bordercolor="#000000" width="100%" align="left" height="100%">
+  <tr>
+    <td width="100%" align="left" height="100%" valign="top">
+          <h2>Local solution of bilinear matrix inequalities (BMIs)</h2>
+    <hr noShade SIZE="1">
+    <p>
+    <img border="0" src="exclamationmark.jpg" align="left" width="16" height="16">This 
+    example requires the solver <a href="solvers.htm#penbmi">PENBMI</a></p>
+    <p>BMI problems are solved locally just as easy as standard SDP 
+    problems, by using the solver <a href="solvers.htm#penbmi">PENBMI</a>. As an example, the&nbsp;<a href="gevp.htm">decay-rate estimation problem</a> that we 
+    earlier solved using a bisection, is solved with the following code.</p>
+    <table cellPadding="10" width="100%">
+      <tr>
+        <td class="xmpcode">
+        <pre>A = [-1 2;-3 -4];
+t = sdpvar(1,1);
+P = sdpvar(2,2);
+F = set(P&gt;eye(2))+set(A'*P+P*A &lt; -2*t*P);
+solvesdp(F,-t);</pre>
+        </td>
+      </tr>
+    </table>
+    <p> <a href="solvers.htm#penbmi">PENBMI</a> seem to perform better if 
+	variables are constrained, so the following code is often recommended (see 
+	the <a href="advanced.htm">advanced programming examples</a>).</p>
+    <table cellPadding="10" width="100%">
+      <tr>
+        <td class="xmpcode">
+        <pre>A = [-1 2;-3 -4];
+t = sdpvar(1,1);
+P = sdpvar(2,2);
+F = set(P&gt;eye(2))+set(A'*P+P*A &lt; -2*t*P);
+
+F = F + set(-100 &lt; recover(depends(F)) &lt; 100);
+
+solvesdp(F,-t);</pre>
+        </td>
+      </tr>
+    </table>
+    		<p>As another example, the code below calculates an LQ optimal feedback. 
+    (of-course, this can be solved much more efficiently by first recasting it 
+    as a convex problem)</p>
+    <table cellPadding="10" width="100%">
+      <tr>
+        <td class="xmpcode">
+        <pre>A = [-1 2;-3 -4];B = [1;1];
+P = sdpvar(2,2);K = sdpvar(1,2);
+F = set(P&gt;0)+set((A+B*K)'*P+P*(A+B*K) &lt; -eye(2)-K'*K);
+solvesdp(F,trace(P));</pre>
+        </td>
+      </tr>
+    </table>
+    <p>More interesting, we can solve the LQ problem with constraints on the 
+    feedback matrix.</p>
+    <table cellPadding="10" width="100%">
+      <tr>
+        <td class="xmpcode">
+        <pre>A = [-1 2;-3 -4];B = [1;1];
+P = sdpvar(2,2);K = sdpvar(1,2);
+F = set(K&lt;0.1)+set(K&gt;-0.1)+set(P&gt;0)+set((A+B*K)'*P+P*(A+B*K) &lt; -eye(2)-K'*K);
+solvesdp(F,trace(P));</pre>
+        </td>
+      </tr>
+    </table>
+    <p>Reasonable initial guesses is often crucial in non-convex optimization. 
+    The easiest way to specify initial guesses in YALMIP is to use the field
+    <code>usex0</code> in
+    <a href="reference.htm#sdpsettings">
+    sdpsettings</a> and the command
+    <a href="reference.htm#assign">
+    assign</a>. Consider the constrained LQ example above, and let us specify 
+    an initial guess using a standard LQ feedback. </p>
+    <table cellPadding="10" width="100%">
+      <tr>
+        <td class="xmpcode">
+        <pre>A = [-1 2;-3 -4];B = [1;1];
+[K0,P0] = lqr(A,B,eye(2),1);
+P = sdpvar(2,2);assign(P,P0);
+K = sdpvar(1,2);assign(K,-K0);
+F = set(K&lt;0.1)+set(K&gt;-0.1)+set(P&gt;0)+set((A+B*K)'*P+P*(A+B*K) &lt; -eye(2)-K'*K);
+solvesdp(F,trace(P),sdpsettings('usex0',1));</pre>
+        </td>
+      </tr>
+    </table>
+          <p><img border="0" src="demoicon.gif" width="16" height="16"><a href="solvers.htm#penbmi">PENBMI</a> 
+          supports non-convex quadratic objective functions. Hence you can 
+          (locally) solve non-convex quadratically constrained quadratic 
+          programming using PENBMI.
+<!--          <p><img border="0" src="demoicon.gif" width="16" height="16">You can 
+          actually (try to...) solve the BMI above without PENBMI. The internal solver <code>'bmilin'</code> is one 
+          alternative. Note though that this solver is slow and unstable. It is 
+          based on a simple sequential linearization approach with a 
+          trust-region, and is merely implemented to show how a simple 
+          BMI-solver can be coded using a few lines of YALMIP code. For more 
+          information, check out Example 14 in
+          <a href="reference.htm#yalmipdemo">yalmipdemo</a>.-->
+          <p><img border="0" src="demoicon.gif" width="16" height="16">YALMIP 
+			will automatically convert higher order polynomial programs to 
+			bilinear programs, hence YALMIP+<a href="solvers.htm#penbmi">PENBMI</a> 
+			can be used to address general polynomial problems.
+<!--          <p><img border="0" src="demoicon.gif" width="16" height="16">You can 
+          actually (try to...) solve the BMI above without PENBMI. The internal solver <code>'bmilin'</code> is one 
+          alternative. Note though that this solver is slow and unstable. It is 
+          based on a simple sequential linearization approach with a 
+          trust-region, and is merely implemented to show how a simple 
+          BMI-solver can be coded using a few lines of YALMIP code. For more 
+          information, check out Example 14 in
+          <a href="reference.htm#yalmipdemo">yalmipdemo</a>.-->
+          </td>
+  </tr>
+</table>
+
+</div>
+
+</body>
+
+</html>

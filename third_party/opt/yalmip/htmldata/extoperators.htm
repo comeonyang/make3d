@@ -1,0 +1,773 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<title>YALMIP Example : Linear regression</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<meta content="Microsoft FrontPage 6.0" name="GENERATOR">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<link href="yalmip.css" type="text/css" rel="stylesheet">
+<base target="_self">
+</head>
+
+<body leftmargin="0" topmargin="0">
+
+<div align="left">
+	<table border="0" cellpadding="4" cellspacing="3" style="border-collapse: collapse" bordercolor="#000000" width="100%" align="left" height="100%">
+		<tr>
+			<td width="100%" align="left" height="100%" valign="top">
+			<h2>Nonlinear operators</h2>
+			<hr noshade size="1" color="#000000">
+			<p>YALMIP supports modeling of nonlinear, often non-differentiable, 
+			operators that typically occur in convex programming. Nine simple operators 
+			are currently supported: <b>min</b>, <b>max</b>, <b>abs</b>, <b>sqrt</b>,
+			<b>norm</b>, <b>sumk</b>, <b>sumabsk</b>, <b>geomean</b> and <b>cpower</b>, 
+			and users can easily add their own (<a href="#operatorformat">see</a> the end of this page). The operators 
+			can be used intuitively, and YALMIP will automatically try to find out 
+			if they are used in a way that enables a convex representation. Although 
+			this can simplify the modeling phase significantly in some cases, it 
+			is recommended not to use these operators unless you know how to model 
+			them by your self using epigraphs and composition rules of convex and 
+			concave functions, why and when it can be done etc. The text-book
+			<a href="readmore.htm#BOYDVAN2003">[S. Boyd and L. Vandenberghe]</a> 
+			should be a suitable introduction for the beginner. </p>
+			<p>In addition to modeling convex and concave operators and perform 
+			automatic analysis and derivation of equivalent conic programs, YALMIP 
+			also uses the nonlinear operator framework for implementing
+			<a href="logic.htm">logic expression</a> involving <b>or</b> and <b>
+			and</b>, and in the same vein but on a higher level, to handle piecewise 
+			functions in <a href="reference.htm#pwf">pwf</a>.</p>
+			<p>The nonlinear operator framework was initially implemented for 
+			functions that can be modelled rigorously using conic constraints 
+			and additional variables. However, there are many functions that 
+			cannot be exactly modelled using conic constraints, such as 
+			exponential functions and logarithms, but are convex or 
+			concave, and of course can be analyzed in terms of convexity 
+			preserving operations. These function are supported in a framework 
+			called evaluation based nonlinear operators. The models using these 
+			general convex functions will be analysed for convexity, but the 
+			resulting model will be a problem that only can be solved using 
+			a general nonlinear solver, such as <a href="solvers.htm#fmincon">
+			fmincon</a>. See <a href="#evaluationbased">evaluation based nonlinear operators</a>. Note that 
+			this extension still is experimental and not intended for large 
+			problems.</p>
+			<h3><a name="propagation"></a>Convexity analysis in 10 lines</h3>
+			<p>Without going into theoretical details, the convexity analysis is 
+			based on epi- and hypograph formulations, and composition rules. For 
+			the compound expression <b>f = h(g(x))</b>, it holds that (For 
+			simplicity, we write increasing, decreasing, convex and concave, but 
+			the correct notation would be nondecreasing, nonincreasing, convex 
+			or affine and concave or affine. This notation us used throughout 
+			this manual and inside YALMIP)</p>
+			<div align="center">
+				<table border="1" bgcolor="#EEEEEE" bordercolor="#000000" id="table1">
+					<tr>
+						<td bordercolorlight="#FFFFFF" bordercolordark="#FFFFFF">
+						<b>f</b> is <i>convex</i> if <b>h</b> is <i>convex</i> and
+						<i>increasing</i> and <b>g</b> is <i>convex</i><br>
+						<b>f</b> is <i>convex</i> if <b>h</b> is <i>convex</i> and
+						<i>decreasing</i> and <b>g</b> is <i>concave</i> <br>
+						<b>f</b> is <i>concave</i> if <b>h</b> is <i>concave</i> 
+						and <i>increasing</i> and <b>g</b> is <i>concave</i>
+						<br>
+						<b>f</b> is <i>concave</i> if <b>h</b> is <i>concave</i> 
+						and <i>decreasing</i> and <b>g</b> is <i>convex</i></td>
+					</tr>
+				</table>
+			</div>
+			<p>Based on this information, it is possible to recursively analyze 
+			convexity of a complex expression involving convex and concave functions. 
+			When <a href="reference.htm#solvesdp">solvesdp</a> is called, YALMIP 
+			checks the convexity of objective function and constraints by using 
+			information about the properties of the operators. If YALMIP manage 
+			to prove convexity, graph formulations of the operators are automatically 
+			introduced. This means that the operator is replaced with a graph, i.e., 
+			a set of constraints. </p>
+			<div align="center">
+				<table border="1" bgcolor="#EEEEEE" bordercolor="#000000" id="table2">
+					<tr>
+						<td bordercolorlight="#FFFFFF" bordercolordark="#FFFFFF">
+						<b>epigraph: t</b> represents convex function <b>f(x)</b> 
+						: replace with <b>t<font face="Tahoma">&#8805;</font>f(x)</b><br>
+						<b>hypograph</b>: <b>t</b> represents concave function <b>
+						f(x)</b> : replace with <b>t<font face="Tahoma">&#8804;</font>f(x)</b></td>
+					</tr>
+				</table>
+			</div>
+			<p align="left">Of course, in order for this to be useful, the epigraph 
+			representation has to be represented using standard constraints, such 
+			as conic constraints.</p>
+			<h3 align="left">The operators</h3>
+			<p align="left">The operators defined in the current release are 
+			described in the table below. This information might be useful to 
+			understand how and when YALMIP can derive convexity.</p>
+			<div align="center">
+				<table border="1" width="86%" id="table7" bordercolor="#000000" style="border-collapse: collapse" bgcolor="#EEEEEE">
+					<tr>
+						<td>
+						<p align="center"><b>Name</b></td>
+						<td>
+						<p align="center"><b>Convex/Concave</b></td>
+						<td>
+						<p align="center"><b>Monotinicity</b></td>
+						<td width="468">
+						<p align="center"><b>Comments</b></td>
+					</tr>
+					<tr>
+						<td align="center">abs</td>
+						<td bgcolor="#FFFFFF" align="center">convex</td>
+						<td bgcolor="#FFFFFF" align="center">none</td>
+						<td width="468" bgcolor="#FFFFFF" height="31">&nbsp;</td>
+					</tr>
+					<tr>
+						<td align="center">min</td>
+						<td bgcolor="#FFFFFF" align="center">concave</td>
+						<td bgcolor="#FFFFFF" align="center">increasing</td>
+						<td width="468" bgcolor="#FFFFFF">&nbsp;</td>
+					</tr>
+					<tr>
+						<td align="center">max</td>
+						<td bgcolor="#FFFFFF" align="center">convex</td>
+						<td bgcolor="#FFFFFF" align="center">increasing</td>
+						<td width="468" bgcolor="#FFFFFF">&nbsp;</td>
+					</tr>
+					<tr>
+						<td align="center">norm</td>
+						<td bgcolor="#FFFFFF" align="center">convex</td>
+						<td bgcolor="#FFFFFF" align="center">none</td>
+						<td width="468" bgcolor="#FFFFFF">All standard norms (1,2, inf and Frobenius) can be used 
+						(applicable on both vectors and matrices.)</td>
+					</tr>
+					<tr>
+						<td align="center">sumk</td>
+						<td bgcolor="#FFFFFF" align="center">convex</td>
+						<td bgcolor="#FFFFFF" align="center">See comment</td>
+						<td width="468" bgcolor="#FFFFFF">Defines the sum of the 
+						k largest elements of a vector, or the sum of the k 
+						largest eigenvalues of a symmetric matrix. Increasing 
+						for vector arguments, no monotinicity defined for 
+						eigenvalue operator.</td>
+					</tr>
+					<tr>
+						<td align="center">sumabsk</td>
+						<td bgcolor="#FFFFFF" align="center">convex</td>
+						<td bgcolor="#FFFFFF" align="center">none</td>
+						<td width="468" bgcolor="#FFFFFF">Defines the sum of the 
+						k largest absolute value elements of a vector, or the 
+						sum of the k largest absolute value eigenvalues of a 
+						symmetric matrix. </td>
+					</tr>
+					<tr>
+						<td align="center">geomean</td>
+						<td bgcolor="#FFFFFF" align="center">concave</td>
+						<td bgcolor="#FFFFFF" align="center">See comment</td>
+						<td width="468" bgcolor="#FFFFFF">For vector arguments, the operator is increasing. For 
+						symmetric matrix argument, the operator is defined as the 
+						geometric mean of the eigenvalues. No monotinicity 
+						defined for eigenvalue operator</td>
+					</tr>
+					<tr>
+						<td align="center">cpower</td>
+						<td bgcolor="#FFFFFF" align="center">See comment</td>
+						<td bgcolor="#FFFFFF" align="center">See comment</td>
+						<td width="468" bgcolor="#FFFFFF">Convexity-aware 
+						version of power. For negative powers, the operator is convex and decreasing. 
+						For positive powers less than one, the operator is concave 
+						and increasing. Positive powers larger than 1 gives a convex 
+						increasing operator.</td>
+					</tr>
+					<tr>
+						<td align="center">sqrt</td>
+						<td bgcolor="#FFFFFF" align="center">concave</td>
+						<td bgcolor="#FFFFFF" align="center">increasing</td>
+						<td width="468" bgcolor="#FFFFFF">Short for 
+						cpower(x,0.5)</td>
+					</tr>
+					</table>
+			</div>
+			<h3>Standard use</h3>
+			<p>Consider once again the <a href="linearregression.htm">linear regression 
+			problem</a>.</p>
+			<table cellpadding="10" width="100%">
+				<tr>
+					<td class="xmpcode">
+					<pre>a = [1 2 3 4 5 6]&#39;;
+t = (0:0.2:2*pi)&#39;;
+x = [sin(t) sin(2*t) sin(3*t) sin(4*t) sin(5*t) sin(6*t)];
+y = x*a+(-4+8*rand(length(x),1));
+a_hat = sdpvar(6,1);
+residuals = y-x*a_hat;</pre>
+					</td>
+				</tr>
+			</table>
+			<p>Using <b>abs</b> and <b>max</b>, we can easily solve the L<sub>1</sub> 
+			and the L<sub>&#8734;</sub> problem (Note that the <b>abs</b> operator currently 
+			has performance issues and should be avoided for large arguments. Moreover, explicitly creating 
+			absolute values when minimizing the L<sub>&#8734;</sub> error is 
+			unnecessarily complicated).
+			</p>
+			<table cellpadding="10" width="100%">
+				<tr>
+					<td class="xmpcode">
+					<pre>solvesdp([],sum(abs(residuals)));
+a_L1 = double(a_hat)
+solvesdp([],max(abs(residuals)));
+a_Linf = double(a_hat)</pre>
+					</td>
+				</tr>
+			</table>
+			<p>YALMIP automatically concludes that the objective functions can be 
+			modeled using some additional linear inequalities, adds these, and solves 
+			the problems. We can simplify the code even more by using the <b>norm</b> 
+			operator (this is much faster for large-scale problems due to implementation 
+			issues in YALMIP). Here we also compute the least-squares solution (note 
+			that this norm will generate a second-order cone constraint).</p>
+			<table cellpadding="10" width="100%">
+				<tr>
+					<td class="xmpcode">
+					<pre>solvesdp([],norm(residuals,1));
+a_L1 = double(a_hat)
+solvesdp([],norm(residuals,2));
+a_L2 = double(a_hat)
+solvesdp([],norm(residuals,inf));
+a_Linf = double(a_hat)</pre>
+					</td>
+				</tr>
+			</table>
+			<p>The following piece of code shows how we easily can solve a regularized 
+			problem.</p>
+			<table cellpadding="10" width="100%">
+				<tr>
+					<td class="xmpcode">
+					<pre>solvesdp([],1e-3*norm(a_hat,2)+norm(residuals,inf));
+a_regLinf = double(a_hat)</pre>
+					</td>
+				</tr>
+			</table>
+			<p>The <b>norm</b> operator is used exactly as the built-in norm function 
+			in MATLAB, both for vectors and matrices. Hence it can be used also 
+			to minimize the largest singular value (2-norm in matrix case), or the 
+			Frobenious norm of a matrix.</p>
+			<p>The <code>double</code> command of-course applies also to the nonlinear 
+			operators (<b>double</b>(<b>OPERATOR</b>(<b>X</b>)) returns <b>OPERATOR</b>(<b>double</b>(<b>X</b>)).</p>
+			<table cellpadding="10" width="100%">
+				<tr>
+					<td class="xmpcode">
+					<pre>double(1e-3*norm(a_hat,2)+norm(residuals,inf))
+<font color="#000000">ans =
+    3.1175</font></pre>
+					</td>
+				</tr>
+			</table>
+			<p><a name="geomean2"></a>A construction useful for maximizing determinants 
+			of positive definite matrices is the function <b>(det P)<sup>1/m</sup></b>, 
+			for positive definite matrix P, where <b>m</b> is the dimension of
+			<b>P</b>. This concave function, called <b>geomean</b> in YALMIP, is 
+			supported as an extended operator. Note that the positive semidefiniteness 
+			constraint on <b>P</b> is added automatically by YALMIP.</p>
+			<table cellpadding="10" width="100%">
+				<tr>
+					<td class="xmpcode">
+					<pre>D = randn(5,5);
+P = sdpvar(5,5);
+solvesdp(set(P &lt; D*D&#39;),-geomean(P));</pre>
+					</td>
+				</tr>
+			</table>
+			<p>The command can be applied also on positive vectors, and will then 
+			model the geometric mean of the elements. We can use this to find the analytic 
+			center of a set of linear inequalities (note that this is absolutely 
+			not the recommended way to compute the analytic center.)</p>
+			<table cellpadding="10" width="100%">
+				<tr>
+					<td class="xmpcode">
+					<pre>A = randn(15,2);
+b = rand(15,1)*5;</pre>
+					<pre>x = sdpvar(2,1);
+solvesdp([],-geomean(b-A*x)); % Maximize product of elements in b-Ax, s.t Ax &lt; b</pre>
+					</td>
+				</tr>
+			</table>
+			<p>Rather advanced constructions are possible, and YALMIP will try derive 
+			an equivalent convex model.</p>
+			<table cellpadding="10" width="100%" id="table3">
+				<tr>
+					<td class="xmpcode">
+					<pre>sdpvar x y z
+F = set(max(1,x)+max(y^2,z) &lt; 3)+set(max(1,-min(x,y)) &lt; 5)+set(norm([x;y],2) &lt; z);
+sol = solvesdp(F,max(x,z)-min(y,z)-z);</pre>
+					</td>
+				</tr>
+			</table>
+			<h3><a name="polynomials"></a>Polynomial and sigmonial expressions</h3>
+			<p>By default, polynomial expressions (except quadratics) are not analyzed 
+			with respect to convexity and conversion to a conic model is not performed. 
+			Hence, if you add a constraint such as <code>set(x^4 + y^8-x^0.5 &lt; 10)</code>, 
+			YALMIP may complain about convexity, even though we can see that the 
+			expression is convex and can be represented using conic constraints. 
+			More importantly, YALMIP will not try to derive an equivalent conic 
+			model. However, by using the command <b>cpower</b> instead, rational 
+			powers can be used. </p>
+			<p>To illustrate this, first note the difference between a monomial 
+			generated using overloaded power and a variable generated <b>cpower</b>.</p>
+			<table cellpadding="10" width="100%" id="table4">
+				<tr>
+					<td class="xmpcode">
+					<pre>sdpvar x
+x^4
+<font color="#000000">Polynomial scalar (real, homogeneous, 1 variable)</font>
+cpower(x,4)
+<font color="#000000">Linear scalar (real, derived, 1 variable)</font></pre>
+					</td>
+				</tr>
+			</table>
+			<p>The property <i>derived</i> indicates that YALMIP will try to replace the 
+			variable with its epigraph formulation when the problem is solved. Working 
+			with these convexity-aware monomials is no different than usual.</p>
+			<table cellpadding="10" width="100%" id="table5">
+				<tr>
+					<td class="xmpcode">
+					<pre>sdpvar x y
+F = set(cpower(x,4) + cpower(y,4) &lt; 10) + set(cpower(x,2/3) + cpower(y,2/3) &gt; 1);
+plot(F,[x y]);</pre>
+					</td>
+				</tr>
+			</table>
+			<p>Note that when you plot sets with constraints involving nonlinear 
+			operators and polynomials, it is recommended that you specify the variables 
+			of interest in the second argument (YALMIP may otherwise plot the set 
+			with respect to auxiliary variables introduced during the construction 
+			of the conic model.)</p>
+			<p>Do not use these operators unless you really need them. The conic 
+			representation of rational powers easily grow large.</p>
+			<h3>Limitations</h3>
+			<p>If the convexity propagation fails, an error will be issued (error 
+			code 14). Note that this does not imply that the model is nonconvex, 
+			but only means that the simple sufficient conditions used for checking 
+			convexity were violated. Failure is however typically an indication 
+			of a bad model, and most often due to an actual nonconvex part in the 
+			model. The problems above are all convex, but not this problem below, 
+			due to the way <b>min</b> enters in the constraint.</p>
+			<table cellpadding="10" width="100%">
+				<tr>
+					<td class="xmpcode">
+					<pre>sdpvar x y z
+F = set(max(1,x)+max(y^2,z) &lt; 3)+set(max(1,<font color="#FF0000">min</font>(x,y)) &lt; 5)+set(norm([x;y],2) &lt; z);
+sol = solvesdp(F,max(x,z)-min(y,z)-z);
+sol.info
+
+<font color="#000000">ans =
+ Convexity check failed (Expected convex function in constraint #2 at level 2)</font></pre>
+					</td>
+				</tr>
+			</table>
+			<p>In the same sense, this problem fails due to a nonconvex objective 
+			function.</p>
+			<table cellpadding="10" width="100%">
+				<tr>
+					<td class="xmpcode">
+					<pre>sdpvar x y z
+F = set(max(1,x)+max(y^2,z) &lt; 3);
+sol = solvesdp(F,-norm([x;y]));
+sol.info
+<font color="#000000">
+ans =
+ Convexity check failed (Expected concave function in objective at level 1)</font></pre>
+					</td>
+				</tr>
+			</table>
+			<p>This following problem is however convex, but convexity propagation 
+			fails.</p>
+			<table cellpadding="10" width="100%" id="table6">
+				<tr>
+					<td class="xmpcode">
+					<pre>sdpvar x
+sol = solvesdp([],norm(max([1 1-x 1+x])))
+sol.info
+<font color="#000000">
+ans =
+ Convexity check failed (Monotonicity required at objective at level 1)</font></pre>
+					</td>
+				</tr>
+			</table>
+			<p>The described operators cannot be used in polynomial expressions 
+			in the current implementation. The following problem is trivially convex 
+			but fails.</p>
+			<table cellpadding="10" width="100%" id="table8">
+				<tr>
+					<td class="xmpcode">
+					<pre>sdpvar x y
+sol = solvesdp([],norm([x;y])^2);
+sol.info
+
+<font color="#000000">ans =
+ Convexity check failed (Operator in polynomial in objective)</font></pre>
+					</td>
+				</tr>
+			</table>
+			<p>Another limitation is that the operators not are allowed in cone 
+			and semidefinite constraints.</p>
+			<table cellpadding="10" width="100%" id="table10">
+				<tr>
+					<td class="xmpcode">
+					<pre>sdpvar x y
+sol = solvesdp(set(cone(max(x,y,1),2)),x+y);
+sol.info
+
+<font color="#000000">ans =
+ Convexity propagation failed (YALMIP)</font></pre>
+					</td>
+				</tr>
+			</table>
+			<p>In practice, these limitations should not pose a major problem. A 
+			better model is possible (and probably recommended) in most cases if 
+			these situations occur. </p>
+			<h3><a name="milp"></a>Mixed integer models</h3>
+			<p>In some cases when the convexity analysis fails, it is possible 
+			to tell YALMIP to switch from a graph based approach to a mixed 
+			integer model based approach. In other words, if no graph model can 
+			be derived, YALMIP introduces integer variables to model the 
+			operators. This is currently implemented for <b>min</b>, <b>
+			max</b>, <b>abs</b> and linear <b>norm</b> for real arguments. By default, this feature 
+			is not invoked, but can be activated by <code>sdpsettings('allowmilp',1)</code>.</p>
+			<p>Consider the following simple example which fails due to the 
+			non-convex use of the convex <b>abs</b> operator</p>
+			<table cellpadding="10" width="100%" id="table12">
+				<tr>
+					<td class="xmpcode">
+					<pre>sdpvar x y
+F = set(abs(abs(x+1)+3) &gt; y)+set(0&lt;x&lt;3);
+sol = solvesdp(F,-y);
+sol.info
+<font color="#000000"> Convexity check failed (Expected concave function in constraint #1 at level 1)</font></pre>
+					</td>
+				</tr>
+			</table>
+			<p>By turning on the mixed integer fall back model, a mixed integer 
+			LP is generated and the problem is easily solved.</p>
+			<table cellpadding="10" width="100%" id="table13">
+				<tr>
+					<td class="xmpcode">
+					<pre>sdpvar x y
+F = set(abs(abs(x+1)+3) &gt; y)+set(0&lt;x&lt;3);
+sol = solvesdp(F,-y,sdpsettings('allowmilp',1));
+double([x y])
+<font color="#000000">ans =
+    3.0000    7.0000</font></pre>
+					</td>
+				</tr>
+			</table>
+			<p>If you know that your model is non-convex and will require a 
+			mixed integer model, you can bypass the initial attempt to generate 
+			the graph model by using <code>sdpsettings('allowmilp',2)</code>.</p>
+			<h3><a name="evaluationbased"></a>Evaluation based nonlinear operators</h3>
+			<p>YALMIP now also supports experimental support for general 
+			convex/concave functions that cannot be modelled using conic 
+			representations. The main difference when working with these 
+			operators is that the problem always requires a general nonlinear 
+			solver to solved, such as<a href="solvers.htm#fmincon"> fmincon</a>. 
+			All convexity analysis is still performed tough.</p>
+			<table cellpadding="10" width="100%" id="table14">
+				<tr>
+					<td class="xmpcode">
+					<pre>sdpvar x
+solvesdp(set(exp(2*x + 1) &lt; 1),-x,sdpsettings('solver','fmincon'));
+double(x)
+<font color="#000000">ans =
+   -0.5000</font></pre>
+					<pre>double(exp(2*x + 1))
+<font color="#000000">ans =
+     1</font></pre>
+					</td>
+				</tr>
+			</table>
+			<p>Note that this feature still is very limited and experimental. 
+			Too see how you can add our own function, see the
+			<a href="#entropy">example for scalar entropy</a>. </p>
+			<p>As a word of caution, note that<a href="solvers.htm#fmincon"> fmincon</a> 
+			performs pretty bad on problems with functions that aren't defined 
+			everywhere, such as logarithms. Hence, solving problem involving 
+			these functions can easily lead to problems. It is highly 
+			recommended to at least provide a feasible solution, or even better, 
+			to use the inverse operator to formulate the problem. Consider the 
+			following trivial example of finding the analytic center of a unit 
+			cube centered at the point (3,3,3)</p>
+			<table cellpadding="10" width="100%" id="table16">
+				<tr>
+					<td class="xmpcode">
+					<pre>x = sdpvar(3,1);
+p = [1-(x-3);(x-3)+1]
+
+% Not recommended
+solvesdp([],-sum(log(p)));
+
+% Better
+assign(x,[3.1;3.2;3.3]);
+solvesdp([],-sum(log(p)),sdpsettings('usex0',1));
+
+% Best (well, adding initials on x and t would be even better)
+t = sdpvar(3,1);
+solvesdp(exp(t) &lt; p ,-sum(t));</pre>
+					<pre>
+</pre>
+					</td>
+				</tr>
+			</table>
+			<h3>Behind the scene</h3>
+			<p>If you want to look at the model that YALMIP generates, you can use 
+			the two commands <code>model</code> and <code>expandmodel</code>. Please 
+			note that these expanded models never should be used manually. The commands 
+			described below should only be used for illustrating the process that 
+			goes on behind the scenes.</p>
+			<p>With the command <code>model</code>, the epi- or hypograph model 
+			of the variable is returned. As an example, to model the maximum of 
+			two scalars <b>x</b> and <b>y</b>, YALMIP generates two linear inequalities.</p>
+			<table cellpadding="10" width="100%">
+				<tr>
+					<td class="xmpcode">
+					<pre>sdpvar x y
+t = max([x y]);
+F = model(t)
+<font color="#000000">++++++++++++++++++++++++++++++++++++++++++++
+|   ID|      Constraint|               Type|
+++++++++++++++++++++++++++++++++++++++++++++
+|   #1|   Numeric value|   Element-wise 1x2|
+++++++++++++++++++++++++++++++++++++++++++++</font>
+sdisplay(sdpvar(F(1)))
+<font color="#000000">ans =
+   &#39;-x+t&#39;    &#39;-y+t&#39;</font></pre>
+					</td>
+				</tr>
+			</table>
+			<p>For more advanced models with recursively used nonlinear operators, 
+			the function <code>model</code> will not generate the complete model 
+			since it does not recursively expand the arguments. For this case, use 
+			the command <code>expandmodel</code>. This command takes two arguments, 
+			a set of constraints and an objective function. To expand an expression, 
+			just let the expression take the position as the objective function. 
+			Note that the command assumes that the expansion is performed in order 
+			to prove a convex function, hence if you expression is meant to be concave, 
+			you need to negate it. To illustrate this, let us expand the objective 
+			function in an extension of the geometric mean example above.</p>
+			<table cellpadding="10" width="100%">
+				<tr>
+					<td class="xmpcode">
+					<pre>A = randn(15,2);
+b = rand(15,1)*5;</pre>
+					<pre>x = sdpvar(2,1);
+expandmodel([],-geomean([b-A*x;min(x)]))
+<font color="#000000">+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+|    ID|      Constraint|                               Type|
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+|    #1|   Numeric value|                   Element-wise 2x1|
+|    #2|   Numeric value|   Second order cone constraint 3x1|
+|    #3|   Numeric value|   Second order cone constraint 3x1|
+|    #4|   Numeric value|   Second order cone constraint 3x1|
+|    #5|   Numeric value|   Second order cone constraint 3x1|
+|    #6|   Numeric value|   Second order cone constraint 3x1|
+|    #7|   Numeric value|   Second order cone constraint 3x1|
+|    #8|   Numeric value|   Second order cone constraint 3x1|
+|    #9|   Numeric value|   Second order cone constraint 3x1|
+|   #10|   Numeric value|   Second order cone constraint 3x1|
+|   #11|   Numeric value|   Second order cone constraint 3x1|
+|   #12|   Numeric value|   Second order cone constraint 3x1|
+|   #13|   Numeric value|   Second order cone constraint 3x1|
+|   #14|   Numeric value|   Second order cone constraint 3x1|
+|   #15|   Numeric value|   Second order cone constraint 3x1|
+|   #16|   Numeric value|   Second order cone constraint 3x1|
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</font></pre>
+					</td>
+				</tr>
+			</table>
+			<p>The result is two linear inequalities related to the <b>min</b> operator 
+			and 15 second order cone constraints used for the conic representation 
+			of the geometric mean.</p>
+			<h3><a name="operatorformat"></a>Adding new operators</h3>
+			<p>If you want to add your own operator, all you need to do is to create 
+			1 file. This file should be able to return the numerical value of the 
+			operator for a numerical input, and return the epigraph (or hypograph) 
+			and a descriptive structure of the operator when the first input is
+			<code>&#39;graph&#39;</code>. As an example, the following file implements the 
+			nonlinear operator <b>tracenorm</b>. This convex operator returns <b>
+			sum(svd(X))</b> for matrices <b>X</b>. This value can also be described 
+			as the minimizing argument of the optimization problem <b>min<sub>t,A,B</sub> 
+			t</b> subject to <b>set([A X;X&#39; B] &gt; 0) + set(trace(A)+trace(B) &lt; 2*t)</b>.</p>
+			<table cellpadding="10" width="100%">
+				<tr>
+					<td class="xmpcode">
+					<pre>function varargout = tracenorm(varargin)
+
+switch class(varargin{1})    
+
+    case &#39;double&#39; % What is the <font color="#FF0000">numerical value</font> (needed for displays etc)
+        varargout{1} = sum(svd(varargin{1}));
+
+    case &#39;char&#39;   % YALMIP send &#39;graph&#39; when it wants the epigraph or hypograph
+        switch varargin{1}
+	 case &#39;graph&#39;
+            t = varargin{2}; % 2nd arg is the extended operator variable
+            X = varargin{3}; % 3rd arg and above are args user used when defining t.
+            A = sdpvar(size(X,1));
+            B = sdpvar(size(X,2));
+            F = set([A X;X&#39; B] &gt; 0) + set(trace(A)+trace(B) &lt; 2*t);
+
+            % <font color="#FF0000">Return epigraph model
+            </font>varargout{1} = F;
+            % <font color="#FF0000">a description </font>
+            properties.convexity    = &#39;convex&#39;;<font color="#FF0000">   % convex | none | concave</font>
+            properties.monotonicity = &#39;none&#39;;<font color="#FF0000">     % increasing | none | decreasing</font>
+            properties.definiteness = &#39;positive&#39;;<font color="#FF0000"> % negative | none | positive</font>  
+            varargout{2} = properties;
+            % <font color="#FF0000">and the argument
+</font>            varargout{3} = X;
+
+         case 'milp'
+	    varargout{1} = [];
+	    varargout{2} = [];
+	    varargout{3} = [];
+
+         otherwise
+            error(&#39;Something is very wrong now...&#39;)
+        end    
+
+    case &#39;sdpvar&#39; % Always the same. 
+        varargout{1} = yalmip(&#39;addextendedvariable&#39;,mfilename,varargin{:});    
+
+    otherwise
+end</pre>
+					</td>
+				</tr>
+			</table>
+			<p>The function <code>sumk.m</code> in YALMIP is implemented using this 
+			framework and might serve as an additional fairly simple example. The 
+			overloaded operator <code>norm.m</code> is also defined using this method, 
+			but is a bit more involved, since it supports different norms. Note 
+			that we with a slight abuse of notation use the terms increasing and 
+			decreasing instead of nondecreasing and nonincreasing.</p>
+			<h3><a name="operatorformat0"></a>Adding new operators with mixed 
+			integer models</h3>
+			<p>If the convexity analysis fails, it is possible to have fall back 
+			alternative models based on integer variables. If the operator is 
+			called with the flag <code>milp</code>, a mixed integer exact model 
+			can be 
+			returned. As an illustration, here is a stripped down version of the 
+			epigraph and MILP model of the absolute value of a real scalar.</p>
+			<table cellpadding="10" width="100%" id="table11">
+				<tr>
+					<td class="xmpcode">
+					<pre>function varargout = scalarrealabs(varargin)
+
+switch class(varargin{1})    
+
+    case &#39;double&#39; 
+        varargout{1} = abs(varargin{1});
+
+    case &#39;char&#39;   % YALMIP send &#39;graph&#39; when it wants the epigraph or hypograph
+        switch varargin{1}
+	 case &#39;graph&#39;
+            t = varargin{2}; 
+            X = varargin{3}; 
+<font color="#FF0000">            </font>varargout{1} = set(-t &lt;= X &lt;= t);
+            properties.convexity    = &#39;convex&#39;;<font color="#FF0000">   </font>
+            properties.monotonicity = &#39;none&#39;;<font color="#FF0000">     
+</font>            properties.definiteness = &#39;positive&#39;;<font color="#FF0000"> </font>
+            varargout{2} = properties;
+            varargout{3} = X;
+
+         case <font color="#FF0000">'milp'
+</font>            t = varargin{2}; 
+            X = varargin{3}; 
+	    d = binvar(1,1); % d=1 means x&gt;0, d=0 means x&lt;0
+	    F = set([]);
+	    M = 1e4; % Big-M constant
+	    F = F + set(x &gt;= -M*(1-d))                     % d=1 means x &gt;= 0
+	    F = F + set(x &lt;= M*d)                          % d=0 means x &lt;= 0
+	    F = F + set(-M*(1-d) &lt;= t-x &lt;= M*(1-d); % d=1 means t = X
+	    F = F + set(-M*d     &lt;= t+x &lt;= M*d;     % d=0 means t = -X
+
+	    varargout{1} = F;
+	    properties.convexity    = &#39;<font color="#FF0000">milp</font>&#39;;<font color="#FF0000">   </font>
+            properties.monotonicity = &#39;<font color="#FF0000">milp</font>&#39;;<font color="#FF0000">     
+</font>            properties.definiteness = &#39;<font color="#FF0000">milp</font>&#39;;<font color="#FF0000"> </font>
+	    varargout{2} = properties;
+	    varargout{3} = X;
+
+         otherwise
+            error(&#39;Something is very wrong now...&#39;)
+        end    
+
+    case &#39;sdpvar&#39; % Always the same. 
+        varargout{1} = yalmip(&#39;addextendedvariable&#39;,mfilename,varargin{:});    
+
+    otherwise
+end</pre>
+					</td>
+				</tr>
+			</table>
+			<p>MILP models are most often based on so called big-M models. For 
+			these methods to work well, it is important to have as small 
+			constants M as possible, but in the code above, we just picked a 
+			number. For the MILP models defined by default in YALMIP (<b>min</b>, 
+			<b>max</b>, <b>abs</b> and linear <b>norms</b>), more effort is spent on 
+			choosing the 
+			constants. To learn more about how you can do this for your model, 
+			please check out the code for these models.</p>
+			<h3><a name="entropy"></a>Adding evaluation based nonlinear 
+			operators</h3>
+			<p>General convex and concave functions are support in YALMIP by the 
+			evaluation based nonlinear operator framework. The definition of 
+			these operators are almost identical to the definition of standard 
+			nonlinear operators. The following code implements a (simplified 
+			version) of a scalar entropy measure <b>-xlog(x)</b>.</p>
+			<table cellpadding="10" width="100%" id="table15">
+				<tr>
+					<td class="xmpcode">
+					<pre>function varargout = entropy(varargin)
+
+switch class(varargin{1})</pre>
+					<pre>    case 'double' % What is the numerical value of this argument (needed for displays etc)        
+	varargout{1} = <font color="#FF0000">-varargin{1}*log(varargin{1})</font>;
+
+    case 'sdpvar' % Overloaded operator for SDPVAR objects.
+         varargout{1} = yalmip('addEvalVariable',mfilename,varargin{1});        </pre>
+					<pre>    case 'char' % YALMIP sends 'graph' when it wants the epigraph, hypograph or domain definition
+        switch varargin{1}
+            case 'graph'
+                t = varargin{2};
+                X = varargin{3};                </pre>
+					<pre><font color="#FF0000">                </font>% This is different from standard extended operators.
+                % Just do it!<font color="#FF0000">
+		</font>F = SetupEvaluationVariable(varargin{:});<font color="#FF0000">
+                </font>                
+                % Now add your own code, typically domain constraints
+                <font color="#FF0000">F = F + set(X &gt; 0);</font>
+                
+                % Let YALMIP know about convexity etc                
+                varargout{1} = F;
+                varargout{2} = struct('convexity','concave','monotonicity','none','definiteness','none');
+                varargout{3} = X;                </pre>
+					<pre>            case 'milp' % No MILP model available for entropy
+                    varargout{1} = [];
+                    varargout{2} = [];
+                    varargout{3} = [];                
+            otherwise
+                error('ENTROPY called with CHAR argument?');
+        end
+    otherwise
+        error('ENTROPY called with invalid argument.');
+end</pre>
+					</td>
+				</tr>
+			</table>
+			<p>The evaluation based framework is primarily intended for scalar 
+			functions, but can be extended to support element-wise vector functions. See the 
+			implementation of the overloaded log operator for details.</p>
+			</td>
+		</tr>
+	</table>
+	<p>&nbsp;</div>
+
+</body>
+
+</html>

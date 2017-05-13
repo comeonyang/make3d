@@ -1,0 +1,116 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us" />
+<title>YALMIP Example : Lyapunov stability</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251" />
+<meta content="Microsoft FrontPage 6.0" name="GENERATOR" />
+<meta name="ProgId" content="FrontPage.Editor.Document" />
+<link href="yalmip.css" type="text/css" rel="stylesheet" />
+<base target="_self" />
+</head>
+
+<body leftmargin="0" topmargin="0">
+
+<div align="left">
+  &nbsp;<table border="0" cellpadding="4" cellspacing="3" style="border-collapse: collapse" bordercolor="#000000" width="100%" align="left" height="100%">
+    <tr>
+      <td width="100%" align="left" height="100%" valign="top">
+      <h2>Lyapunov stability</h2>
+      <hr noshade size="1" color="#000000" />
+      <p>Given a linear dynamic system <strong>x&#39; = Ax</strong>, our goal is to 
+      prove stability by finding a symmetric matrix <b>P</b> satisfying </p>
+      <blockquote dir="ltr" style="MARGIN-RIGHT: 0px">
+        <p><span style="font-style: normal"><strong>
+        <img border="0" src="lyapun6.gif" /></strong></span></p>
+      </blockquote>
+      <p>Define a matrix <b><font face="Tahoma">A</font></b> and the symmetric matrix
+      <b><font face="Tahoma">P</font></b>.</p>
+      <table cellpadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>A = [-1 2;-3 -4];
+P = sdpvar(2,2);</pre>
+          </td>
+        </tr>
+      </table>
+      <p>Having <b>P</b>, we are ready to define the constraints.</p>
+      <table cellpadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>F = set(P &gt; 0) + set(A&#39;*P+P*A &lt; 0);</pre>
+          </td>
+        </tr>
+      </table>
+      <p>To avoid the zero solution or an unbounded solution, we constrain the trace 
+      of the matrix (Of course, this is not the only way. We could have used, e.g., 
+      the constraint <b><font face="Tahoma">P&gt;I</font></b> instead)</p>
+      <table cellpadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>F = F + set(trace(P) == 1);</pre>
+          </td>
+        </tr>
+      </table>
+      <p>At this point, we are ready to solve our problem. But first, we display 
+      the collection of constraints to see what we have defined.</p>
+      <table cellpadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>F
+<font color="#000000">+++++++++++++++++++++++++++++++++++++++++++++++++++
+|   ID|      Constraint|                      Type|
++++++++++++++++++++++++++++++++++++++++++++++++++++
+|   #1|   Numeric value|     Matrix inequality 2x2|
+|   #2|   Numeric value|     Matrix inequality 2x2|
+|   #3|   Numeric value|   Equality constraint 1x1|
++++++++++++++++++++++++++++++++++++++++++++++++++++</font></pre>
+          </td>
+        </tr>
+      </table>
+      <p>We only need a feasible solution, so one argument is sufficient when we 
+      call <a href="reference.htm#solvesdp">solvesdp</a> to solve the problem.</p>
+      <table cellpadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>solvesdp(F);
+P_feasible = double(P);</pre>
+          </td>
+        </tr>
+      </table>
+      <p>The resulting constraint satisfaction can be conveniently investigated 
+      with <a href="reference.htm#checkset">checkset</a>.</p>
+      <table cellpadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>checkset(F)
+<font color="#000000">+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+|   ID|      Constraint|                  Type|   Primal residual|   Dual residual|   Compl. slack|
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+|   #1|   Numeric value|                   LMI|           0.32029|     2.7929e-014|     4.983e-014|
+|   #2|   Numeric value|                   LMI|            1.6706|     2.5781e-015|     1.936e-014|
+|   #3|   Numeric value|   Equality constraint|      -2.0151e-014|    -1.0991e-014|    2.2148e-028|
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</font></pre>
+          </td>
+        </tr>
+      </table>
+      <p>Minimizing, e.g., the top-left element of <b>
+      <font face="Tahoma,Arial,sans-serif">P</font></b> is done by specifying an 
+      objective function.</p>
+      <table cellpadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>F = set(P &gt; 0) + set(A&#39;*P+P*A &lt; 0);
+solvesdp(F,P(1,1));</pre>
+          </td>
+        </tr>
+      </table>
+      </td>
+    </tr>
+  </table>
+</div>
+
+</body>
+
+</html>

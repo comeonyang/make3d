@@ -1,0 +1,7 @@
+./src/main.o: src/main.cpp src/config.h src/main.h src/PNM.h src/Rectify/Ops.h \
+  src/Rectify/General2Im.h
+
+src/Rectify/Ops.o: src/Rectify/Ops.cpp src/config.h src/Rectify/Ops.h
+
+src/Rectify/General2Im.o: src/Rectify/General2Im.cpp src/config.h \
+  src/Rectify/General2Im.h src/Rectify/Ops.h

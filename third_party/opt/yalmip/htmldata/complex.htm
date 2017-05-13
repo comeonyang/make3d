@@ -1,0 +1,118 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<title>YALMIP Example : Complex-valued problems</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<meta content="Microsoft FrontPage 6.0" name="GENERATOR">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<link href="yalmip.css" type="text/css" rel="stylesheet">
+<base target="_self">
+</head>
+
+<body leftMargin="0" topMargin="0">
+
+<div align="left">
+
+<table border="0" cellpadding="4" cellspacing="3" style="border-collapse: collapse" bordercolor="#000000" width="100%" align="left" height="100%">
+  <tr>
+    <td width="100%" align="left" height="100%" valign="top">
+ 
+           <h2>Complex-valued problems</h2>
+    <hr noShade SIZE="1">
+    <p>YALMIP supports complex valued constraints for all solvers by 
+    automatically converting complex-valued problems to real-valued problems.</p>
+    <p>To begin with,&nbsp;let us just define a simple linear complex problem to 
+    illustrate how complex variables and constraints are generated and 
+    interpreted.</p>
+    <table cellPadding="10" width="100%">
+      <tr>
+        <td class="xmpcode">
+        <pre>p = sdpvar(1,1,'full','complex');&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; % A complex scalar (4 arguments necessary)
+s = sdpvar(1,1)+sqrt(-1)*sdpvar(1,1);&nbsp; % Alternative definition
+F = set('0.9&gt;imag(p)');                % Imaginary part constrained
+F = F+set('0.01&gt;real(p)');             % Real part constrained
+
+F = F+set('0.1+0.5*sqrt(-1)&gt;p');       % Both parts constrained
+
+F = F+set('s+p==2+4*sqrt(-1)');        % Both parts constrained</pre>
+        </td>
+      </tr>
+    </table>
+    <p>To see how complex-valued constraints can be used in a more advanced 
+    setting,&nbsp;we solve the covariance estimation problem from the&nbsp;<a href="solvers.htm#sedumi">SeDuMi</a> 
+    manual. The problem is to find a positive-definite Hermitian Toeplitz matrix 
+    <b>Z</b> such that the Frobenious norm of <b><font face="Tahoma">P-Z</font></b> is minimized (<b><font face="Tahoma">P</font></b> is a given complex 
+    matrix.)</p>
+    <p>The matrix <b>P</b> is</p>
+    <table cellPadding="10" width="100%">
+      <tr>
+        <td class="xmpcode">
+        <pre>P = [4 1+2*i 3-i;1-2*i 3.5 0.8+2.3*i;3+i 0.8-2.3*i 4];</pre>
+        </td>
+      </tr>
+    </table>
+    <p>We define a complex-valued&nbsp;Toeplitz matrix of the corresponding dimension</p>
+    <table cellPadding="10" width="100%">
+      <tr>
+        <td class="xmpcode">
+        <pre>Z = sdpvar(3,3,'toeplitz','complex')</pre>
+        </td>
+      </tr>
+    </table>
+    <p>A complex Toeplitz matrix is not Hermitian, but we can make it Hermitian 
+    if we remove the imaginary part on the diagonal.</p>
+    <table cellPadding="10" width="100%">
+      <tr>
+        <td class="xmpcode">
+        <pre>Z = Z-diag(imag(diag(Z)))*sqrt(-1);</pre>
+        </td>
+      </tr>
+    </table>
+    <p>Minimizing the Frobenious norm of <b><font face="Tahoma">P-Z</font></b> can be cast as minimizing the 
+    Euclidean norm of the vectorized difference <b><font face="Tahoma">P(:)-Z(:)</font></b>. By using a Schur 
+    complement, we see that this can be written as the following SDP.</p>
+    <table cellPadding="10" width="100%">
+      <tr>
+        <td class="xmpcode">
+        <pre>e = P(:)-Z(:)
+t = sdpvar(1,1);
+F = set(Z&gt;0);
+F = F+set([t e';e eye(9)]&gt;0);
+solvesdp(F,t);</pre>
+        </td>
+      </tr>
+    </table>
+    <p>The problem can be implemented more efficiently using a second order cone 
+    constraint.</p>
+    <table cellPadding="10" width="100%">
+      <tr>
+        <td class="xmpcode">
+        <pre>e = Z(:)-P(:)
+t = sdpvar(1,1);
+F = set(Z&gt;0);
+F = F+set(cone(e,t));
+solvesdp(F,t);</pre>
+        </td>
+      </tr>
+    </table>
+    <p>...or by using a quadratic objective function</p>
+    <table cellPadding="10" width="100%">
+      <tr>
+        <td class="xmpcode">
+        <pre>e = Z(:)-P(:)
+F = set(Z&gt;0);
+solvesdp(F,e'*e);</pre>
+        </td>
+      </tr>
+    </table>
+    </td>
+  </tr>
+</table>
+
+</div>
+
+</body>
+
+</html>

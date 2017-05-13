@@ -1,0 +1,13 @@
+kovesi - a random assortment of computer vision and image processing matlab functions
+         downloaded from Peter Kovesi's website at http://www.csse.uwa.edu.au/~pk/research/matlabfns
+
+EdgeLinkLineSegFit - a Edge linking and line segment fitting matlab functions
+                     downloaded from Peter Kovesi's website at http://www.csse.uwa.edu.au/~pk/research/matlabfns
+
+sift - a sift implementation by Andrea Vedaldi downloaded from 
+       http://vision.ucla.edu/~vedladi/code/sift/sift.html
+
+PhotoPopUp - 
+
+Superpixels - a segmentation code provide by elzenszwalb and Huttenlocher 
+              at people.cs.uchicago.edu/~pff/segment/ to create the superpixels

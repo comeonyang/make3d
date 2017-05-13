@@ -1,0 +1,342 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<title>What's new in YALMIP 3</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<meta name="description" content="What's new in YALMIP 3">
+<meta content="Microsoft FrontPage 6.0" name="GENERATOR">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<link href="yalmip.css" type="text/css" rel="stylesheet">
+<base target="_self">
+</head>
+
+<body leftMargin="0" topMargin="0">
+<div align="left">
+
+<table border="1" cellpadding="4" cellspacing="0" style="border-collapse: collapse" bordercolor="#000000" width="100%" height="100%" align="left">
+  <tr>
+    <td width="100%" align="left" height="100%" valign="top">
+    <h2>What's new</h2>
+    <hr noShade SIZE="1">
+    <p align="left">YALMIP 3 is a major revision compared to earlier versions. 
+    The internal machinery of YALMIP has been rewritten, and the main result is 
+    the possibility to work with nonlinear expressions. In addition, mixed 
+    integer capabilities have been improved, and a number of new solvers have 
+    been interfaced.</p>
+    <h4 align="left">YALMIP 3 [R20040306]</h4>
+    <!--msimagelist--><table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <!--msimagelist--><tr>
+        <!--msimagelist--><td valign="baseline" width="42">
+        <img src="icon_add.gif" width="14" height="14" hspace="14" alt="bullet"></td>
+        <td valign="top" width="100%">
+      <div>Determinant maximization problems can now be solved using any SDP solver.</div>
+        <!--msimagelist--></td>
+      </tr>
+      <!--msimagelist--><tr>
+        <!--msimagelist--><td valign="baseline" width="42">
+        <img src="icon_add.gif" width="14" height="14" hspace="14" alt="bullet"></td>
+        <td valign="top" width="100%">
+      <div>Global bilinear programming (beta version, slow and 
+        unstable...)</div><!--msimagelist--></td>
+      </tr>
+      <!--msimagelist--><tr>
+        <!--msimagelist--><td valign="baseline" width="42">
+        <img src="icon_add.gif" width="14" height="14" hspace="14" alt="bullet"></td>
+        <td valign="top" width="100%">
+      <div>Extended mixed integer code to include posynomial geometric programming 
+        (requires latest <a href="solvers.htm#mosek">MOSEK</a> patches, not 
+        tested seriously).</div>
+        <!--msimagelist--></td>
+      </tr>
+      <!--msimagelist--><tr>
+        <!--msimagelist--><td valign="baseline" width="42">
+        <img src="icon_add.gif" width="14" height="14" hspace="14" alt="bullet"></td>
+        <td valign="top" width="100%">
+      <div>Least squares assignment in <a href="reference.htm#setsdpvar">setsdpvar</a>.</div>
+        <!--msimagelist--></td>
+      </tr>
+      <!--msimagelist--><tr>
+        <!--msimagelist--><td valign="baseline" width="42">
+        <img src="icon_add.gif" width="14" height="14" hspace="14" alt="bullet"></td>
+        <td valign="top" width="100%">
+      <div><a href="reference.htm#setsdpvar">sdpvar</a> can be called with only 
+        one argument (simplifies definition of symmetric matrices and scalars).</div>
+        <!--msimagelist--></td>
+      </tr>
+      <!--msimagelist--></table>
+    <!--msimagelist--><table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <!--msimagelist--><tr>
+        <!--msimagelist--><td valign="baseline" width="42">
+        <img src="icon_fix.gif" width="14" height="14" hspace="14" alt="bullet"></td>
+        <td valign="top" width="100%">
+      <div>Fixed bug in internal mixed integer solver (might have caused YALMIP to miss the optimal solution.)</div>
+        <!--msimagelist--></td>
+      </tr>
+      <!--msimagelist--></table>
+    <!--msimagelist--><table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <!--msimagelist--><tr>
+        <!--msimagelist--><td valign="baseline" width="42">
+        <img src="icon_fix.gif" width="14" height="14" hspace="14" alt="bullet"></td>
+        <td valign="top" width="100%">
+      <div>Fixed bug on overloaded &gt;= operator.</div>
+        <!--msimagelist--></td>
+      </tr>
+      <!--msimagelist--></table>
+    <!--msimagelist--><table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <!--msimagelist--><tr>
+        <!--msimagelist--><td valign="baseline" width="42">
+        <img src="icon_fix.gif" width="14" height="14" hspace="14" alt="bullet"></td>
+        <td valign="top" width="100%">
+      <div>Fixed bug on purely binary problems using <a href="solvers.htm#mosek">MOSEK</a>.</div>
+        <!--msimagelist--></td>
+      </tr>
+      <!--msimagelist--></table>
+    <!--msimagelist--><table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <!--msimagelist--><tr>
+        <!--msimagelist--><td valign="baseline" width="42">
+        <img src="icon_fix.gif" width="14" height="14" hspace="14" alt="bullet"></td>
+        <td valign="top" width="100%">
+      <div>Fixed bug in interface to <a href="solvers.htm#penbmi">PENBMI</a> 
+        (may have caused erroneous solutions in some rare cases).</div>
+        <!--msimagelist--></td>
+      </tr>
+      <!--msimagelist--></table>
+    <!--msimagelist--><table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <!--msimagelist--><tr>
+        <!--msimagelist--><td valign="baseline" width="42">
+        <img src="icon_fix.gif" width="14" height="14" hspace="14" alt="bullet"></td>
+        <td valign="top" width="100%">
+      <div>Fixed various bugs to enable nonlinear objective functions in moment 
+        relaxations.</div>
+        <!--msimagelist--></td>
+      </tr>
+      <!--msimagelist--></table>
+    <!--msimagelist--><table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <!--msimagelist--><tr>
+        <!--msimagelist--><td valign="baseline" width="42">
+        <img src="icon_fix.gif" width="14" height="14" hspace="14" alt="bullet"></td>
+        <td valign="top" width="100%">
+      <div>YALMIP does <i>not</i> mean Yet Another LMI Parser any more. </div>
+        <!--msimagelist--></td>
+      </tr>
+      <!--msimagelist--></table>
+    <!--msimagelist--><table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <!--msimagelist--><tr>
+        <!--msimagelist--><td valign="baseline" width="42">
+        <img src="icon_fix.gif" width="14" height="14" hspace="14" alt="bullet"></td>
+        <td valign="top" width="100%">
+      <div>YALMIP now works with LMILAB in MATLAB 5.3.</div>
+        <!--msimagelist--></td>
+      </tr>
+      <!--msimagelist--></table>
+    <!--msimagelist--><table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <!--msimagelist--><tr>
+        <!--msimagelist--><td valign="baseline" width="42">
+        <img src="icon_fix.gif" width="14" height="14" hspace="14" alt="bullet"></td>
+        <td valign="top" width="100%">
+      <div>Various fixes for MATLAB 5.3.</div>
+        <!--msimagelist--></td>
+      </tr>
+      <!--msimagelist--></table>
+
+
+    <h4 align="left">News in Version 3 compared to 2.4</h4>
+    <!--msimagelist--><table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <!--msimagelist--><tr>
+        <!--msimagelist--><td valign="baseline" width="42">
+        <img src="icon_add.gif" width="14" height="14" hspace="14" alt="bullet"></td>
+        <td valign="top" width="100%">
+      <div>
+        Polynomial expressions.</div>
+        <!--msimagelist--></td>
+      </tr>
+      <!--msimagelist--><tr>
+        <!--msimagelist--><td valign="baseline" width="42">
+        <img src="icon_add.gif" width="14" height="14" hspace="14" alt="bullet"></td>
+        <td valign="top" width="100%">
+      <div>
+        Quadratic objective functions.</div>
+        <!--msimagelist--></td>
+      </tr>
+      <!--msimagelist--><tr>
+        <!--msimagelist--><td valign="baseline" width="42">
+        <img src="icon_add.gif" width="14" height="14" hspace="14" alt="bullet"></td>
+        <td valign="top" width="100%">
+      <div>
+        Interfaces to solvers <a href="solvers.htm#pensdp">PENSDP</a>,
+        <a href="solvers.htm#penbmi">PENBMI</a>, <a href="solvers.htm#lmilab">LMILAB</a>,
+        <a href="solvers.htm#nag">NAG</a>, <a href="solvers.htm#cdd">CDD</a>,
+        <a target="topic" href="solvers.htm#ooqp">OOQP</a>,
+        <a target="topic" href="solvers.htm#mosek">MOSEK</a>,
+        <a href="solvers.htm#cplex">CPLEX</a>, <a href="solvers.htm#linprog">LINPROG</a> and
+        <a href="solvers.htm#quadprog">QUADPROG</a>.</div>
+        <!--msimagelist--></td>
+      </tr>
+      <!--msimagelist--><tr>
+        <!--msimagelist--><td valign="baseline" width="42">
+        <img src="icon_add.gif" width="14" height="14" hspace="14" alt="bullet"></td>
+        <td valign="top" width="100%">
+      <div>
+        Added possibility to define KYP-related constraints (<a href="reference.htm#kyp">kyp</a>) 
+        and related interface to the specialized code <a href="solvers.htm#kypd">KYPD</a>.</div>
+        <!--msimagelist--></td>
+      </tr>
+      <!--msimagelist--><tr>
+        <!--msimagelist--><td valign="baseline" width="42">
+        <img src="icon_add.gif" width="14" height="14" hspace="14" alt="bullet"></td>
+        <td valign="top" width="100%">
+      <div>
+        Multi-parametric linear and quadratic programming using
+        <a href="solvers.htm#mpt">MPT-Toolbox</a>.</div>
+        <!--msimagelist--></td>
+      </tr>
+      <!--msimagelist--><tr>
+        <!--msimagelist--><td valign="baseline" width="42">
+        <img src="icon_add.gif" width="14" height="14" hspace="14" alt="bullet"></td>
+        <td valign="top" width="100%">
+      <div>
+        Integer and binary variables.</div>
+        <!--msimagelist--></td>
+      </tr>
+      <!--msimagelist--><tr>
+        <!--msimagelist--><td valign="baseline" width="42">
+        <img src="icon_add.gif" width="14" height="14" hspace="14" alt="bullet"></td>
+        <td valign="top" width="100%">
+      <div>
+        Posynomial geometric programming.</div>
+        <!--msimagelist--></td>
+      </tr>
+      <!--msimagelist--><tr>
+        <!--msimagelist--><td valign="baseline" width="42">
+        <img src="icon_add.gif" width="14" height="14" hspace="14" alt="bullet"></td>
+        <td valign="top" width="100%">
+      <div>
+        An internal (wickedly slow) branch-and bound solver for mixed integer conic programs 
+        (MILP, MIQP, MISOCP, MISDP).</div>
+        <!--msimagelist--></td>
+      </tr>
+      <!--msimagelist--><tr>
+        <!--msimagelist--><td valign="baseline" width="42">
+        <img src="icon_add.gif" width="14" height="14" hspace="14" alt="bullet"></td>
+        <td valign="top" width="100%">
+      <div>
+        Sum-of-squares decomposition<span lang="de-ch">s</span>.</div>
+        <!--msimagelist--></td>
+      </tr>
+      <!--msimagelist--><tr>
+        <!--msimagelist--><td valign="baseline" width="42">
+        <img src="icon_add.gif" width="14" height="14" hspace="14" alt="bullet"></td>
+        <td valign="top" width="100%">
+      <div>
+        Moment-based polynomial programming.</div>
+        <!--msimagelist--></td>
+      </tr>
+      <!--msimagelist--><tr>
+        <!--msimagelist--><td valign="baseline" width="42">
+        <img src="icon_add.gif" width="14" height="14" hspace="14" alt="bullet"></td>
+        <td valign="top" width="100%">
+      <div>Simple definition of double-sided constraints (see 
+        <a target="topic" href="linearregression.htm">Linear regression 
+        example</a>).</div><!--msimagelist--></td>
+      </tr>
+      <!--msimagelist--><tr>
+        <!--msimagelist--><td valign="baseline" width="42">
+        <img src="icon_add.gif" width="14" height="14" hspace="14" alt="bullet"></td>
+        <td valign="top" width="100%">
+      <div><a href="reference.htm#plot">Plot</a> the feasible set of a constraint.</div>
+        <!--msimagelist--></td>
+      </tr>
+      <!--msimagelist--><tr>
+        <!--msimagelist--><td valign="baseline" width="42">
+        <img src="icon_add.gif" width="14" height="14" hspace="14" alt="bullet"></td>
+        <td valign="top" width="100%">
+      <div>Imroved functionality in
+        <a href="reference.htm#checklmi">checkset</a> (previously called
+        <a href="reference.htm#checklmi">checklmi</a>).
+      </div><!--msimagelist--></td>
+      </tr>
+      <!--msimagelist--><tr>
+        <!--msimagelist--><td valign="baseline" width="42">
+        <img src="icon_add.gif" width="14" height="14" hspace="14" alt="bullet"></td>
+        <td valign="top" width="100%">
+      <div>Imroved support for subsref in
+        <a href="reference.htm#lmi">set</a> (previously called
+        <a href="reference.htm#lmi">lmi</a>) and
+        <a href="reference.htm#sdpvar">sdpvar</a> objects.</div>
+        <!--msimagelist--></td>
+      </tr>
+      <!--msimagelist--><tr>
+        <!--msimagelist--><td valign="baseline" width="42">
+        <img src="icon_add.gif" width="14" height="14" hspace="14" alt="bullet"></td>
+        <td valign="top" width="100%">
+      <div>New feature in the option <code>removeequalities </code>in
+        <a href="reference.htm#sdpsettings">sdpsettings</a>.</div>
+        <!--msimagelist--></td>
+      </tr>
+      <!--msimagelist--><tr>
+        <!--msimagelist--><td valign="baseline" width="42">
+        <img src="icon_add.gif" width="14" height="14" hspace="14" alt="bullet"></td>
+        <td valign="top" width="100%">
+      <div>New feature in the option <code>cachesolvers</code> in
+        <a href="reference.htm#sdpsettings">sdpsettings</a>.</div>
+        <!--msimagelist--></td>
+      </tr>
+      <!--msimagelist--><tr>
+        <!--msimagelist--><td valign="baseline" width="42">
+        <img src="icon_add.gif" width="14" height="14" hspace="14" alt="bullet"></td>
+        <td valign="top" width="100%">
+      <div>New feature in the option <code>usex0</code> in
+        <a href="reference.htm#sdpsettings">sdpsettings</a>.</div>
+        <!--msimagelist--></td>
+      </tr>
+      <!--msimagelist--><tr>
+        <!--msimagelist--><td valign="baseline" width="42">
+        <img src="icon_add.gif" width="14" height="14" hspace="14" alt="bullet"></td>
+        <td valign="top" width="100%">
+      <div>New feature in the option <code>radius</code> in
+        <a href="reference.htm#sdpsettings">sdpsettings</a>.</div>
+        <!--msimagelist--></td>
+      </tr>
+      <!--msimagelist--><tr>
+        <!--msimagelist--><td valign="baseline" width="42">
+        <img src="icon_add.gif" width="14" height="14" hspace="14" alt="bullet"></td>
+        <td valign="top" width="100%">
+      <div>New feature in the option <code>shift</code> in
+        <a href="reference.htm#sdpsettings">sdpsettings</a>. 
+      </div><!--msimagelist--></td>
+      </tr>
+      <!--msimagelist--></table>
+    <!--msimagelist--><table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <!--msimagelist--><tr>
+        <!--msimagelist--><td valign="baseline" width="42">
+        <img src="icon_fix.gif" width="14" height="14" hspace="14" alt="bullet"></td>
+        <td valign="top" width="100%">
+      <div>Updated interfaces to new versions of <a href="solvers.htm#csdp">CSDP</a>,
+        <a href="solvers.htm#dsdp">DSDP</a>, <a href="solvers.htm#sdpt3">SDPT3</a> 
+        and <a href="solvers.htm#glpk">GLPK</a>.</div>
+        <!--msimagelist--></td>
+      </tr>
+      <!--msimagelist--><tr>
+        <!--msimagelist--><td valign="baseline" width="42">
+        <img src="icon_fix.gif" width="14" height="14" hspace="14" alt="bullet"></td>
+        <td valign="top" width="100%">
+      <div>Improved error detection in <a href="solvers.htm#sedumi">SeDuMi</a> and
+        <a href="solvers.htm#glpk">GLPK.</a></div>
+        <!--msimagelist--></td>
+      </tr>
+      <!--msimagelist--></table>
+
+
+    <p>Make sure to read <span lang="de-ch">the information on
+    <a href="backwards.htm">b</a></span><span lang="de-ch"><a target="topic" href="backwards.htm">ackwards 
+    compatibility.</a></span></td>
+  </tr>
+</table>
+
+</div>
+
+</body>
+
+</html>

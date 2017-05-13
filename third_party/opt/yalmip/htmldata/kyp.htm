@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<title>YALMIP Example : Efficient solution of KYP problems</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<meta content="Microsoft FrontPage 6.0" name="GENERATOR">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<link href="yalmip.css" type="text/css" rel="stylesheet">
+<base target="_self">
+</head>
+
+<body leftMargin="0" topMargin="0">
+
+<div align="left">
+  <table border="0" cellpadding="4" cellspacing="3" style="border-collapse: collapse" bordercolor="#000000" width="100%" align="left" height="100%">
+    <tr>
+      <td width="100%" align="left" height="100%" valign="top">
+      <h2>KYP problems</h2>
+      <hr noShade SIZE="1">
+    <p>
+    <img border="0" src="exclamationmark.jpg" align="left" width="16" height="16">This 
+    example requires <a href="solvers.htm#kypd">KYPD</a> and
+    an SDP-solver capable of calculating dual variables.</p>
+      <p>Many problems in control and system theory can be formulated using the celebrated 
+      Kalman-Yakubovic-Popov lemma (KYP). By using this lemma, a large number of 
+      problems can be formulated using LMIs. Unfortunately, many 
+      practical problems leads to LMIs far too big to be efficiently solved 
+      using standard semidefinite solvers.</p>
+      <p>YALMIP can be used with the dedicated solver <a href="solvers.htm#kypd">
+      KYPD</a> to efficiently solve some problems with large-scale KYP constraints. 
+      In our setting, a <a href="reference.htm#kyp">KYP</a> is a matrix of the 
+      form <b><font face="Tahoma">[A<sup>T</sup>P+PA PB;B<sup>T</sup>P 0] + M(x)</font></b>, 
+      with <b>P</b> and the <b>x</b> being the free variables, and <b>M</b> a 
+      linear operator.</p>
+      <p>The following code calculates the L<sub>2</sub>-gain of a random stable 
+      system with 40 states, using the dedicated <a href="solvers.htm#kypd">KYPD</a>-solver, 
+      and a standard SDP-solver.</p>
+      <table cellPadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>n = 40;
+A = randn(n);A = A - max(real(eig(A)))*eye(n)*1.5; % Stable dynamics
+B = randn(n,1);
+C = randn(1,n);
+
+t = sdpvar(1,1);
+P = sdpvar(n,n);
+
+F = set(kyp(A,B,P,blkdiag(C'*C,-t)) &lt; 0)
+
+sol1 = solvesdp(F,t,sdpsettings('solver','kypd'));
+sol2 = solvesdp(F,t);
+
+sol1.solvertime/sol2.solvertime % Compare solution time</pre>
+          </td>
+        </tr>
+      </table>
+      <p><img border="0" src="demoicon.gif" width="16" height="16">&nbsp; The 
+      variable <b>P </b>may only enter in 1 constraint if you intend to use
+      <a href="solvers.htm#kypd">KYPD</a>, i.e. you cannot use
+      <a href="solvers.htm#kypd">KYPD</a> if you want to impose explicit 
+      constraints (including&nbsp; <br>
+      positive definiteness) of <b>P</b>. However, positive definiteness of <b>P </b>
+      is in some cases implied by the KYP constraint.&nbsp; You can have multiple KYP constraints with different <b>P </b>variables.</p>
+      </td>
+    </tr>
+  </table>
+</div>
+
+</body>
+
+</html>

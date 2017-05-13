@@ -1,0 +1,18 @@
+#!/bin/bash
+# Script file to clean up a directory and all it's sub-directories
+# Arg 1 should be the directory to clean
+
+function cleandir() {
+  echo Cleaning $1
+
+  rm -f $1/sta* $1/*~ $1/*% $1/*.a $1/*.bak $1/*.o $1/*.rpo $1/core
+
+  for fname in $1/*
+  do
+    if [ -d $fname -a ! -L $fname ]; then
+      cleandir $fname
+    fi
+  done
+}
+
+cleandir $1

@@ -1,0 +1,155 @@
+Scaling:
+1) Individual model scale: the depth scale generated from Mono-inference
+	- ImgInfo.Model.Depth....
+	- ImgInfo.Model.Constrain.Depth_modified % matched triangulated depth
+	- ImgInfo.Model.PlaneParaInfo.PlanePara
+	- ImgInfo.Model.PlaneParaInfo.FitDepth
+	- ImgInfo.Model.PlaneParaInfo.Position3DFited
+2) PairMatchScale
+	- Pair.T
+	- Pair.lamda
+3) GlobalModelScale
+	- 
+
+Scale Transform:
+1) Pair.DepthScale: Individual model scale*Pair.DepthScale = PairMatchScale
+2) ModelStatus.Scale: Individual model scale*ModelStatus.Scale = GlobalModelScale
+
+Storaged Data Structure
+
+0) First stage data from GPS, IMU, and Google earth modification
+Description:
+	ImgInfo in the camera Exif file
+	Geo info from GPS and Modified by Google Earth
+	Orientation info from IMU and Modified by Google Earth	
+
+Path:
+	./data/
+
+FileName:
+	ImgInfo.mat
+
+Variables:
+	ImgInfo - Struture
+		.ExifInfo - Struture
+			.name - String, the name of the image (including file extension)
+			---------------
+			all other infomation depending on your camera default
+			ex: .FocalLength
+			---------------
+		.Geo - Structure
+			.Longitude - double
+			.Latitude - double
+			.altitude - double
+		.Rw - 3 x 1,  [ Pitch Yaw Roll]
+		.X_world - 3 by 1, global Cartesian coordinate, calculated from Geo infomation
+Comments:	
+	
+	
+1) Individual image infomation
+
+Description:
+	Infomation of indiviual image infomation
+	Start form Mono-infomation
+	Then evlove with Matches infomation 
+	and Occlusion Refinement infomation
+	(Notice always maintained in the Scale of beginning Mono-Model)
+
+Path:
+	./data/"Img1Name"/
+FileName:
+	"WrlName"_"Img1Name"_"PostFix".mat
+	(ex: Multi_IMG_0606_Mono.mat)
+
+Variables:
+	model - structure
+		(From Mono)
+		.Depth - Structure
+			.FitDepth (nxm) double, DepthMap after Mono PlaneParameter Model fiting depths
+			.RawDepth (nxm) double, DepthMap from image learning	
+		.Ray - 3xnxm double, unit 3-d vector indiacte the track of ray a specific image point come from
+			( 3DPosition = Ray(:,:).*repmat(FitDepth(:)',3,1))
+		.Sup - nxm integer, index that group each point into a Superpixel
+		.maskG - nxm logical, 1 indicated Ground
+		.maskSky - nxm logical, 1 indicated sky
+		.SupNeighborTable - MaxIndexSup x MaxIndexSup, is a look up table of which Sups are neighboring each other
+		.MultiScaleSupTable - NumUniqueSup x 14(14 type of Bigger group of points)
+
+		(From Matches)
+		.Constrain - Structure
+			.RayMatche - NumMatches x 3, the Ray that correspoding to the matches feature points
+			.Depth_modified - 1 x NumMatches, the triangulated depth in Indivial Model Scale
+			.SupMatched - NumMatches x 1, the sup index of the matches
+
+		(UptoDate Model after any Re-Inference)
+		.PlaneParaInfo - Structure
+			.PlanePara - 3 by NumUniqueSup, the plane parameter after Re-inference in Indivial Model Scale
+			.Sup2Para - 1 by MaxIndexofSupEpand, since not all the sup have a PlaneParameter, 
+					Sup2Para is the hash table of Sup Index to PlaneParameter Index
+			.SupEpand - nxm integer, Superpixel index after some Process to clean the Sky Boundary
+			.maskSkyEroded - nxm logical, new sky mask after some process
+			.Ray -  3xnxm double, unit 3-d vector indiacte the track of ray a specific image point come from
+	                        ( 3DPosition = Ray(:,:).*repmat(FitDepth(:)',3,1))	
+			.PositionTex - n x m x 2 double, used my VRMl rendering
+					(ex: PositionTex(:,:,1) are the X position of the FaceSet Points in the range from 0 to 1)
+			.FitDepth - (nxm) double, DepthMap after Mono PlaneParameter Model fiting depths
+			.Position3DFited - (n x m x 3) double, 3D position of each FaceSet Points
+			.SupOri - nxm integer, index that group each point into a Superpixel
+
+		(From Refinement)
+		.ConstrainOccluMatch
+Comments:	
+
+ 
+2) Pair image infomation
+% ============================================================================
+Description:
+	Infomation obtained after matching pair of images
+
+Path: 
+	./data/
+
+FileName: 
+	"Img1Name"_"Img2Name"_PoseMatch.mat
+
+Variables:
+	Error - integer from -1 to 6, indicating different error type when matched
+	Matches - (2 by NumMatches) integer, indicating the index of the whole surf Features Set
+	Pair - Structure
+		.R - 3x3 double, the rotation matrix from Img1 Coordinate to Img2 Coordinate
+		.T - 3x1 double, the translation matrix from Img1 Coordinate to Img2 Coordinate
+			(ex: X2 = R*X1+T)
+		.Xim - 4 by NumMatches integer, 
+			Xim(1:2,:) indicating the (X Y) position (in pixel) of the Matched points in Img1
+			Xim(3:4,:) indicating the (X Y) position (in pixel) of the Matched points in Img2
+		.lamda - 2 by NumMatches double, 
+			lamda(1,:) is the triangulated depths in Img1 in Pair Match Scale
+			lamda(2,:) is the triangulated depths in Img2 in Pair Match Scale
+		.DepthScale - 2x1 double, indicate the Scaling factoe when applying the single model depths the the triangulated depths
+		 		(ex: DepthScale(1)*IndivialModelDepth = PairMatchedDepths in Img1)	
+		.t -empty
+Comments:	
+	Should merge Error and Matches into Pair.Error Pair.Matches,
+	and erase Pair.t
+% =============================================================================== //Min to do
+Description:
+Path:
+	./data/
+
+FileName:
+	"Img1Name"_"Img2Name"_OccluDetect_Ray.mat
+
+Variables:
+Comments:	
+
+% ===============================================================================
+3) Whole model infomation
+
+Template -
+
+Description:
+Path:
+FileName:
+Variables:
+Comments:	
+

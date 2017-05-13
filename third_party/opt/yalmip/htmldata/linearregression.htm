@@ -1,0 +1,147 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<title>YALMIP Example : Linear regression</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<meta content="Microsoft FrontPage 6.0" name="GENERATOR">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<link href="yalmip.css" type="text/css" rel="stylesheet">
+<base target="_self">
+</head>
+
+<body leftMargin="0" topMargin="0">
+
+<div align="left">
+  <table border="0" cellpadding="4" cellspacing="3" style="border-collapse: collapse" bordercolor="#000000" width="100%" align="left" height="100%">
+    <tr>
+      <td width="100%" align="left" height="100%" valign="top">
+                      <h2>Linear regression</h2>
+      <hr noShade SIZE="1" color="#000000">
+           <p>YALMIP started out as a parser for semidefinite programs, but is 
+           just as useful for linear and quadratic programming. As an example, 
+           we will use YALMIP to define a couple of regression problems.</p>
+           <p>Let us assume that we have data generated from a noisy linear 
+           regression <strong>y(t) = x(t)a+e(t).</strong> The goal is to 
+           estimate the parameter <strong>a</strong>, given <strong>y</strong> 
+           and <strong>x</strong>, and we will try 3 different approaches.</p>
+           <p>Create some data to work with.</p>
+           <table cellPadding="10" width="100%">
+             <tr>
+               <td class="xmpcode">
+               <pre>a = [1 2 3 4 5 6]';
+t = (0:0.02:2*pi)';
+x = [sin(t) sin(2*t) sin(3*t) sin(4*t) sin(5*t) sin(6*t)];
+y = x*a+(-4+8*rand(length(x),1));</pre>
+               </td>
+             </tr>
+           </table>
+           <p>Define the variable we are looking for</p>
+           <table cellPadding="10" width="100%">
+             <tr>
+               <td class="xmpcode">
+               <pre>&nbsp;a_hat = sdpvar(6,1);</pre>
+               </td>
+             </tr>
+           </table>
+           <p>By using <code>a_hat</code> and the regressors
+           <font face="Courier New" color="#0000c0">x</font>, we can define the 
+           residuals (which also will be an&nbsp;<a href="reference.htm#sdpvar">sdpvar</a> 
+           object, parameterized in <font face="Courier New" color="#0000c0">
+           a_hat</font>)</p>
+           <table cellPadding="10" width="100%">
+             <tr>
+               <td class="xmpcode">
+               <pre>residuals = y-x*a_hat;</pre>
+               </td>
+             </tr>
+           </table>
+           <p>To solve the L<sub>1</sub> regression problem (minimize sum of absolute 
+           values of residuals), we define a variable that will serve as a bound 
+           on the elements in |<font face="Courier New" color="#0000c0">y-x*a_hat</font>|.</p>
+           <table cellPadding="10" width="100%">
+             <tr>
+               <td class="xmpcode">
+               <pre>bound = sdpvar(length(residuals),1);</pre>
+               </td>
+             </tr>
+           </table>
+           <p>Express that <font color="#0000c0" face="Courier New">bound</font>
+           is larger than the absolute values of the residuals (note the simple 
+           definition of a double-sided constraint).</p>
+           <table cellPadding="10" width="100%">
+             <tr>
+               <td class="xmpcode">
+               <pre>F = set(-bound &lt; residuals &lt; bound);</pre>
+               </td>
+             </tr>
+           </table>
+           <p>Minimize the sum of the bounds subject to the constraints in
+           <font face="Courier New" color="#0000c0">F</font>.</p>
+           <table cellPadding="10" width="100%">
+             <tr>
+               <td class="xmpcode">
+               <pre>solvesdp(F,sum(bound));</pre>
+               </td>
+             </tr>
+           </table>
+           <p>The optimal value is extracted using the overloaded 
+           <a href="reference.htm#double">double</a> 
+           command.</p>
+           <table cellPadding="10" width="100%">
+             <tr>
+               <td class="xmpcode">
+               <pre>a_L1 = double(a_hat);</pre>
+               </td>
+             </tr>
+           </table>
+           <p>The&nbsp;L<sub>2</sub> problem is easily solved as a QP problem without any 
+           constraints.</p>
+           <table cellPadding="10" width="100%">
+             <tr>
+               <td class="xmpcode">
+               <pre>solvesdp([],residuals'*residuals);
+a_L2 = double(a_hat);</pre>
+               </td>
+             </tr>
+           </table>
+           <p>YALMIP automatically detects that the objective is a convex 
+           quadratic function, and solves the problem using any installed QP 
+           solver. If no QP solver is found, the problem is converted to an 
+           SOCP, and if no dedicated SOCP solver exist, the SOCP is converted to 
+           an SDP. </p>
+           <p>Finally, we minimize the L<sub>&#8734;</sub> norm. This corresponds to minimizing 
+           the largest (absolute value) residual. Introduce a scalar to bound 
+           the largest value in the vector <font color="#0000c0" face="Courier New">
+           residual</font>
+           (YALMIP uses MATLAB standard to compare scalars, vectors and 
+           matrices)</p>
+           <table cellPadding="10" width="100%">
+             <tr>
+               <td class="xmpcode">
+               <pre>bound = sdpvar(1,1);
+F = set(-bound &lt; residuals &lt; bound);</pre>
+               </td>
+             </tr>
+           </table>
+           <p>and minimize the bound.</p>
+           <table cellPadding="10" width="100%">
+             <tr>
+               <td class="xmpcode">
+               <pre>solvesdp(F,bound);
+a_Linf = double(a_hat);</pre>
+               </td>
+             </tr>
+           </table>
+                      <p><img border="0" src="demoicon.gif" width="16" height="16">Make sure to check out the <a href="extoperators.htm">
+                      nonlinear operator examples</a> to see how you can 
+						simplify 
+                      the code even more.</td>
+    </tr>
+  </table>
+</div>
+
+</body>
+
+</html>

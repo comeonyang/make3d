@@ -1,0 +1,592 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<title>YALMIP Example : Sum-of-squares decompositions</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<meta content="Microsoft FrontPage 6.0" name="GENERATOR">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<link href="yalmip.css" type="text/css" rel="stylesheet">
+<base target="_self">
+</head>
+
+<body leftMargin="0" topMargin="0">
+
+<div align="left">
+  <table border="0" cellpadding="4" cellspacing="3" style="border-collapse: collapse" bordercolor="#000000" width="100%" align="left" height="100%">
+    <tr>
+      <td width="100%" align="left" height="100%" valign="top">
+      <h2>Sum of squares decompositions</h2>
+      <hr noShade SIZE="1">
+      <p>YALMIP has a built-in module for sum of squares calculations. In its most basic formulation, a 
+      sum of squares (SOS) problem takes a polynomial
+      <strong>p(x)</strong> and tries to find a real-valued polynomial vector function
+      <strong>h(x)</strong> such 
+      that <strong>p(x)=h<sup>T</sup>(x)h(x)</strong> (or equivalently <strong>p(x)=v<sup>T</sup>(x)Qv(x)</strong>, 
+      where <b>Q</b> is positive semidefinite and <strong>v(x)</strong> is a vector of monomials), hence proving non-negativity of the polynomial <strong>p(x)</strong>.
+      Read more about standard sum of squares decompositions in 
+      <a href="readmore.htm#PARRILO">[Parrilo]</a>. </p>
+		<p>In addition to standard SOS decompositions, YALMIP also supports
+		<a href="#linear">linearly</a> and <a href="#polynomial">nonlinearly</a> 
+		parameterized problems, decomposition of <a href="#matrix">matrix 
+		valued</a> polynomials and computation of<a href="#lowrank"> low rank 
+		decompositions</a>.</p>
+		<p>The examples below only introduce the basic features related to 
+		sum-of-squares in YALMIP. For more features and details, run the example 
+		<code>sosex.m</code></p>
+      <h3>Doing it your self the hard way</h3>
+      <p>Before we introduce the efficiently implemented SOS module in YALMIP, 
+		let us briefly mention how one could implement a SOS solver in 
+		high-level YALMIP code. Of course, you would never use this approach, 
+		but it might be useful to see the basic idea. Define a polynomial.</p>
+      <table cellPadding="10" width="100%" id="table5">
+        <tr>
+          <td class="xmpcode">
+          <pre>x = sdpvar(1,1);y = sdpvar(1,1);
+p = (1+x)^4 + (1-y)^2;</pre>
+          </td>
+        </tr>
+      </table>
+      <p>Introduce a decomposition</p>
+      <table cellPadding="10" width="100%" id="table6">
+        <tr>
+          <td class="xmpcode">
+          <pre>v = monolist([x y],degree(p)/2);
+Q = sdpvar(length(v));
+p_sos = v'*Q*v;</pre>
+          </td>
+        </tr>
+      </table>
+      <p>The polynomials have to match, hence all coefficient in the polynomial 
+		describing the difference of the two polynomials have to be zero.</p>
+      <table cellPadding="10" width="100%" id="table7">
+        <tr>
+          <td class="xmpcode">
+          <pre>F = set(coefficients(p-p_sos,[x y]) == 0) + set(Q &gt; 0);
+solvesdp(F)</pre>
+          </td>
+        </tr>
+      </table>
+      <p>The problem above is typically more efficiently solved when interpreted 
+		in primal form, hence we <a href="dual.htm#dualize">dualize</a> it.</p>
+      <table cellPadding="10" width="100%" id="table11">
+        <tr>
+          <td class="xmpcode">
+          <pre>F = set(coefficients(p-p_sos,[x y]) == 0) + set(Q &gt; 0);
+[F,obj] = dualize(F,[]);
+solvesdp(F,-obj)</pre>
+          </td>
+        </tr>
+      </table>
+      <p>Adding parameterizations does not change the code significantly. Here is the 
+		code to find a lower bound on the polynomial</p>
+      <table cellPadding="10" width="100%" id="table8">
+        <tr>
+          <td class="xmpcode">
+          <pre>sdpvar t
+F = set(coefficients((p-t)-p_sos,[x y]) == 0) + set(Q &gt; 0);
+solvesdp(F,-t)</pre>
+          </td>
+        </tr>
+      </table>
+      <p>Matrix valued decompositions are a bit trickier, but still 
+		straightforward.</p>
+      <table cellPadding="10" width="100%" id="table9">
+        <tr>
+          <td class="xmpcode">
+          <pre>sdpvar x y
+P = [1+x^2 -x+y+x^2;-x+y+x^2 2*x^2-2*x*y+y^2];
+m = size(P,1);
+v = monolist([x y],degree(P)/2);
+Q = sdpvar(length(v)*m);
+R = kron(eye(m),v)'*Q*kron(eye(m),v)-P;
+s = coefficients(R(find(triu(R))),[x y]);
+solvesdp(set(Q &gt; 0) + set(s==0));
+sdisplay(clean(kron(eye(m),v)'*double(Q)*kron(eye(m),v),1e-6))</pre>
+          </td>
+        </tr>
+      </table>
+      <p>Once again, this is the basic idea behind the SOS module in YALMIP. 
+		However, the implementation is far more efficient and uses various 
+		approaches to reduce complexity, hence the approaches above should never be 
+		used in practice.</p>
+		<h3>Simple sum of squares problems</h3>
+      <p>The following lines of code presents some typical manipulation when working 
+      with SOS-calculations (a more detailed description is available if you run 
+		the sum of squares example in <code>yalmipdemo.m</code>). </p>
+		<p>The most important commands are <a href="reference.htm#sos">
+      	sos</a> (to define a SOS constraint) and
+      <a href="reference.htm#solvesos">
+      solvesos</a> (to solve the problem).</p>
+      <table cellPadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>x = sdpvar(1,1);y = sdpvar(1,1);
+p = (1+x)^4 + (1-y)^2;
+F = set(sos(p));
+solvesos(F);</pre>
+          </td>
+        </tr>
+      </table>
+      <p>The sum of squares decomposition is extracted with the command
+      <a href="reference.htm#sosd">
+      sosd</a>.</p>
+      <table cellPadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>h = sosd(F);
+sdisplay(h)<font color="#000000">
+
+ans = </font></pre>
+          <pre><font color="#000000">  '-1.203-1.9465x+0.22975y-0.97325x^2'
+  '0.7435-0.45951x-0.97325y-0.22975x^2'
+  '0.0010977+0.00036589x+0.0010977y-0.0018294x^2'</font></pre>
+          </td>
+        </tr>
+      </table>
+      <p>To see if the decomposition was successful, we simply calculate <strong>
+      p(x)-h<sup>T</sup>(x)h(x) </strong>which should be 0. However, due to numerical errors, 
+      the difference will not be zero. A useful command then is
+      <a href="reference.htm#clean">
+      clean</a>. Using
+      <a href="reference.htm#clean">
+      clean</a>, we remove all monomials with coefficients smaller than, e.g., 1e-6.</p>
+      <table cellPadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>clean(p-h&#39;*h,1e-6)
+<font color="#000000">
+ans =</font></pre>
+          <pre><font color="#000000">&nbsp;&nbsp;  0</font></pre>
+          </td>
+        </tr>
+      </table>
+      <p>The decomposition <strong>
+      p(x)-v<sup>T</sup>(x)Qv(x) </strong>can also be obtained easily.</p>
+      <table cellPadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>x = sdpvar(1,1);y = sdpvar(1,1);
+p = (1+x)^4 + (1-y)^2;
+F = set(sos(p));
+[sol,v,Q] = solvesos(F);
+clean(p-v{1}'*Q{1}*v{1},1e-6)</pre>
+          <pre><font color="#000000"> ans =
+     0</font></pre>
+          </td>
+        </tr>
+      </table>
+      <p><font color="#FF0000">Note</font> : Even though <strong>
+      h<sup>T</sup>(x)h(x) </strong>and <strong>
+      v<sup>T</sup>(x)Qv(x)</strong> should be the same in theory, they are 
+      typically not. The reason is partly numerical issues with floating point 
+      numbers, but more importantly due to the way YALMIP treats the case when 
+      <b>Q</b> 
+      not is positive definite (often the case due to numerical issues in the 
+      SDP solver). The decomposition is in theory defined as <strong>h(x)=chol(Q)v(x)</strong> 
+      . If <strong>
+      Q</strong> is indefinite, YALMIP uses an approximation of the Cholesky 
+      factor based on a singular value decomposition.</p>
+      <p>The quality of the decomposition can alternatively be evaluated using 
+		<a href="reference.htm#checkset">checkset</a>. The value reported is the 
+		largest coefficient in the polynomial&nbsp; <strong>
+      p(x)-h<sup>T</sup>(x)h(x)</strong></p>
+      <table cellPadding="10" width="100%" id="table1">
+        <tr>
+          <td class="xmpcode">
+          <pre>checkset(F)
+<font color="#000000">++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+|   ID|      Constraint|                          Type|   Primal residual|
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+|   #1|   Numeric value|   SOS constraint (polynomial)|       7.3674e-012|
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</font></pre>
+			<pre>e = checkset(F(is(F,'sos')))
+
+<font color="#000000">e =</font></pre>
+			<pre><font color="#000000">  7.3674e-012</font></pre>
+          </td>
+        </tr>
+      </table>
+      <p>It is very rare (except in contrived academic examples) that one finds a 
+      decomposition with a positive definite <strong>
+      Q </strong>and zero mismatch<strong>
+      </strong>between <strong>
+      v<sup>T</sup>(x)Qv(x) </strong>and the polynomial <strong>
+      p(x)</strong> .The reason is simply that all SDP solver uses real 
+      arithmetics. Hence, in principle, the decomposition has no theoretical 
+      value as a certificate for non-negativity unless additional post-analysis 
+      is performed (relating the size of the residual with the eigenvalues of 
+		the Gramian).</p>
+      <h3><a name="linear"></a>Parameterized problems</h3>
+      <p>The involved polynomials can be parameterized, and we can optimize the parameters 
+      under the constraint that the polynomial is a sum of squares. As an example, 
+      we can calculate a lower bound on a polynomial. The second argument can be used for an objective function to be 
+      minimized. Here, we maximize the lower bound, i.e. minimize the negative 
+      lower bound. The third argument is an options structure while the fourth argument is a vector 
+      containing all parametric variables in the polynomial (in this example 
+      we only have one variable, but several parametric variables can be defined 
+      by simply concatenating them).</p>
+      <table cellPadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>sdpvar x y lower
+p = (1+x*y)^2-x*y+(1-y)^2;
+F = set(sos(p-lower));
+solvesos(F,-lower,[],lower);
+double(lower)
+<font color="#000000">
+ ans =</font></pre>
+          <pre><font color="#000000">&nbsp;&nbsp;&nbsp;  0.75</font></pre>
+          </td>
+        </tr>
+      </table>
+      <p>YALMIP automatically declares all variables appearing in the objective 
+      function and in non-SOS constraints as parametric variables. Hence, the 
+      following code is equivalent.</p>
+      <table cellPadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>solvesos(F,-lower);
+double(lower)
+<font color="#000000">
+ ans =</font></pre>
+          <pre><font color="#000000">&nbsp;&nbsp;&nbsp;  0.75</font></pre>
+          </td>
+        </tr>
+      </table>
+      <p>Multiple SOS constraints can also be used. Consider the following problem of 
+      finding the smallest possible <b>t</b> such that the polynomials <b>t(1+xy)<sup>2</sup>-xy+(1-y)<sup>2</sup></b> 
+      and <b>(1-xy)<sup>2</sup>+xy+t(1+y)<sup>2</sup> </b>are both 
+      sum of squares.</p>
+      <table cellPadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>sdpvar x y t
+p1 = t*(1+x*y)^2-x*y+(1-y)^2;
+p2 = (1-x*y)^2+x*y+t*(1+y)^2;
+F = set(sos(p1))+set(sos(p2));
+solvesos(F,t);</pre>
+          <pre>double(t)
+<font color="#000000">
+ ans = 
+
+   0.2500</font></pre>
+          <pre>sdisplay(sosd(F(1)))</pre>
+          <pre><font color="#000000">ans = </font></pre>
+          <pre><font color="#000000">    '-1.102+0.95709y+0.14489xy'
+    '-0.18876-0.28978y+0.47855xy'</font></pre>
+          <pre>sdisplay(sosd(F(2)))</pre>
+          <pre><font color="#000000">ans = </font></pre>
+          <pre><font color="#000000">    '-1.024-0.18051y+0.76622xy'
+    '-0.43143-0.26178y-0.63824xy'
+    '0.12382-0.38586y+0.074568xy'</font></pre>
+          <pre>&nbsp;</pre>
+          </td>
+        </tr>
+      </table>
+      <p>
+          <img border="0" src="demoicon.gif" width="16" height="16">If you have 
+		parametric variables, bounding the feasible region typically 
+		improves numerical behavior. Having lower bounds will 
+			additionally decrease the size of the optimization problem 
+			(variables bounded from below can be treated as translated cone 
+			variables in <a href="dual.htm#dualization">dualization</a>, which 
+			is used by <a href="reference.htm#solvesos">
+			solvesos</a>).</p>
+		<p>
+          <img border="0" src="demoicon.gif" width="16" height="16"> One of the 
+			most common mistake people make when using the sum of squares module 
+			is to forget to declare some parametric variables. This will 
+			typically lead to a (of-course erroneous) huge sum of squares 
+			problem which easily freezes MATLAB and/or give strange error 
+			messages (trivially infeasible, nonlinear parameterization, etc). 
+			Make sure to initially run the module in verbose mode to see how 
+			YALMIP characterizes the problem (most importantly to check the 
+			number of parametric variables and independent variables). If you 
+			use nonlinear operators (<b>min</b>, <b>max</b>, <b>abs</b>,...) on 
+			parametric variables in your problem, it is recommended to always 
+			declare the parametric variables.</p>
+		<p>
+          <img border="0" src="demoicon.gif" width="16" height="16">When you use 
+			a kernel representation (<code>sos.model=1</code> and typically the case also 
+			for <code>sos.model=0</code>), YALMIP will derive and solve a 
+			problem which is related to the dual of your original problem. This 
+			means that warnings about infeasibility after solving the SDP actually means 
+		unbounded objective, and vice versa. If you use <code>sos.model=2</code>, 
+			a primal problem is solved, and YALMIP error messages are directly related to 
+			your problem.</p>
+		<p>
+          <img border="0" src="demoicon.gif" width="16" height="16">The quality 
+			of the SOS approximation is typically improved substantially if the 
+			tolerance and precision options of the semidefinite solver is 
+			decreased. As an example, having <code>sedumi.eps</code> 
+			less than 10<sup>-10 </sup> when solving sum of squares problems is 
+			typically recommended for anything but trivial problems. There is a 
+			higher likelihood that the semidefinite solver will complain about 
+			numerical problems in the end-phase, but the resulting solutions are 
+			typically much better. This seem to be even more important in 
+			parameterized problems.</p>
+		<p>
+          <img border="0" src="demoicon.gif" width="16" height="16">To evaluate 
+			the quality and success of the sum of squares decomposition, do not 
+			forget to study the discrepancy between the decomposition and the 
+			original polynomial.<checksetche&nbsp; The quality 
+			of the SOS approximation is typically improved substantially if the 
+			tolerance and precision options of the semidefinite solver is 
+			decreased. As an example, having <code> No problems in the 
+			semidefinite solver is no guarantee for a successful decomposition 
+			(due to numerical reasons, tolerances in the solvers etc.)</p>
+		<h3><a name="nonlinear"></a>Polynomial parameterizations</h3>
+      <p>A special feature of the sum of squares package in YALMIP is the 
+      possibility to work with nonlinear SOS parameterizations, i.e. SOS problems 
+      resulting in PMIs (polynomial matrix inequalities) instead of LMIs. The following piece of code solves a 
+      nonlinear control <i>synthesis</i> problem using sum of squares. Note 
+      that this requires the solver <a href="solvers.htm#penbmi">PENBMI</a>.</p>
+      <table cellPadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>clear all
+yalmip('clear');
+
+% States...
+sdpvar x1 x2
+x = [x1;x2];
+
+% Non-quadratic Lyapunov z'Pz 
+z = [x1;x2;x1^2];
+P = sdpvar(3,3);
+V = z'*P*z;
+
+% Non-linear state feedback
+v = [x1;x2;x1^2];
+K = sdpvar(1,3);
+u = K*v;
+
+% System x' = f(x)+Bu
+f = [1.5*x1^2-0.5*x1^3-x2; 3*x1-x2];
+B = [0;1];
+
+% Closed loop system, u = Kv
+fc = f+B*K*v;
+
+% Stability and performance constraint dVdt &lt; -x'x-u'u
+% NOTE : This polynomial is bilinear in P and K
+F = set(sos(-jacobian(V,x)*fc-x'*x-u'*u));
+
+% P is positive definite, bound P and K for numerical reasons
+F = F + set(P&gt;0)+set(25&gt;P(:)&gt;-25)+set(25&gt;K&gt;-25);
+
+% Minimize trace(P)
+% Parametric variables P and K automatically detected
+% by YALMIP since they are both constrained
+solvesos(F,trace(P));</pre>
+          </td>
+        </tr>
+      </table>
+      <h3><a name="matrix"></a>Matrix valued problems</h3>
+		<p>In the same sense that the moment implementation in YALMIP supports 
+		<a href="moment.htm#matrix">optimization over nonlinear semidefiniteness constraint</a> 
+		using moments, YALMIP also supports the dual SOS approach. Instead of computing a 
+		decomposition <strong>
+      	p(x) =
+      v<sup>T</sup>(x)Qv(x)</strong>, the matrix SOS decomposition is <strong>P(x) = (kron(I,v(x))</strong><strong><sup>T</sup>Q(kron(I,v(x))</strong>.</p>
+      <table cellPadding="10" width="100%" id="table4">
+        <tr>
+          <td class="xmpcode">
+          <pre>sdpvar x1 x2
+P = [1+x1^2 -x1+x2+x1^2;-x1+x2+x1^2 2*x1^2-2*x1*x2+x2^2];
+[sol,v,Q] = solvesos(set(sos(P)));
+sdisplay(v{1})
+<font color="#000000"> ans = </font></pre>
+			<pre><font color="#000000">    '1'     '0' 
+    'x2'    '0' 
+    'x1'    '0' 
+    '0'     '1' 
+    '0'     'x2'
+    '0'     'x1'
+
+</font>clean(v{1}'*Q{1}*v{1}-P,1e-8)
+ <font color="#000000">ans =</font></pre>
+			<pre><font color="#000000">     0     0
+     0     0</font></pre>
+          </td>
+        </tr>
+      </table>
+      <p>Of course, parameterized problems etc can also be solved with matrix 
+		valued SOS constraints. </p>
+		<p>At the moment, YALMIP extends some of the reduction techniques from 
+		the scalar case to exploit symmetry and structure of the polynomial 
+		matrix, but there is room for obvious improvements. If you think you 
+		might need this, make a feature request.</p>
+		<p>Keep in mind, that a simple scalarization can be more efficient in 
+		many cases.</p>
+      <table cellPadding="10" width="100%" id="table12">
+        <tr>
+          <td class="xmpcode">
+          <pre>w = sdpvar(length(P),1);
+[sol,v,Q] = solvesos(set(sos(w'*P*w)));
+clean(v{1}'*Q{1}*v{1}-w'*P*w,1e-8)
+ <font color="#000000">ans =
+     0 </font></pre>
+          </td>
+        </tr>
+      </table>
+      <p>This approach will however only prove positive semidefiniteness, it 
+		will not provide a decomposition of the polynomial matrix.</p>
+      <h3><a name="lowrank"></a>Low-rank sum-of-squares (<font color="#FF0000">experimental</font>)</h3>
+		<p>By using the capabilities of the solver <a href="solvers.htm#LMIRANK">LMIRANK</a>, 
+		we can pose sum-of-squares problems where we search for decompositions 
+		with few terms (low-rank Gramian). Consider the following problem where 
+		a trace heuristic leads to an effective rank of 5, perhaps 6. </p>
+      <table cellPadding="10" width="100%" id="table2">
+        <tr>
+          <td class="xmpcode">
+          <pre>x = sdpvar(1,1);
+y = sdpvar(1,1);
+f = 200*(x^3 - 4*x)^2+200 * (y^3 - 4*y)^2+(y - x)*(y + x)*x*(x + 2)*(x*(x - 2)+2*(y^2 - 4));
+g = 1 + x^2 + y^2;
+p = f * g;
+F = set(sos(p));
+[sol,v,Q] = solvesos(F,[],sdpsettings('sos.traceobj',1));
+
+eig(Q{1})
+<font color="#000000">ans =</font></pre>
+			<pre><font color="#000000">  1.0e+003 *</font></pre>
+			<pre><font color="#000000">    0.0000
+    0.0000
+    0.0000
+    0.0000
+    0.0000
+    0.0000
+    0.0000
+    0.0000
+    0.0001
+    0.0124
+    0.3977
+    3.3972
+    3.4000
+    6.7972</font></pre>
+          </td>
+        </tr>
+      </table>
+      <p>We solve the problem using <a href="solvers.htm#LMIRANK">LMIRANK</a> 
+		instead, and aim for a rank less than or equal to 4. The desired rank is 
+		specified easily in the <a href="reference.htm#sos">sos</a> construct.</p>
+      <table cellPadding="10" width="100%" id="table3">
+        <tr>
+          <td class="xmpcode">
+          <pre>x = sdpvar(1,1);
+y = sdpvar(1,1);
+f = 200*(x^3 - 4*x)^2+200 * (y^3 - 4*y)^2+(y - x)*(y + x)*x*(x + 2)*(x*(x - 2)+2*(y^2 - 4));
+g = 1 + x^2 + y^2;
+p = f * g;
+F = set(sos(p,<font color="#FF0000">4</font>));
+[sol,v,Q] = solvesos(F,[],sdpsettings('lmirank.eps',0));
+
+eig(Q{1})
+<font color="#000000">ans =</font></pre>
+			<pre><font color="#000000">  1.0e+003 *</font></pre>
+			<pre><font color="#000000">   -0.0000
+   -0.0000
+   -0.0000
+   -0.0000
+   -0.0000
+   -0.0000
+   -0.0000
+   -0.0000
+    0.0000
+    0.0000
+    0.4634
+    4.2674
+    4.6584
+    7.1705</font></pre>
+          </td>
+        </tr>
+      </table>
+      <p>The resulting rank is indeed effectively 4. Note though that <a href="solvers.htm#LMIRANK">LMIRANK</a> 
+		works on the dual problem side, and can return slightly infeasible 
+		solutions (in terms of positive definiteness.) Keep in mind that 
+		sum-of-squares decompositions <i>almost always</i> be slightly wrong, in 
+		one way or the other. If a dual (also called image) approach is used 
+		(corresponding to <font color="#0000FF">sos.model=2</font>), positive 
+		definiteness may be violated, and if a primal approach (also called 
+		kernel) approach is used (corresponding to <font color="#0000FF">
+		sos.model=1</font>), there is typically a difference between the 
+		polynomial and its decomposition. This simply due to the way SDP solvers 
+		and floating point arithmetic work. See more in the example <font color="#0000FF">sosex.m</font></p>
+		<p>Remember that <a href="solvers.htm#LMIRANK">LMIRANK</a> is a local 
+		solver, hence there are no guarantees that it will find a low rank 
+		solution even though one is known to exist. Moreover, note that <a href="solvers.htm#LMIRANK">LMIRANK</a> 
+		does not support objective functions.<h3>Options</h3>
+      <p>In the examples above, we are mainly using the default settings when 
+      solving the SOS problem, but there are a couple of options that can be 
+      changed to alter the computations. The most important are:</p>
+      <table border="1" cellspacing="1" style="border-collapse: collapse" width="100%" bordercolor="#000000" bgcolor="#FFFFE0" id="table10">
+        <tr>
+          <td width="301"><code>sdpsettings('sos.model',[0|1|2])</code></td>
+          <td>The SDP formulation of a SOS problem is not unique but can be 
+          done in several ways. YALMIP supports two version, here called image 
+          and kernel representation. If you set the value to 1, a kernel 
+          representation will be used, while 2 will result in an image 
+          representation. If the option is set to the default value 0, YALMIP 
+          will automatically select the representation (kernel by default).<p>
+          The kernel representation will most often give a smaller and 
+          numerically more robust semidefinite program, but cannot be used for 
+          nonlinearly parameterized SOS programs (i.e. problems resulting in 
+          BMIs etc) or problems with integrality 
+          constraints on parametric variables.</p> </td>
+        </tr>
+        <tr>
+          <td width="301"><code>sdpsettings('sos.newton',[0|1])</code></td>
+          <td>To reduce the size of the resulting SDP, a Newton polytope 
+          reduction algorithm is applied by default. For efficiency, you must 
+          have <a href="solvers.htm#cdd">CDDMEX</a> or <a href="solvers.htm#glpk">
+          GLPKMEX</a> installed.</td>
+        </tr>
+        <tr>
+          <td width="301"><code>sdpsettings('sos.congruence',[0|1])</code></td>
+          <td>A useful feature in YALMIP is the use of symmetry of the 
+          polynomial to block-diagonalize the SDP. This can make a huge difference 
+          for some SOS problems and is applied by default.</td>
+        </tr>
+        <tr>
+          <td width="301"><code>sdpsettings('sos.inconsistent',[0|1])</code></td>
+          <td>This options can be used to further reduce the size of the SDP. It 
+          is turned off by default since it typically not gives any major 
+          reduction in problem size once the Newton polytope reduction has been 
+          applied. In some situations, it might however be useful to use this 
+          strategy instead of the linear programming based Newton reduction (it 
+          cannot suffer from numerical problems and does not require any 
+          efficient LP solver), and for some problems, it can reduce models that 
+          are minimal in the Newton polytope sense, leading to a more 
+          numerically robust solution of the resulting SDP.</td>
+        </tr>
+        <tr>
+          <td width="301"><code>sdpsettings('sos.extlp',[0|1])</code></td>
+          <td>When a kernel representation model is used, the SDP problem is 
+			derived using the <a href="dual.htm#dualize">dualization</a> 
+			function. For some problems, the strategy in the dualization may 
+			affect the numerical conditioning of the problem. If you encounter 
+			numerical problems, it can sometimes be resolved by setting this 
+			option to 0. This will typically yield a slightly larger problem, but 
+          can improve the numerical performance. Note that this option only is of use 
+          if you have parametric variables with explicit non-zero lower bounds (constraints like <b>set(t&gt;-100)</b>).</td>
+        </tr>
+         <tr>
+          <td width="301"><code>sdpsettings('sos.postprocess',[0|1])</code></td>
+          <td>In practice, the SDP computations will never give a completely 
+			correct decomposition (due to floating point numbers and in many 
+			cases numerical problems in the solver). YALMIP can try to recover 
+			from these problems by applying a heuristic post-processing 
+			algorithm. This can in many cases improve the results.</td>
+        </tr>
+        </table>
+      <p>&nbsp;</td>
+    </tr>
+  </table>
+</div>
+
+</body>
+
+</html>

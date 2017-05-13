@@ -1,0 +1,162 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<title>YALMIP Example : Basics</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<link href="yalmip.css" type="text/css" rel="stylesheet">
+<base target="_self">
+</head>
+
+<body leftmargin="0" topmargin="0">
+
+<div align="left">
+  <table border="0" cellpadding="4" cellspacing="3" style="border-collapse: collapse" bordercolor="#000000" width="100%" align="left" height="100%">
+    <tr>
+      <td width="100%" align="left" height="100%" valign="top">
+      <h2>Basics: The sdpvar and set object</h2>
+      <hr size="1" color="#000000">
+      <p>The most important command in YALMIP is <a href="reference.htm#sdpvar">
+      sdpvar</a>. This command is used to the define decision variables. To define 
+      a matrix (or scalar) <b>P</b> with height <b>n</b> and width <b>m</b>, we 
+      write</p>
+      <table cellpadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>P = sdpvar(n,m)</pre>
+          </td>
+        </tr>
+      </table>
+      <p><font color="#FF0000">A square matrix is symmetric by default!</font>. To obtain a fully parameterized 
+      square matrix, a third argument is needed.</p>
+      <table cellpadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>P = sdpvar(3,3,&#39;full&#39;)</pre>
+          </td>
+        </tr>
+      </table>
+      <p>The third argument can be used to obtain a number of pre-defined types 
+      of variables, such as Toeplitz, Hankel, symmetric and skew-symmetric matrices. 
+      See the help text on <a href="reference.htm#sdpvar">sdpvar</a> for details.&nbsp; 
+		Alternatively, the associated standard commands can be applied to a 
+		suitable vector</p>
+      <table cellpadding="10" width="100%" id="table2">
+        <tr>
+          <td class="xmpcode">
+          <pre>x = sdpvar(n,1);
+D = diag(x) ;    % Diagonal matrix
+H = hankel(x);   % Hankel matrix
+T = toeplitz(x); % Hankel matrix</pre>
+          </td>
+        </tr>
+      </table>
+		<p>Scalars can be defined in three different ways.</p>
+      <table cellpadding="10" width="100%" id="table1">
+        <tr>
+          <td class="xmpcode">
+          <pre>x = sdpvar(1,1); y = sdpvar(1,1);
+x = sdpvar(1);   y = sdpvar(1);
+sdpvar x y</pre>
+          </td>
+        </tr>
+      </table>
+      <p>The <a href="reference.htm#sdpvar">sdpvar</a> objects are manipulated in 
+      MATLAB as any other variable and (almost)<font color="#FF0000"> all standard 
+      functions are overloaded</font>. Hence, the following commands are valid</p>
+      <table cellpadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>P = sdpvar(3,3) + diag(sdpvar(3,1));
+X = [P P;P eye(length(P))] + 2*trace(P);
+Y = X + sum(sum(P*rand(length(P)))) + P(end,end)+hankel(X(:,1));</pre>
+          </td>
+        </tr>
+      </table>
+      <p>To define constraints, the command <a href="reference.htm#set">set</a> 
+      is used (with set meaning set as in convex set, non-convex set, set of integers 
+      etc, not as in set/get). The meaning of a constraint is context-dependent. 
+      If left-hand side and right-hand side are Hermitian, the constraint is interpreted 
+      in terms of positive definiteness, otherwise element-wise. Hence, declaring 
+      a symmetric matrix and a positive definiteness constraint is done with</p>
+      <table cellpadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>n = 3;
+P = sdpvar(n,n);
+F = set(P&gt;0);</pre>
+          </td>
+        </tr>
+      </table>
+      <p>while a symmetric matrix with positive elements is defined with, e.g.,</p>
+      <table cellpadding="10" width="100%">
+        <tr>
+          <td class="xmpcode" >
+          <pre>P = sdpvar(n,n);
+F = set(P(:)&gt;0);</pre>
+          </td>
+        </tr>
+      </table>
+      <p>According to the rules above, a non-square matrix with positive elements 
+      can be defined using the &gt; operator immediately</p>
+      <table cellpadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>P = sdpvar(n,2*n);
+F = set(P&gt;0);</pre>
+          </td>
+        </tr>
+      </table>
+      <p>A list of several constraints is defined by just adding
+      <a href="reference.htm#set">set</a> objects.</p>
+      <table cellpadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>P = sdpvar(n,n);
+F = set(P&gt;0) + set(P(1,1)&gt;2);</pre>
+          </td>
+        </tr>
+      </table>
+      <p>Of course, the involved expressions can be arbitrary
+      <a href="reference.htm#sdpvar">sdpvar</a> objects, and equality constraints 
+      (==) can be defined, as well as constraints using &lt;.</p>
+      <table cellpadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>F = set(P&gt;0) + set(P(1,1)&lt;2) + set(sum(sum(P))==10);</pre>
+          </td>
+        </tr>
+      </table>
+      <p>In fact, non-strict operators =&lt; and &gt;= may also be used (by default, there 
+      is no difference, but by using the option <code>shift</code> in
+      <a href="reference.htm#sdpsettings">sdpsetttings</a>, it is possible to 
+		aim for 
+      strict feasibility). Note though that no solver can distinguish between 
+		strict and non-strict constraints. In fact, most solvers will not even 
+		respect a non-strict constraint but often return slightly infeasible 
+		solutions.</p>
+      <table cellpadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>F = set(P&gt;=0) + set(P(1,1)&lt;=2) + set(sum(sum(P))==10);</pre>
+          </td>
+        </tr>
+      </table>
+      <p>Finally, a convenient way to define several constraint is to use double-sided 
+      constraints.</p>
+      <table cellpadding="10" width="100%">
+        <tr>
+          <td class="xmpcode">
+          <pre>F = set(0 &lt; P(1,1) &lt; 2);</pre>
+          </td>
+        </tr>
+      </table>
+      </td>
+    </tr>
+  </table>
+</div>
+
+</body>
+
+</html>
