@@ -72,15 +72,15 @@ if ~isdeployed
   elseif nargin < 3
      taskName = '';
      Flag = [];
-     ScratchFolder = ['/home/young/Desktop/make3d/scratch' ];
-     ParaFolder = '/home/young/Desktop/make3d/params/';
+     ScratchFolder = ['/home/young/Desktop/Make3D/scratch' ];
+     ParaFolder = '/home/young/Desktop/Make3D/params/';
   elseif nargin < 4
      Flag = [];
-     ScratchFolder = ['/home/young/Desktop/make3d/scratch' ];
-     ParaFolder = '/home/young/Desktop/make3d/params/';
+     ScratchFolder = ['/home/young/Desktop/Make3D/scratch' ];
+     ParaFolder = '/home/young/Desktop/Make3D/params/';
   elseif nargin < 5
      Flag = [];
-     ParaFolder = '/home/young/Desktop/make3d/params/';
+     ParaFolder = '/home/young/Desktop/Make3D/params/';
   elseif nargin < 6
      Flag = [];
   end
