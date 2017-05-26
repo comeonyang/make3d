@@ -36,7 +36,7 @@
 % *  permissions and limitations under the License.
 % *
 % */
-function OneShot3dEfficient(ImgPath, OutPutFolder,...
+function depth_pre = OneShot3dEfficient(ImgPath, OutPutFolder,...
      taskName,...% taskname will append to the imagename and form the outputname
      ScratchFolder,... % ScratchFolder
      ParaFolder,... % All Parameter Folder
@@ -47,8 +47,11 @@ if ~isdeployed
   addpath(genpath('../../LearningCode'));
  addpath(genpath('../../third_party'));
  addpath(genpath('../../bin/mex'));
- end
+end
 
+if exist(OutPutFolder, 'dir') ~= 7
+    mkdir(OutPutFolder);
+end
 
 
 % This function is the speed up version of the OneShot3d
@@ -72,15 +75,15 @@ if ~isdeployed
   elseif nargin < 3
      taskName = '';
      Flag = [];
-     ScratchFolder = ['/home/young/Desktop/Make3D/scratch' ];
-     ParaFolder = '/home/young/Desktop/Make3D/params/';
+     ScratchFolder = ['/home/young/Desktop/Depth-Make3D/Make3D/scratch' ];
+     ParaFolder = '/home/young/Desktop/Depth-Make3D/Make3D/params/';
   elseif nargin < 4
      Flag = [];
-     ScratchFolder = ['/home/young/Desktop/Make3D/scratch' ];
-     ParaFolder = '/home/young/Desktop/Make3D/params/';
+     ScratchFolder = ['/home/young/Desktop/Depth-Make3D/Make3D/scratch' ];
+     ParaFolder = '/home/young/Desktop/Depth-Make3D/Make3D/params/';
   elseif nargin < 5
      Flag = [];
-     ParaFolder = '/home/young/Desktop/Make3D/params/';
+     ParaFolder = '/home/young/Desktop/Depth-Make3D/Make3D/params/';
   elseif nargin < 6
      Flag = [];
   end
@@ -92,7 +95,7 @@ if ~isdeployed
 
   % Function that setup the Default
   Default = SetupDefault_New(...
-            [ strrep(filename{1}, '.jpg', '') '_' taskName],...
+            [ strrep(filename{1}, '.png', '') taskName],...
             ParaFolder,...
             OutPutFolder,...
             ScratchFolder,...
@@ -211,7 +214,8 @@ if ~isdeployed
   
   % 5) output data
   fprintf('Writing superpixels and image...  ');
-  save([ Default.OutPutFolder Default.filename{1} '.mat'],'MedSup');
+  depth_pre = full(Predicted.depthMap);
+  save([ Default.OutPutFolder 'depth_predict.mat'],'depth_pre');
 
   % 6) Image copy to OutPutFolder
   %system(['cp ' ImgPath ' ' OutPutFolder Default.filename{1} '.jpg']);
